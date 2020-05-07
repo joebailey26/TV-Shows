@@ -39,17 +39,12 @@
 		color: white;
 	}
 
-	form, label {
-		display: grid;
-		grid-gap: 1rem;
-	}
-
 	form {
-		grid-template-columns: repeat(auto-fit, 250px);
+		text-align: left;
 	}
 
-	label {
-		grid-auto-flow: column;
+	form * {
+		display: inline
 	}
 
 	@media (min-width: 640px) {
