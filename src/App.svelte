@@ -76,7 +76,7 @@
 		</form>
 		<div class="shows_container">
 			{#each search_results.tv_shows as show}
-				<div class="show {showClassHelper(show.status)}">
+				<div class="show {showClassHelper(show.status, show.countdown)}">
 					<h3>{show.name}</h3>
 					<p>Network: {show.network}</p>
 					<a href="javascript:void(0)" on:click|preventDefault={addShowHelper(show.id)}>Add</a>
