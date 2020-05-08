@@ -74,31 +74,36 @@
 			</label>
 			<div><input type="submit" value="Search"/></div>
 		</form>
-		<div class="shows_container">
-			{#each search_results.tv_shows as show}
-				<div class="show {showClassHelper(show.status, show.countdown)}">
-					<h3>{show.name}</h3>
-					<p>Network: {show.network}</p>
-					<a href="javascript:void(0)" on:click|preventDefault={addShowHelper(show.id)}>Add</a>
-				</div>
-			{/each}
-		</div>
+		{#if searching}
+			<div class="shows_container container" transition:fade>
+				{#each search_results.tv_shows as show}
+					<div class="show {showClassHelper(show.status, show.countdown)}">
+						<h3>{show.name}</h3>
+						<p>Network: {show.network}</p>
+						<a href="javascript:void(0)" on:click|preventDefault={addShowHelper(show.id)}>Add</a>
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 	<h2>Currently Watching</h2>
-	<div class="shows_container container">
-		{#each shows as show}
-		<div class="show {showClassHelper(show.tvShow.status, show.tvShow.countdown)}">
-			<h3>{show.tvShow.name}</h3>
-			<p>Next episode: {@html showCountdownHelper(show.tvShow.countdown)}</p>
-			<p>Network: {show.tvShow.network}</p>
-			<a href="javascript:void(0)" on:click|preventDefault={deleteShow(show.tvShow.id)}>Remove</a>
+	{#if visible}
+		<div class="shows_container container" transition:fade>
+			{#each shows as show}
+			<div class="show {showClassHelper(show.tvShow.status, show.tvShow.countdown)}">
+				<h3>{show.tvShow.name}</h3>
+				<p>Next episode: {@html showCountdownHelper(show.tvShow.countdown)}</p>
+				<p>Network: {show.tvShow.network}</p>
+				<a href="javascript:void(0)" on:click|preventDefault={deleteShow(show.tvShow.id)}>Remove</a>
+			</div>
+			{/each}
 		</div>
-		{/each}
-	</div>
+	{/if}
 </main>
 
 <script>
 	import { onMount } from 'svelte'
+	import { fade } from 'svelte/transition'
 
 	// Data
 	let shows = []
@@ -111,12 +116,14 @@
 	let search_results = {
 		tv_shows: []
 	}
+	let searching = false
+	let visible = false
 
 	function showClassHelper (status, countdown) {
 		if (status === 'Canceled/Ended' || status === 'Ended') {
 			return 'red'
 		}
-		else if (countdown !== null) {
+		else if (countdown !== null && countdown !== undefined) {
 			return 'green'
 		}
 	}
@@ -124,7 +131,7 @@
 	function showCountdownHelper (countdown) {
 		if (countdown == null) {
 			return 'Unknown'
-			}
+		}
 		else {
 			let date = new Date(countdown.air_date)
 			let day = date.getDate()
@@ -182,6 +189,7 @@
 		}).catch((error) => {
 			console.log('API error', error)
 		})
+		searching = false
 		new_show = {
 			id: null
 		}
@@ -198,6 +206,7 @@
 
 	// Get Shows on page load
 	async function getShows () {
+		visible = false
 		getShowsAPI().then(async (response) => {
 			IDs = await response
 			for (let ID of IDs) {
@@ -213,6 +222,7 @@
 				return 0;
 			})
 			shows = shows
+			visible = true
 		}).catch((error) => {
 			console.log('API error', error)
 		})
@@ -230,6 +240,8 @@
 		searchEpisodate().then((response) => {
 			search_results = response
 			search_results = search_results
+			searchData = ''
+			searching = true
 		}).catch((error) => {
 			console.log('API error', error)
 		})
@@ -251,7 +263,6 @@
 	}
 
 	async function deleteShow (id) {
-		console.log(IDs)
 		await deleteShowAPI(id)
 		shows = []
 		getShows()
