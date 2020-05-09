@@ -10,6 +10,7 @@
     "start:server": "netlify-lambda serve functions -c ./webpack.config.js"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "encoding": "^0.1.12",
     "faunadb": "^2.14.0"
   },

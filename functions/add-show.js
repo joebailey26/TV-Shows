@@ -1,9 +1,10 @@
 import faunadb from 'faunadb'
+require('dotenv').config()
 
 /* configure faunaDB Client with our secret */
 const q = faunadb.query
 const client = new faunadb.Client({
-  secret: "fnADrPreonACADjIEB2zhXSrrpPn21v42vikxIH2"
+  secret: process.env.FAUNA_KEY
 })
 
 /* export our lambda function as named "handler" export */

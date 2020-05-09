@@ -4,6 +4,7 @@
 
 # FaunaDB API Key
 .faunarc
+.env
 
 # production
 /functions-build
