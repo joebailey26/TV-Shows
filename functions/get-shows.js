@@ -16,15 +16,15 @@ exports.handler = (event, context, callback) => {
       })
       // then query the refs
       return client.query(getAllShowsDataQuery).then((ret) => {
-        return callback(null, {
+        return {
           statusCode: 200,
           body: JSON.stringify(ret)
-        })
+        }
       })
     }).catch((error) => {
-      return callback(null, {
+      return {
         statusCode: 400,
         body: JSON.stringify(error)
-      })
+      }
     })
 }

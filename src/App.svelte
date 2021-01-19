@@ -125,7 +125,7 @@
 		tv_shows: []
 	}
 	let searching = false
-	let visible = false
+	let visible = true
 	let cal = ics()
 
 	function showClassHelper (status, countdown) {
@@ -196,7 +196,7 @@
 	}
 
 	// On form submit call addShowAPI
-	async function addShow () {
+	async function addShow (id) {
 		await addShowAPI(new_show).then((response) => {
 			success = response
 		}).catch((error) => {
@@ -206,48 +206,62 @@
 		new_show = {
 			id: null
 		}
-		shows = []
-		getShows()
+		getShow(id)
+		getShowsAPI().then(async (response) => {
+			IDs = await response
+			localStorage.setItem('id', JSON.stringify(IDs))
+		}).catch((error) => {
+			console.log('API error', error)
+		})
 	}
 
 	function addShowHelper (id) {
 		new_show = {
 			id: id
 		}
-		addShow()
+		addShow(id)
 	}
 
-	// Get Shows on page load
+	async function getShow (id) {
+		await getShowsEpisodate(id).then((response) => {
+			shows.push(response)
+			let i
+			for (i = 0; i < (response.tvShow.episodes).length; i++) {
+				let episode = response.tvShow.episodes[i]
+				if (episode.air_date) {
+					let date = new Date(episode.air_date)
+					date.setDate(date.getDate() + 1)
+					date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+					if (date > new Date()) {
+						cal.addEvent(response.tvShow.name + ' | ' + episode.name, '', '', date, date)
+					}
+				}
+			}
+		}).catch((error) => {
+			console.log('API error', error)
+		})
+		shows.sort(function(a, b){
+			if(a.tvShow.network < b.tvShow.network) { return -1; }
+			if(a.tvShow.network > b.tvShow.network) { return 1; }
+			return 0;
+		})
+		shows = shows
+		localStorage.setItem('shows', JSON.stringify(shows))
+	}
+
 	async function getShows () {
-		visible = false
 		getShowsAPI().then(async (response) => {
 			IDs = await response
-			for (let ID of IDs) {
-				await getShowsEpisodate(ID.data.id).then((response) => {
-					shows.push(response)
-					let i
-					for (i = 0; i < (response.tvShow.episodes).length; i++) {
-						let episode = response.tvShow.episodes[i]
-						if (episode.air_date) {
-							let date = new Date(episode.air_date)
-							date.setDate(date.getDate() + 1)
-							date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-							if (date > new Date()) {
-								cal.addEvent(response.tvShow.name + ' | ' + episode.name, '', '', date, date)
-							}
-						}
-					}
-				}).catch((error) => {
-					console.log('API error', error)
-				})
+			if (localStorage.getItem('id') != JSON.stringify(IDs)) {
+				for (let ID of IDs) {
+					getShow(ID.data.id)
+					console.log(ID.data.id)
+				}
+				localStorage.setItem('id', JSON.stringify(IDs))
+			} else {
+				IDs = JSON.parse(localStorage.getItem('id'))
+				shows = JSON.parse(localStorage.getItem('shows'))
 			}
-			shows.sort(function(a, b){
-				if(a.tvShow.network < b.tvShow.network) { return -1; }
-				if(a.tvShow.network > b.tvShow.network) { return 1; }
-				return 0;
-			})
-			shows = shows
-			visible = true
 		}).catch((error) => {
 			console.log('API error', error)
 		})
@@ -288,9 +302,28 @@
 	}
 
 	async function deleteShow (id) {
-		await deleteShowAPI(id)
-		shows = []
-		getShows()
+		if (window.confirm('Are you sure you want to delete this show?')) {
+			await deleteShowAPI(id)
+			let i
+			for (i in shows) {
+				if (shows[i].tvShow.id === id) {
+					shows.splice(i, 1)
+				}
+			}
+			let b
+			for (b in IDs) {
+				if(IDs[b].data.id === id) {
+					IDs.splice(b, 1)
+				}
+			}
+			shows.sort(function(a, b){
+				if(a.tvShow.network < b.tvShow.network) { return -1; }
+				if(a.tvShow.network > b.tvShow.network) { return 1; }
+				return 0;
+			})
+			shows = shows
+			localStorage.setItem('shows', JSON.stringify(shows))
+		}
 	}
 
 	getShows()

@@ -16,17 +16,17 @@ exports.handler = (event, context, callback) => {
   }
   /* construct the fauna query */
   return client.query(q.Create(q.Ref("classes/tv-shows"), item))
-  .then((response) => {
+  .then(() => {
     /* Success! return the response with statusCode 200 */
-    return callback(null, {
+    return {
       statusCode: 200,
       body: JSON.stringify("Added successfully")
-    })
+    }
   }).catch((error) => {
     /* Error! return the error with statusCode 400 */
-    return callback(null, {
+    return {
       statusCode: 400,
       body: JSON.stringify(error)
-    })
+    }
   })
 }

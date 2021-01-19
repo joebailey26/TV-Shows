@@ -11,14 +11,14 @@ exports.handler = (event, context, callback) => {
   const id = getId(event.path)
   return client.query(q.Delete(q.Ref(`classes/tv-shows/${id}`)))
   .then((response) => {
-    return callback(null, {
+    return {
       statusCode: 200,
       body: JSON.stringify(response)
-    })
+    }
   }).catch((error) => {
-    return callback(null, {
+    return {
       statusCode: 400,
       body: JSON.stringify(error)
-    })
+    }
   })
 }
