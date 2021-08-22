@@ -87,9 +87,14 @@
 			</div>
 		{/if}
 	</div>
-	<form on:submit|preventDefault={downloadCalendar}>
-		<input type="submit" value="Download calendar" />
-	</form>
+	<div style="text-align: left">
+		<form on:submit|preventDefault={downloadCalendar} style="display: inline-block">
+			<input type="submit" value="Download calendar" />
+		</form>
+		<form on:submit|preventDefault={clearStorage} style="display: inline-block">
+			<input type="submit" value="Clear Storage" />
+		</form>
+	</div>
 	<h2>Currently Watching</h2>
 	{#if visible}
 		<div class="shows_container container" transition:fade>
@@ -169,6 +174,10 @@
 		cal.download('tv_shows')
 	}
 
+	function clearStorage () {
+		localStorage.clear()
+	}
+
 	// Add show
 	function addShowAPI (data) {
 		return fetch(`https://tv-shows-api.joebailey.workers.dev/add-show/${data.id}`, {
@@ -177,7 +186,7 @@
 				Authorization: 'GTO'
 			}
 		}).then(response => {
-			return response.json()
+			return response.text()
 		})
 	}
 
@@ -189,7 +198,7 @@
 				Authorization: 'GTO'
 			}
 		}).then(response => {
-			return response
+			return response.json()
 		})
 	}
 
@@ -206,7 +215,7 @@
 		await addShowAPI(new_show).then((response) => {
 			success = response
 		}).catch((error) => {
-			console.log('API error', error)
+			console.error('API error', error)
 		})
 		searching = false
 		new_show = {
@@ -217,7 +226,7 @@
 			IDs = await response
 			localStorage.setItem('id', JSON.stringify(IDs))
 		}).catch((error) => {
-			console.log('API error', error)
+			console.error('API error', error)
 		})
 	}
 
@@ -244,7 +253,7 @@
 				}
 			}
 		}).catch((error) => {
-			console.log('API error', error)
+			console.error('API error', error)
 		})
 		shows.sort(function(a, b){
 			if(a.tvShow.network < b.tvShow.network) { return -1; }
@@ -261,7 +270,6 @@
 			if (localStorage.getItem('id') != JSON.stringify(IDs)) {
 				for (let ID of IDs) {
 					getShow(ID.data.id)
-					console.log(ID.data.id)
 				}
 				localStorage.setItem('id', JSON.stringify(IDs))
 			} else {
@@ -269,7 +277,7 @@
 				shows = JSON.parse(localStorage.getItem('shows'))
 			}
 		}).catch((error) => {
-			console.log('API error', error)
+			console.error('API error', error)
 		})
 	}
 
@@ -288,7 +296,7 @@
 			searchData = ''
 			searching = true
 		}).catch((error) => {
-			console.log('API error', error)
+			console.error('API error', error)
 		})
 	}
 
@@ -306,13 +314,17 @@
 				Authorization: 'GTO'
 			}
 		}).then(response => {
-			return response
+			return response.text()
 		})
 	}
 
 	async function deleteShow (id) {
 		if (window.confirm('Are you sure you want to delete this show?')) {
-			await deleteShowAPI(id)
+			await deleteShowAPI(id).then((response) => {
+				success = response
+			}).catch((error) => {
+				console.error('API error', error)
+			})
 			let i
 			for (i in shows) {
 				if (shows[i].tvShow.id === id) {
