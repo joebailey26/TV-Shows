@@ -189,7 +189,7 @@
 				Authorization: 'GTO'
 			}
 		}).then(response => {
-			return response.json()
+			return response
 		})
 	}
 
@@ -306,7 +306,7 @@
 				Authorization: 'GTO'
 			}
 		}).then(response => {
-			return response.json()
+			return response
 		})
 	}
 
