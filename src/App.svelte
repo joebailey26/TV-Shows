@@ -22,6 +22,7 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fit, 250px);
 		grid-gap: 1rem;
+		justify-content: center
 	}
 
 	.show {
@@ -170,8 +171,7 @@
 
 	// Add show
 	function addShowAPI (data) {
-		return fetch('https://tv-shows-api.joebailey.workers.dev/add-show', {
-			body: JSON.stringify(data),
+		return fetch(`https://tv-shows-api.joebailey.workers.dev/add-show/${data.id}`, {
 			method: 'POST',
 			headers: {
 				Authorization: 'GTO'
