@@ -172,7 +172,10 @@
 	function addShowAPI (data) {
 		return fetch('https://tv-shows-api.joebailey.workers.dev/add-show', {
 			body: JSON.stringify(data),
-			method: 'POST'
+			method: 'POST',
+			headers: {
+				joe: 'GTO'
+			}
 		}).then(response => {
 			return response.json()
 		})
@@ -181,7 +184,10 @@
 	// Get shows
 	function getShowsAPI () {
 		return fetch('https://tv-shows-api.joebailey.workers.dev/get-shows', {
-			method: 'GET'
+			method: 'GET',
+			headers: {
+				joe: 'GTO'
+			}
 		}).then(response => {
 			return response.json()
 		})
@@ -295,7 +301,10 @@
 			}
 		}
 		return fetch(`https://tv-shows-api.joebailey.workers.dev/remove-show/${request}`, {
-			method: 'POST'
+			method: 'POST',
+			headers: {
+				joe: 'GTO'
+			}
 		}).then(response => {
 			return response.json()
 		})
