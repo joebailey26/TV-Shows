@@ -183,7 +183,7 @@
 		return fetch(`https://tv-shows-api.joebailey.workers.dev/add-show/${data.id}`, {
 			method: 'POST',
 			headers: {
-				Authorization: 'GTO'
+				Authorization: 'Mitsubishi'
 			}
 		}).then(response => {
 			return response.text()
@@ -195,7 +195,7 @@
 		return fetch('https://tv-shows-api.joebailey.workers.dev/get-shows', {
 			method: 'GET',
 			headers: {
-				Authorization: 'GTO'
+				Authorization: 'Mitsubishi'
 			}
 		}).then(response => {
 			return response.json()
@@ -311,7 +311,7 @@
 		return fetch(`https://tv-shows-api.joebailey.workers.dev/remove-show/${request}`, {
 			method: 'POST',
 			headers: {
-				Authorization: 'GTO'
+				Authorization: 'Mitsubishi'
 			}
 		}).then(response => {
 			return response.text()
