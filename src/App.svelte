@@ -170,7 +170,7 @@
 
 	// Add show
 	function addShowAPI (data) {
-		return fetch('/.netlify/functions/add-show', {
+		return fetch('https://tv-shows-api.joebailey.workers.dev/add-show', {
 			body: JSON.stringify(data),
 			method: 'POST'
 		}).then(response => {
@@ -180,7 +180,7 @@
 
 	// Get shows
 	function getShowsAPI () {
-		return fetch('/.netlify/functions/get-shows', {
+		return fetch('https://tv-shows-api.joebailey.workers.dev/get-shows', {
 			method: 'GET'
 		}).then(response => {
 			return response.json()
@@ -294,7 +294,7 @@
 				request = ID.ref['@ref'].id
 			}
 		}
-		return fetch(`/.netlify/functions/remove-show/${request}`, {
+		return fetch(`https://tv-shows-api.joebailey.workers.dev/remove-show/${request}`, {
 			method: 'POST'
 		}).then(response => {
 			return response.json()
