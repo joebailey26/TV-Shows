@@ -211,22 +211,26 @@
 
 	// On form submit call addShowAPI
 	async function addShow (id) {
-		await addShowAPI(new_show).then((response) => {
-			success = response
-		}).catch((error) => {
-			console.error('API error', error)
-		})
-		searching = false
-		new_show = {
-			id: null
+		if (IDs.find(ID => ID.data.id === id)) {
+			success = 'This show has already been added'
+		} else {
+			await addShowAPI(new_show).then((response) => {
+				success = response
+			}).catch((error) => {
+				console.error('API error', error)
+			})
+			searching = false
+			new_show = {
+				id: null
+			}
+			getShow(id)
+			getShowsAPI().then(async (response) => {
+				IDs = await response
+				localStorage.setItem('id', JSON.stringify(IDs))
+			}).catch((error) => {
+				console.error('API error', error)
+			})
 		}
-		getShow(id)
-		getShowsAPI().then(async (response) => {
-			IDs = await response
-			localStorage.setItem('id', JSON.stringify(IDs))
-		}).catch((error) => {
-			console.error('API error', error)
-		})
 	}
 
 	function addShowHelper (id) {
