@@ -18,4 +18,4 @@ It then exports all of the episodes set in the future to an iCal file which you 
 
 ## Future
 
-- [ ] Make the calendar a live link for Google Calendar to ping
+- [*] Make the calendar a live link for Google Calendar to ping
