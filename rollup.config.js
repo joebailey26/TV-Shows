@@ -3,7 +3,6 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
 import serve from 'rollup-plugin-serve-proxy'
-import injectProcessEnv from 'rollup-plugin-inject-process-env'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -35,7 +34,6 @@ export default {
 				'Access-Control-Allow-Origin': '*'
 			}
 		}),
-		injectProcessEnv(),
 		svelte({
 			dev: !production,
 			// we'll extract any component CSS out into
