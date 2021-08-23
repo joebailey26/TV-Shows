@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
 import serve from 'rollup-plugin-serve-proxy'
+import injectProcessEnv from 'rollup-plugin-inject-process-env'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -15,27 +16,28 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
-        !production && serve({
-            // Launch in browser (default: false)
-            open: true,
-           
-            // Show server address in console (default: true)
-            verbose: false,
-           
-            // Folder to serve files from
-            contentBase: 'public',
-           
-            // Options used in setting up server
-            host: 'localhost',
-            port: 8999,
-           
-            //set headers
-            headers: {
-              'Access-Control-Allow-Origin': '*'
-            }
-        }),          
+		!production && serve({
+			// Launch in browser (default: false)
+			open: true,
+
+			// Show server address in console (default: true)
+			verbose: false,
+
+			// Folder to serve files from
+			contentBase: 'public',
+
+			// Options used in setting up server
+			host: 'localhost',
+			port: 8999,
+
+			//set headers
+			headers: {
+				'Access-Control-Allow-Origin': '*'
+			}
+		}),
+		injectProcessEnv(),
 		svelte({
-            dev: !production,
+			dev: !production,
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
 			css: css => {
@@ -56,7 +58,7 @@ export default {
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-        production && terser()
+			production && terser()
 	],
 	watch: {
 		clearScreen: false
