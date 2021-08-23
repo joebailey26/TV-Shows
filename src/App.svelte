@@ -2,7 +2,6 @@
 	main {
 		text-align: center;
 		padding: 1em;
-		max-width: 240px;
 		margin: 0 auto;
 	}
 
@@ -183,7 +182,7 @@
 		return fetch(`https://tv-shows-api.joebailey.workers.dev/add-show/${data.id}`, {
 			method: 'POST',
 			headers: {
-				Authorization: 'Mitsubishi'
+				Authorization: TV_API_SECRET
 			}
 		}).then(response => {
 			return response.text()
@@ -195,7 +194,7 @@
 		return fetch('https://tv-shows-api.joebailey.workers.dev/get-shows', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Mitsubishi'
+				Authorization: TV_API_SECRET
 			}
 		}).then(response => {
 			return response.json()
@@ -311,7 +310,7 @@
 		return fetch(`https://tv-shows-api.joebailey.workers.dev/remove-show/${request}`, {
 			method: 'POST',
 			headers: {
-				Authorization: 'Mitsubishi'
+				Authorization: TV_API_SECRET
 			}
 		}).then(response => {
 			return response.text()
