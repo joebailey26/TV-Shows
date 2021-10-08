@@ -275,6 +275,9 @@
 					getShow(ID.data.id)
 				}
 				localStorage.setItem('id', JSON.stringify(IDs))
+			} else if (!localStorage.getItem('shows')) {
+				IDs = []
+				shows = []
 			} else {
 				IDs = JSON.parse(localStorage.getItem('id'))
 				shows = JSON.parse(localStorage.getItem('shows'))
