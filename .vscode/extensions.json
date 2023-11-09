@@ -1,5 +1,14 @@
 {
     "recommendations": [
-        "svelte.svelte-vscode"
+        "svelte.svelte-vscode",
+        "stylelint.vscode-stylelint",
+        "phoenisx.cssvar",
+        "dbaeumer.vscode-eslint",
+        "wix.vscode-import-cost",
+        "zignd.html-css-class-completion",
+        "sburg.vscode-javascript-booster",
+        "gencer.html-slim-scss-css-class-completion",
+        "mrmlnc.vscode-scss",
+        "octref.vetur"
     ]
 }

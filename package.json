@@ -4,11 +4,16 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "dev": "wrangler pages dev --proxy=8999 --compatibility-date=2023-11-09 -- npm run start"
+    "dev": "wrangler pages dev --proxy=8999 --compatibility-date=2023-11-09 -- npm run start",
+    "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
+    "lint:styles": "stylelint \"**/*.{vue,scss}\"",
+    "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "^7.0.0",
+    "galexia-eslint-config": "github:Galexia-Agency/eslint-config",
     "rollup": "^1.20.0",
     "rollup-plugin-serve-proxy": "^1.1.4",
     "rollup-plugin-svelte": "^5.0.3",
