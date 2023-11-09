@@ -13,7 +13,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "^7.0.0",
-    "galexia-eslint-config": "github:Galexia-Agency/eslint-config",
+    "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
     "rollup": "^1.20.0",
     "rollup-plugin-serve-proxy": "^1.1.4",
     "rollup-plugin-svelte": "^5.0.3",
