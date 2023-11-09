@@ -1,0 +1,7 @@
+name = "tv-shows"
+
+account_id = "8259f9bfa45a74a587d6a90822de442d"
+workers_dev = true
+
+[build]
+  command = "npm run build"
