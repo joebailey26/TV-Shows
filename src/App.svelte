@@ -77,9 +77,7 @@
 		{/if}
 	</div>
 	<div style="text-align: left">
-		<form on:submit|preventDefault={downloadCalendar} style="display: inline-block">
-			<input type="submit" value="Download calendar" />
-		</form>
+		<a class="button" style="display: inline-block; margin-bottom: 1rem" href="{env.API_URL}/calendar" target="_blank">Download calendar</a>
 	</div>
 	<h2>Currently Watching</h2>
 	{#if visible}
@@ -148,11 +146,6 @@
 
 			return `<time datetime=${date}>${day} ${month} '${year}</time>`
 		}
-	}
-
-	function downloadCalendar () {
-		// Open the calendar api endpoint in a new window
-		window.open(`${env.API_URL}/calendar`, '_blank');
 	}
 
 	async function search () {
