@@ -99,10 +99,11 @@
 <script>
 	import { fade } from 'svelte/transition'
 
-	// Env
-	// const apiUrl = 'https://tv-shows-api.joebailey.workers.dev'
-	const apiUrl = 'http://127.0.0.1:8787'
-	const auth = 'Skyline'
+	// env
+	const env = {
+		API_URL: window.location.port === "8788" ? "http://localhost:8080" : "https://tv-shows-api.joebailey.workers.dev",
+		AUTH_KEY: "Skyline"
+	}
 
 	// Data
 	let shows = []
@@ -150,60 +151,59 @@
 	}
 
 	function downloadCalendar () {
-		// ToDo
-		//  Open the calendar api endpoint in a new window
+		// Open the calendar api endpoint in a new window
+		window.open(`${env.API_URL}/calendar`, '_blank');
 	}
 
-	async function getShows () {
-		shows = await fetch(`${apiUrl}/shows`, {
-			method: 'GET',
-			headers: {
-				Authorization: auth
-			}
-		}).then(response => {
-			return response.json()
-		})
-	}
-
-	function searchEpisodate () {
-		return fetch(`https://www.episodate.com/api/search?q=${searchData}`, {
+	async function search () {
+		const searchRequest = await fetch(`https://www.episodate.com/api/search?q=${searchData}`, {
 			method: 'POST'
 		}).then(response => {
 			return response.json()
 		})
+		search_results = searchRequest
+		searchData = ''
+		searching = true
 	}
 
-	function search () {
-		searchEpisodate().then((response) => {
-			search_results = response
-			search_results = search_results
-			searchData = ''
-			searching = true
+	async function getShows () {
+		// shows is set on the root. Populate it as part of this method
+		shows = await fetch(`${env.API_URL}/shows`, {
+			method: 'GET',
+			headers: {
+				Authorization: env.AUTH_KEY
+			}
+		}).then(response => {
+			return response.json()
 		})
 	}
 
 	async function addShow (id) {
-		await fetch(`${apiUrl}/show/${id}`, {
+		await fetch(`${env.API_URL}/show/${id}`, {
 			method: 'POST',
 			headers: {
-				Authorization: auth
+				Authorization: env.AUTH_KEY
 			}
 		})
+		// You must search to add a show. Now the show is added, clear the searching state
 		searching = false
+		// Refresh getting shows
 		getShows()
 	}
 
 	async function deleteShow (id) {
 		if (window.confirm('Are you sure you want to delete this show?')) {
-			await fetch(`${apiUrl}/show/${id}`, {
+			await fetch(`${env.API_URL}/show/${id}`, {
 				method: 'DELETE',
 				headers: {
-					Authorization: auth
+					Authorization: env.AUTH_KEY
 				}
 			})
+			// Refresh getting shows
 			getShows()
 		}
 	}
 
+	// On mount, fetch the shows
 	getShows()
 </script>
