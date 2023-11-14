@@ -1,25 +1,34 @@
 {
   "name": "tv-shows",
-  "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "build": "rollup -c",
-    "start": "rollup -c -w",
-    "dev": "wrangler pages dev --proxy=8999 --compatibility-date=2023-11-09 -- npm run start",
+    "build": "cross-env NITRO_PRESET=cloudflare-pages nuxi build",
+    "dev": "nuxi dev",
+    "postinstall": "nuxi prepare",
+    "pages:dev": "wrangler pages dev --compatibility-date=2023-10-30 --proxy 3000 -- npm run dev",
+    "pages:deploy": "npm run build && wrangler pages deploy ./dist",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
     "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "11.0.2",
-    "@rollup/plugin-node-resolve": "^7.0.0",
+    "@nuxt/devtools": "latest",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/eslint-module": "^4.1.0",
+    "@nuxtjs/stylelint-module": "^5.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.53.0",
     "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
+    "nuxt": "^3.8.1",
+    "stylelint": "^15.11.0",
     "stylelint-config-galexia": "github:Galexia-Agency/stylelint-config",
-    "rollup": "^1.20.0",
-    "rollup-plugin-serve-proxy": "^1.1.4",
-    "rollup-plugin-svelte": "^5.0.3",
-    "rollup-plugin-terser": "^5.1.2",
-    "svelte": "^3.0.0",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5",
     "wrangler": "^3.15.0"
-  }
+  },
+  "browserslist": [
+    "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
+  ]
 }
