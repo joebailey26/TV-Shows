@@ -1,0 +1,12 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "galexia",
+    "@nuxtjs/eslint-config-typescript"
+  ],
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  }
+}
