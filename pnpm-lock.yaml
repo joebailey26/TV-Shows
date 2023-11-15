@@ -50,6 +50,9 @@ devDependencies:
   stylelint-config-galexia:
     specifier: github:Galexia-Agency/stylelint-config
     version: github.com/Galexia-Agency/stylelint-config/f7b667239a3b6b89913d3b1781708513cd790e3b(postcss-html@1.5.0)(postcss@8.4.31)(typescript@5.2.2)
+  typescript:
+    specifier: ^5.2.2
+    version: 5.2.2
   vue:
     specifier: ^3.3.8
     version: 3.3.8(typescript@5.2.2)

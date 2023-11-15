@@ -1,6 +1,5 @@
+import { H3EventContext } from 'h3'
 import getShowsEpisodate from './getShowsEpisodate'
-import type { H3EventContext } from 'h3';
-import type { D1Database, KVNamespace } from '@cloudflare/workers-types';
 
 export default async function getShows (context: H3EventContext) {
   const DB: D1Database = context.cloudflare.env.DB
@@ -14,10 +13,10 @@ export default async function getShows (context: H3EventContext) {
     //  Offset
   ).all()
 
-  const episodesToReturn = []
+  const episodesToReturn = [] as EpisodateShow[]
 
   // Loop through all shows and fetch the data we need from KV or Episodate
-  for (const show of results) {
+  for (const show of results as unknown as D1Show[]) {
     // Check if we have the show stored in the KV cache
     const cachedShow = await KV_TV_SHOWS.get(show.id)
 

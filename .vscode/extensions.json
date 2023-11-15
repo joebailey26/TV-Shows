@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "svelte.svelte-vscode",
         "stylelint.vscode-stylelint",
         "phoenisx.cssvar",
         "dbaeumer.vscode-eslint",
@@ -9,6 +8,7 @@
         "sburg.vscode-javascript-booster",
         "gencer.html-slim-scss-css-class-completion",
         "mrmlnc.vscode-scss",
-        "octref.vetur"
+        "vue.vscode-typescript-vue-plugin",
+        "Vue.volar"
     ]
 }

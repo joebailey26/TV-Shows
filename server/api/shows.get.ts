@@ -1,14 +1,7 @@
 import getShows from '../lib/getShows'
 
-export default defineEventHandler(async ({context}) => {
-  if (!context.cloudflare) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Cloudflare not available in this environment.',
-    })
-  }
-
-  const shows = await getShows(context)
+export default defineEventHandler(async (event) => {
+  const shows = await getShows(event.context)
 
   // Return the shows sorted alphabetically
   shows.sort((a, b) => {
