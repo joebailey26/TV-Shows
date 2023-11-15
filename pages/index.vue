@@ -75,10 +75,10 @@ form * {
       </transition>
     </div>
     <div style="text-align: left">
-      <a class="button" :href="`${env.API_URL}/calendar`" target="_blank">Download calendar</a>
+      <a class="button" :href="`/api/calendar`" target="_blank">Download calendar</a>
     </div>
     <h2>Currently Watching</h2>
-    <div class="shows_container container">
+    <div class="shows_container container" v-if="shows.length">
       <div v-for="show in shows" :class="['show', showClassHelper(show.status, show.countdown)]" :key="show.id">
         <h3>{{show.name}}</h3>
         <p>Next episode:
@@ -92,7 +92,8 @@ form * {
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { useFetch } from 'nuxt/app'
+import { defineComponent, reactive } from 'vue'
 
 interface Countdown {
   season: number;
@@ -133,12 +134,8 @@ interface Show {
 }
 
 export default defineComponent({
-  setup() {
+  async setup() {
     const state = reactive({
-      env: {
-        API_URL: "https://tv-shows-api.joebailey.workers.dev" as string,
-        AUTH_KEY: "Skyline" as string
-      },
       shows: [] as Show[],
       searchData: '' as string,
       search_results: {
@@ -146,6 +143,9 @@ export default defineComponent({
       },
       searching: false as boolean
     });
+    const { data } = await useFetch('/api/shows');
+
+    state.shows = data
 
     return state;
   },
@@ -234,9 +234,6 @@ export default defineComponent({
         this.getShows()
       }
     }
-  },
-  mounted() {
-    this.getShows();
   },
 });
 </script>

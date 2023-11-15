@@ -21,12 +21,5 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: '/global.css' }
       ]
     }
-  },
-
-  devtools: { enabled: true },
-
-  modules: [
-    '@nuxtjs/eslint-module',
-    '@nuxtjs/stylelint-module'
-  ]
+  }
 })
