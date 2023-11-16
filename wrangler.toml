@@ -6,10 +6,6 @@ kv_namespaces = [
   { binding = "KV_TV_SHOWS", id = "b62c83dd4c614b5bbe512f6cb2ed8ba5", preview_id = "b62c83dd4c614b5bbe512f6cb2ed8ba5" }
 ]
 
-[build]
-  command = "pnpm run build"
-  watch_dir = ["./server", "./pages"]
-
 [[d1_databases]]
   binding = "DB"
   database_name = "tv_shows"

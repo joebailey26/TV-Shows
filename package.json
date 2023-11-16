@@ -4,8 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "nuxi build",
+    "dev": "npm-run-all --parallel build database:build && npm run wrangler:dev",
+    "database:build": "wrangler d1 execute tv_shows --local --file=./schema.sql",
+    "wrangler:dev": "wrangler pages dev dist --compatibility-date=2023-10-30",
+    "watch": "node watch.js",
     "postinstall": "nuxi prepare",
-    "deploy": "pnpm run build && wrangler pages deploy ./dist",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
@@ -19,18 +22,22 @@
     "@vue/runtime-core": "^3.3.8",
     "@vue/runtime-dom": "^3.3.8",
     "@vue/shared": "^3.3.8",
+    "chokidar": "^3.5.3",
     "cross-env": "^7.0.3",
+    "drizzle-kit": "^0.20.2",
+    "drizzle-orm": "^0.29.0",
     "eslint": "^7.0.0",
     "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
     "h3": "^1.8.2",
     "nitropack": "^2.7.2",
+    "npm-run-all": "^4.1.5",
     "nuxt": "^3.8.1",
     "stylelint": "^15.11.0",
     "stylelint-config-galexia": "github:Galexia-Agency/stylelint-config",
+    "typescript": "^5.2.2",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
-    "wrangler": "^3.15.0",
-    "typescript": "^5.2.2"
+    "wrangler": "^3.15.0"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
