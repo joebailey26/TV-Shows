@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-export { EpisodeShowCountdown, EpisodateShowEpisode, EpisodateShow }
+export { EpisodateShowCountdown, EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails }
+
 declare global {
   interface EpisodateShowCountdown {
     season: number;
@@ -37,5 +38,16 @@ declare global {
     genres: string[];
     pictures: string[];
     episodes: Episode[];
+  }
+
+  interface EpisodateShowDetails {
+    tvShow: EpisodateShow
+  }
+
+  interface EpisodateSearch {
+    total: string;
+    page: number;
+    pages: number;
+    tv_shows: EpisodateShow[]
   }
 }

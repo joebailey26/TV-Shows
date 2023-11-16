@@ -105,9 +105,7 @@ export default defineComponent({
     const state = reactive({
       shows: [] as EpisodateShow[],
       searchData: '' as string,
-      searchResults: {
-        tv_shows: [] as EpisodateShow[]
-      },
+      searchResults: {} as EpisodateSearch,
       searching: false as boolean
     })
     const { data } = await useFetch('/api/shows')
@@ -154,10 +152,8 @@ export default defineComponent({
     async search () {
       const searchRequest = await fetch(`https://www.episodate.com/api/search?q=${this.searchData}`, {
         method: 'POST'
-      }).then((response) => {
-        return response.json()
       })
-      this.searchResults = searchRequest
+      this.searchResults = await searchRequest.json() as EpisodateSearch
       this.searchData = ''
       this.searching = true
     },

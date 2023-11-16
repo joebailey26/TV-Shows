@@ -1,4 +1,4 @@
-import getShows from '../lib/getShows'
+import getShows from '../lib/getShowsWithEpisodate'
 
 export default defineEventHandler(async (event) => {
   const shows = await getShows(event.context)

@@ -1,4 +1,4 @@
-import getShows from '../lib/getShows'
+import getShows from '../lib/getShowsWithEpisodate'
 import { ics } from '../lib/ics'
 
 // Return an ICS file containing events for all episodes of all shows stored in D1. Use KV for caching.
