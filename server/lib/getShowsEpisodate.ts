@@ -1,5 +1,6 @@
-import { H3EventContext } from 'h3'
-import { EpisodateShow } from '~/types/episodate'
+import type { KVNamespace } from "@cloudflare/workers-types"
+import type { H3EventContext } from 'h3'
+import type { EpisodateShow } from '~/types/episodate'
 
 export default function getShowsEpisodate (id: string, context: H3EventContext) {
   const KV_TV_SHOWS: KVNamespace = context.cloudflare.env.KV_TV_SHOWS

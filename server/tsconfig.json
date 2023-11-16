@@ -1,9 +1,5 @@
 {
   "extends": "../.nuxt/tsconfig.server.json",
-  "compilerOptions": {
-    "typeRoots": ["../types"],
-    "types": ["h3", "@cloudflare/workers-types"]
-  },
   "exclude": [
     "./lib/ics.js",
     "../node_modules",

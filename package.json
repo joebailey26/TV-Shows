@@ -12,7 +12,8 @@
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
-    "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix"
+    "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix",
+    "typecheck": "nuxi typecheck"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231025.0",

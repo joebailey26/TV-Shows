@@ -1,4 +1,5 @@
-import { H3EventContext } from 'h3'
+import type { D1Database, KVNamespace } from "@cloudflare/workers-types"
+import type { H3EventContext } from 'h3'
 import getShowsEpisodate from './getShowsEpisodate'
 
 export default async function getShows (context: H3EventContext) {

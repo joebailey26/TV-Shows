@@ -1,3 +1,5 @@
+import type { D1Database } from "@cloudflare/workers-types"
+
 export default defineEventHandler(async (event) => {
   const DB: D1Database = event.context.cloudflare.env.DB
 
