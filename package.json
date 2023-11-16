@@ -3,8 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cross-env NITRO_PRESET=cloudflare_pages nuxi build",
-    "dev": "wrangler d1 execute tv_shows --local --file=./schema.sql && cross-env DISABLE_NODE_FETCH_NATIVE_WARN=true wrangler pages dev dist --compatibility-date=2023-10-30",
+    "build": "nuxi build",
     "postinstall": "nuxi prepare",
     "deploy": "pnpm run build && wrangler pages deploy ./dist",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",

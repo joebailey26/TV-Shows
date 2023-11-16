@@ -21,5 +21,8 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: '/global.css' }
       ]
     }
+  },
+  nitro: {
+    preset: 'cloudflare_pages'
   }
 })
