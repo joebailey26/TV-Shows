@@ -170,22 +170,28 @@ export default defineComponent({
     },
 
     async addShow (id: number) {
-      await fetch(`api/show/${id}`, {
+      const response = await fetch(`api/show/${id}`, {
         method: 'POST'
       })
-      // You must search to add a show. Now the show is added, clear the searching state
-      this.searching = false
-      // Refresh getting shows
-      this.getShows()
+
+      if (response.ok) {
+        // You must search to add a show. Now the show is added, clear the searching state
+        this.searching = false
+        // Refresh getting shows
+        this.getShows()
+      }
     },
 
     async deleteShow (id: number) {
       if (typeof window !== 'undefined' && window.confirm('Are you sure you want to delete this show?')) {
-        await fetch(`api/show/${id}`, {
+        const response = await fetch(`api/show/${id}`, {
           method: 'DELETE'
         })
-        // Refresh getting shows
-        this.getShows()
+
+        if (response.ok) {
+          // Refresh getting shows
+          this.getShows()
+        }
       }
     }
   }
