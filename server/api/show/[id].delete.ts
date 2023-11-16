@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     .bind(showId)
     .all()
 
-  if (results.length) {
+  if (!results.length) {
     setResponseStatus(event, 404)
     return 'Show does not exist'
   }
