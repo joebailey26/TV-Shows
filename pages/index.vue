@@ -100,6 +100,8 @@ form * {
 import { useFetch } from 'nuxt/app'
 import { defineComponent, reactive } from 'vue'
 
+definePageMeta({ middleware: 'auth' })
+
 export default defineComponent({
   async setup () {
     const state = reactive({

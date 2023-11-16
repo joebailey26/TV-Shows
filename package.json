@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxi build",
-    "dev": "npm-run-all --parallel build db:migrations:execute && npm run wrangler:dev",
+    "dev": "npm-run-all --parallel build && npm run wrangler:dev",
     "db:migrations:generate": "drizzle-kit generate:sqlite",
     "db:migrations:execute": "node execMigrations",
     "db:migrations:drop": "drizzle-kit drop",
@@ -42,7 +42,9 @@
     "typescript": "^5.2.2",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
-    "wrangler": "^3.15.0"
+    "wrangler": "^3.15.0",
+    "@auth/core": "^0.18.1",
+    "@hebilicious/authjs-nuxt": "^0.3.5"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"

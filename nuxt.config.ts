@@ -1,9 +1,8 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: {
-        lang: 'en-GB',
+        lang: 'en-GB'
       },
       title: 'TV Shows',
       meta: [
@@ -25,5 +24,25 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'cloudflare_pages',
     dev: false
+  },
+  modules: [
+    '@hebilicious/authjs-nuxt'
+  ],
+  runtimeConfig: {
+    authJs: {
+      secret: 'I0egCCYef4BTs/vhcYTi9QFiKFGhHFi/9/2DeHREvYY='
+    },
+    github: {
+      clientId: '8550c7339a6f1e230b35',
+      clientSecret: '93a79da88664172212adfa22db0e9b08bb003e29'
+    },
+    public: {
+      authJs: {
+        baseUrl: 'http://localhost:8788', // 'https://tv.joebailey.xyz', // The URL of your deployed app (used for origin Check in production)
+        guestRedirectTo: '/login', // where to redirect if the user is not authenticated
+        authenticatedRedirectTo: '/', // where to redirect if the user is authenticated
+        verifyClientOnEveryRequest: true // whether to hit the /auth/session endpoint on every client request
+      }
+    }
   }
 })

@@ -8,7 +8,7 @@ const sqlDirectory = './db/migrations'
 // Function to execute the command for each SQL file
 function executeCommandForFile (filePath) {
   const command = 'wrangler'
-  const args = ['d1', 'execute', 'tv_shows', '--local', '--file', filePath]
+  const args = ['d1', 'execute', 'tv_shows', '--file', filePath]
   if (process.env.PRODUCTION_MIGRATIONS) {
     args.push('--local')
   }

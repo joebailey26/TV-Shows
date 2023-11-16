@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1700145139270,
-      "tag": "0000_smooth_klaw",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1700146658881,
-      "tag": "0001_wise_baron_zemo",
+      "when": 1700151680048,
+      "tag": "0000_great_franklin_richards",
       "breakpoints": true
     }
   ]

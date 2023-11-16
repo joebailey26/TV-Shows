@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "a4eced63-ea49-4579-923d-296f1b94375d",
+  "id": "28849041-765a-4aa5-9600-451e732ad3c0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "tv_shows": {
@@ -12,10 +12,34 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
+          "autoincrement": true
+        },
+        "show_id": {
+          "name": "show_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
         }
       },
-      "indexes": {},
+      "indexes": {
+        "id_user_idx": {
+          "name": "id_user_idx",
+          "columns": [
+            "show_id",
+            "user_id"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}

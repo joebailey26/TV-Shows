@@ -1,0 +1,16 @@
+name: Deploy
+
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3.3.2
+        with:
+          preCommands: pnpm install && export PRODUCTION_MIGRATIONS=true && pnpm run db:migrations:execute
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          command: pages deploy dist
