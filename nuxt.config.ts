@@ -23,22 +23,23 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare_pages',
-    dev: false
+    dev: false // We need this so the worker builds properly when running locally
   },
   modules: [
-    '@hebilicious/authjs-nuxt'
+    '@hebilicious/authjs-nuxt',
+    '@pinia/nuxt'
   ],
   runtimeConfig: {
     authJs: {
-      secret: 'I0egCCYef4BTs/vhcYTi9QFiKFGhHFi/9/2DeHREvYY='
+      secret: process.env.NUXT_NEXTAUTH_SECRET
     },
     github: {
-      clientId: '8550c7339a6f1e230b35',
-      clientSecret: '93a79da88664172212adfa22db0e9b08bb003e29'
+      clientId: process.env.NUXT_GITHUB_CLIENT_ID,
+      clientSecret: process.env.NUXT_GITHUB_CLIENT_SECRET
     },
     public: {
       authJs: {
-        baseUrl: 'http://localhost:8788', // 'https://tv.joebailey.xyz', // The URL of your deployed app (used for origin Check in production)
+        baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
         guestRedirectTo: '/login', // where to redirect if the user is not authenticated
         authenticatedRedirectTo: '/', // where to redirect if the user is authenticated
         verifyClientOnEveryRequest: true // whether to hit the /auth/session endpoint on every client request

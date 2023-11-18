@@ -11,6 +11,6 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3.3.2
         with:
-          preCommands: pnpm install && export PRODUCTION_MIGRATIONS=true && pnpm run db:migrations:execute
+          preCommands: npm i -g pnpm && pnpm install && export PRODUCTION_MIGRATIONS=true && pnpm run db:migrations:execute
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: pages deploy dist

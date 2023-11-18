@@ -1,18 +1,25 @@
 import type { D1Database, KVNamespace } from '@cloudflare/workers-types'
 import type { H3EventContext } from 'h3'
+import { eq } from 'drizzle-orm'
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
 import { tvShows } from '../../db/schema'
 import type { EpisodateShow, EpisodateShowDetails } from '../../types/episodate'
 
-export default async function getShows (context: H3EventContext) {
+export default async function getShows (context: H3EventContext, userEmail: string, limit = 24, offset = 0) {
   const D1DB: D1Database = context.cloudflare.env.DB
   const KV_TV_SHOWS: KVNamespace = context.cloudflare.env.KV_TV_SHOWS
   const DB: DrizzleD1Database = drizzle(D1DB)
-  // ToDo
-  //  Where user = current user
-  //  Limit
-  //  Offset
-  const results = await DB.select().from(tvShows).all()
+
+  let results
+  if (limit !== 0) {
+    results = await DB.select({ id: tvShows.showId }).from(tvShows)
+      .where(eq(tvShows.userEmail, userEmail))
+      .limit(limit)
+      .offset(offset)
+  } else {
+    results = await DB.select({ id: tvShows.showId }).from(tvShows)
+      .where(eq(tvShows.userEmail, userEmail))
+  }
 
   const episodesToReturn = [] as EpisodateShow[]
 
@@ -32,7 +39,13 @@ export default async function getShows (context: H3EventContext) {
         throw new Error(`We didn't receive data from the Episodate API for show ${show.id}`)
       }
       // Cache the response in KV with a key of the show id
-      await KV_TV_SHOWS.put(show.id.toString(), JSON.stringify(tvShow))
+      await KV_TV_SHOWS.put(
+        show.id.toString(),
+        JSON.stringify(tvShow),
+        {
+          expirationTtl: 28800 // 8 hours
+        }
+      )
 
       episodesToReturn.push(tvShow)
     }
