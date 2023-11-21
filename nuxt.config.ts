@@ -31,7 +31,11 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     authJs: {
-      secret: process.env.NUXT_NEXTAUTH_SECRET
+      secret: process.env.NUXT_NEXTAUTH_SECRET // You can generate one with `openssl rand -base64 32`
+    },
+    google: {
+      clientId: process.env.NUXT_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.NUXT_GOOGLE_CLIENT_SECRET
     },
     github: {
       clientId: process.env.NUXT_GITHUB_CLIENT_ID,

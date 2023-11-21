@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const cal = ics()
 
   // Get all shows
-  const shows = await getShows(event.context, userEmail, 0)
+  const shows = await getShows(event, userEmail, 0)
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode
   shows.forEach((show) => {

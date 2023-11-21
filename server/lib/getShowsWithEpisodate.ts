@@ -1,24 +1,23 @@
-import type { D1Database, KVNamespace } from '@cloudflare/workers-types'
-import type { H3EventContext } from 'h3'
+import type { KVNamespace } from '@cloudflare/workers-types'
+import type { H3Event } from 'h3'
 import { eq } from 'drizzle-orm'
-import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
 import { tvShows } from '../../db/schema'
 import type { EpisodateShow, EpisodateShowDetails } from '../../types/episodate'
+import { useDb } from '../lib/db'
 
-export default async function getShows (context: H3EventContext, userEmail: string, limit = 24, offset = 0) {
-  const D1DB: D1Database = context.cloudflare.env.DB
-  const KV_TV_SHOWS: KVNamespace = context.cloudflare.env.KV_TV_SHOWS
-  const DB: DrizzleD1Database = drizzle(D1DB)
+export default async function getShows (event: H3Event, userId: string, limit = 24, offset = 0) {
+  const KV_TV_SHOWS: KVNamespace = event.context.cloudflare.env.KV_TV_SHOWS
+  const DB = useDb(event)
 
   let results
   if (limit !== 0) {
     results = await DB.select({ id: tvShows.showId }).from(tvShows)
-      .where(eq(tvShows.userEmail, userEmail))
+      .where(eq(tvShows.userId, userId))
       .limit(limit)
       .offset(offset)
   } else {
     results = await DB.select({ id: tvShows.showId }).from(tvShows)
-      .where(eq(tvShows.userEmail, userEmail))
+      .where(eq(tvShows.userId, userId))
   }
 
   const episodesToReturn = [] as EpisodateShow[]

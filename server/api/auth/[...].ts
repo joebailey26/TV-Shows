@@ -1,22 +1,37 @@
-import GithubProvider from '@auth/core/providers/github'
-import type { AuthConfig } from '@auth/core/types'
-import { NuxtAuthHandler } from '#auth'
 
-// The #auth virtual import comes from this module. You can use it on the client
-// and server side, however not every export is universal. For example do not
-// use sign-in and sign-out on the server side.
+import { Auth } from '@auth/core'
+import { H3Event, getRequestHeaders, getRequestURL, readRawBody } from 'h3'
+import type { NitroRuntimeConfig } from 'nitropack'
+import { useAuthOptions } from '../../lib/auth'
 
-const runtimeConfig = useRuntimeConfig()
-
-// Refer to Auth.js docs for more details
-export const authOptions: AuthConfig = {
-  secret: runtimeConfig.authJs.secret,
-  providers: [
-    GithubProvider({
-      clientId: runtimeConfig.github.clientId,
-      clientSecret: runtimeConfig.github.clientSecret
-    })
-  ]
+function checkOrigin (request: Request, runtimeConfig: NitroRuntimeConfig) {
+  if (process.env.NODE_ENV === 'development') { return }
+  if (request.method !== 'POST') { return }
+  const requestOrigin = request.headers.get('Origin')
+  const serverOrigin = runtimeConfig.public?.authJs?.baseUrl
+  if (serverOrigin !== requestOrigin) { throw new Error('CSRF protected') }
+}
+async function getRequestFromEvent (event: H3Event) {
+  const url = new URL(getRequestURL(event))
+  const method = event.method
+  const body = method === 'POST' ? await readRawBody(event) : undefined
+  return new Request(url, { headers: getRequestHeaders(event) as HeadersInit, method, body })
 }
 
-export default NuxtAuthHandler(authOptions, runtimeConfig)
+export default defineEventHandler(async (event) => {
+  const runtimeConfig = useRuntimeConfig()
+
+  const authOptions = useAuthOptions(event)
+
+  const request = await getRequestFromEvent(event)
+
+  if (request.url.includes('.js.map')) {
+    return
+  }
+
+  checkOrigin(request, runtimeConfig)
+
+  const response = await Auth(request, authOptions)
+
+  return response
+})
