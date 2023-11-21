@@ -5,6 +5,7 @@ export const tvShows = sqliteTable('tv_shows', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   showId: integer('showId').notNull(),
   userId: text('userId')
+    .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   latestWatchedEpisodeId: integer('latestWatchedEpisode_id')
 }, (table) => {
