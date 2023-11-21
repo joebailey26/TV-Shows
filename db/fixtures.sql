@@ -1,9 +1,53 @@
+DROP TABLE IF EXISTS `account`;
+DROP TABLE IF EXISTS `session`;
 DROP TABLE IF EXISTS `tv_shows`;
+DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `verificationToken`;
+CREATE TABLE `account` (
+	`userId` text NOT NULL,
+	`type` text NOT NULL,
+	`provider` text NOT NULL,
+	`providerAccountId` text NOT NULL,
+	`refresh_token` text,
+	`access_token` text,
+	`expires_at` integer,
+	`token_type` text,
+	`scope` text,
+	`id_token` text,
+	`session_state` text,
+	PRIMARY KEY(`provider`, `providerAccountId`),
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `session` (
+	`sessionToken` text PRIMARY KEY NOT NULL,
+	`userId` text NOT NULL,
+	`expires` integer NOT NULL,
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
 CREATE TABLE `tv_shows` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`show_id` integer NOT NULL,
-	`user_email` text DEFAULT 'joe@joebailey.xyz' NOT NULL,
-  `latest_watched_episode_id` integer
+	`showId` integer NOT NULL,
+	`userId` text,
+	`latestWatchedEpisode_id` integer,
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
-CREATE UNIQUE INDEX `show_user_idx` ON `tv_shows` (`show_id`,`user_email`);
-INSERT INTO tv_shows (show_id) VALUES (1), (2), (3), (4), (5);
+--> statement-breakpoint
+CREATE TABLE `user` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text,
+	`email` text NOT NULL,
+	`emailVerified` integer,
+	`image` text
+);
+--> statement-breakpoint
+CREATE TABLE `verificationToken` (
+	`identifier` text NOT NULL,
+	`token` text NOT NULL,
+	`expires` integer NOT NULL,
+	PRIMARY KEY(`identifier`, `token`)
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `showUserIdx` ON `tv_shows` (`showId`,`userId`);
+INSERT INTO tv_shows (showId) VALUES (1), (2), (3), (4), (5);
