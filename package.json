@@ -1,25 +1,51 @@
 {
   "name": "tv-shows",
-  "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "build": "rollup -c",
-    "start": "rollup -c -w",
-    "dev": "wrangler pages dev --proxy=8999 --compatibility-date=2023-11-09 -- npm run start",
+    "build": "nuxi build",
+    "dev": "npm run build && npm run wrangler:dev",
+    "wrangler:d1:prepare": "wrangler d1 execute tv_shows --local --file=db/fixtures.sql",
+    "wrangler:dev": "wrangler pages dev dist --compatibility-date=2023-10-30",
+    "watch": "node watch.js",
+    "postinstall": "nuxi prepare && npm run wrangler:d1:prepare",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
-    "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix"
+    "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix",
+    "typecheck": "nuxi typecheck"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "11.0.2",
-    "@rollup/plugin-node-resolve": "^7.0.0",
+    "@auth/core": "^0.18.1",
+    "@auth/drizzle-adapter": "^0.3.7",
+    "@cloudflare/workers-types": "^4.20231025.0",
+    "@hebilicious/authjs-nuxt": "^0.3.5",
+    "@nuxtjs/eslint-config-typescript": "6.0.1",
+    "@pinia/nuxt": "^0.5.1",
+    "@typescript-eslint/parser": "^6.11.0",
+    "@vue/reactivity": "^3.3.8",
+    "@vue/runtime-core": "^3.3.8",
+    "@vue/runtime-dom": "^3.3.8",
+    "@vue/shared": "^3.3.8",
+    "chokidar": "^3.5.3",
+    "cross-env": "^7.0.3",
+    "drizzle-kit": "^0.20.2",
+    "drizzle-orm": "^0.29.0",
+    "eslint": "^7.0.0",
     "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
+    "h3": "^1.8.2",
+    "nitropack": "^2.7.2",
+    "nuxt": "^3.8.1",
+    "pinia": "^2.1.7",
+    "sass": "^1.69.5",
+    "stylelint": "^15.11.0",
     "stylelint-config-galexia": "github:Galexia-Agency/stylelint-config",
-    "rollup": "^1.20.0",
-    "rollup-plugin-serve-proxy": "^1.1.4",
-    "rollup-plugin-svelte": "^5.0.3",
-    "rollup-plugin-terser": "^5.1.2",
-    "svelte": "^3.0.0",
-    "wrangler": "^3.15.0"
-  }
+    "typescript": "^5.2.2",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5",
+    "wrangler": "^3.16.0"
+  },
+  "browserslist": [
+    "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
+  ]
 }

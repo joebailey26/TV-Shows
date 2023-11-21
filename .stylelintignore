@@ -1,0 +1,7 @@
+# ignore all files except .scss and .vue files
+#*
+!*.scss
+!*.vue
+dist
+public
+node_modules

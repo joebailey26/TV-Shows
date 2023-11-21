@@ -1,5 +1,11 @@
 account_id = "8259f9bfa45a74a587d6a90822de442d"
 workers_dev = true
+compatibility_date = "2023-11-15"
+kv_namespaces = [
+  { binding = "KV_TV_SHOWS", id = "b62c83dd4c614b5bbe512f6cb2ed8ba5", preview_id = "b62c83dd4c614b5bbe512f6cb2ed8ba5" }
+]
 
-[build]
-  command = "npm run build"
+[[d1_databases]]
+  binding = "DB"
+  database_name = "tv_shows"
+  database_id = "b7ecb718-2a90-4cab-a329-8ffaf1478085"

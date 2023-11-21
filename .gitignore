@@ -1,8 +1,31 @@
-/node_modules/
+# Wrangler
+.wrangler
 
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
 .DS_Store
+.fleet
+.idea
 
-# production
-/public/build
+# Local env files
+.env
+.env.*
+!.env.example
 
-/.wrangler
+.stylelintcache
+
+db/migrations
