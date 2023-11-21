@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <button @click="signIn(`github`)">
+      <button @click="signIn()">
         JS Sign In
       </button>
       <button @click="signOut()">
@@ -20,5 +20,5 @@
 definePageMeta({ middleware: 'guest-only' })
 </script>
 <script setup lang="ts">
-const { signIn, signOut, session, status, cookies, getProviders } = useAuth()
+const { signIn, signOut, session, status, cookies } = useAuth()
 </script>
