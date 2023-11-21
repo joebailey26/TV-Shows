@@ -5,12 +5,10 @@ import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event) => {
   const authOptions = useAuthOptions(event)
-
-  const session = await getServerSession(event, authOptions)
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
-  const userEmail = session.user.email
+  const userId = session.user.id
 
   const query = getQuery(event)
   let limit = Array.isArray(query.limit) ? query.limit[0] : query.limit
@@ -20,7 +18,7 @@ export default defineEventHandler(async (event) => {
   limit = (typeof limit === 'string') ? parseInt(limit, 10) : 24 // Default to 24 if limit is not a string
   offset = (typeof offset === 'string') ? parseInt(offset, 10) : 0 // Default to 0 if offset is not a string
 
-  const shows = await getShows(event, userEmail, limit, offset)
+  const shows = await getShows(event, userId, limit, offset)
 
   // Return the shows sorted alphabetically
   shows.sort((a, b) => {
