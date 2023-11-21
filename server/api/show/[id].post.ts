@@ -7,8 +7,12 @@ import { getServerSession } from '#auth'
 export default defineEventHandler(async (event) => {
   const DB = useDb(event)
   const authOptions = useAuthOptions(event)
-
-  const session = await getServerSession(event, authOptions)
+  let session
+  try {
+    session = await getServerSession(event, authOptions)
+  } catch (e) {
+    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
+  }
   if (!session?.user?.id) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
