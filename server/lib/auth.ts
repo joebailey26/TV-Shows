@@ -5,6 +5,7 @@ import type { AuthConfig } from '@auth/core/types'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
 import { H3Event } from 'h3'
+import { skipCSRFCheck } from '@auth/core'
 
 export function useAuthOptions (event: H3Event) {
   const runtimeConfig = useRuntimeConfig()
@@ -21,7 +22,8 @@ export function useAuthOptions (event: H3Event) {
         clientSecret: runtimeConfig.github.clientSecret
       })
     ],
-    trustHost: true
+    trustHost: true,
+    skipCSRFCheck
   }
 
   if (event.context.cloudflare) {
