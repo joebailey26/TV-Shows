@@ -26,11 +26,9 @@ export function useAuthOptions (event: H3Event) {
     skipCSRFCheck
   }
 
-  // if (event.context.cloudflare) {
-    const D1DB: D1Database = process.env.DB
-    const DB: DrizzleD1Database = drizzle(D1DB)
-    authOptions.adapter = DrizzleAdapter(DB)
-  // }
+  const D1DB: D1Database = event.context.cloudflare.env.DB
+  const DB: DrizzleD1Database = drizzle(D1DB)
+  authOptions.adapter = DrizzleAdapter(DB)
 
   return authOptions
 }
