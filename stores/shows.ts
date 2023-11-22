@@ -8,7 +8,7 @@ export const useShowsStore = defineStore('showsStore', {
   getters: {
     getShowById: (state) => {
       return (showId: number) => {
-        return state.shows.find(show => show.id === showId)
+        return state.shows.length ? state.shows.find(show => show.id === showId) : {}
       }
     }
   },
