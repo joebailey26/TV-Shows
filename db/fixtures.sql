@@ -29,7 +29,7 @@ CREATE TABLE `session` (
 CREATE TABLE `tv_shows` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`showId` integer NOT NULL,
-	`userId` text,
+	`userId` text NOT NULL,
 	`latestWatchedEpisode_id` integer,
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
@@ -50,4 +50,5 @@ CREATE TABLE `verificationToken` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `showUserIdx` ON `tv_shows` (`showId`,`userId`);
-INSERT INTO tv_shows (showId) VALUES (1), (2), (3), (4), (5);
+INSERT INTO user (id, email) VALUES ('0c106c65-d348-4b58-aeb6-83737ac1fb01', 'joe@joebailey.xyz');
+INSERT INTO tv_shows (showId, userId) VALUES (1, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (2, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (3, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (4, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (5, '0c106c65-d348-4b58-aeb6-83737ac1fb01');
