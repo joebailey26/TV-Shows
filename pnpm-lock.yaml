@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@hebilicious/authjs-nuxt@0.3.5':
+    hash: sbosp2im47oooqrb2fl7yks46u
+    path: patches/@hebilicious__authjs-nuxt@0.3.5.patch
+
 devDependencies:
   '@auth/core':
     specifier: ^0.18.2
@@ -16,7 +21,7 @@ devDependencies:
     version: 4.20231025.0
   '@hebilicious/authjs-nuxt':
     specifier: ^0.3.5
-    version: 0.3.5(@auth/core@0.18.2)(nuxt@3.8.2)
+    version: 0.3.5(patch_hash=sbosp2im47oooqrb2fl7yks46u)(@auth/core@0.18.2)(nuxt@3.8.2)
   '@nuxtjs/eslint-config-typescript':
     specifier: 6.0.1
     version: 6.0.1(eslint@7.32.0)(typescript@5.3.2)
@@ -1245,7 +1250,7 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /@hebilicious/authjs-nuxt@0.3.5(@auth/core@0.18.2)(nuxt@3.8.2):
+  /@hebilicious/authjs-nuxt@0.3.5(patch_hash=sbosp2im47oooqrb2fl7yks46u)(@auth/core@0.18.2)(nuxt@3.8.2):
     resolution: {integrity: sha512-8w4FJ+gVx41w+Oax0HFQdQ+poqYx1xxDU6F/NZOp3reIhYJEWmTqJm9Qd0u4uBOonhksZ+vVGQbjP3ZTKERONA==}
     peerDependencies:
       '@auth/core': ^0.17.0
@@ -1265,6 +1270,7 @@ packages:
       - rollup
       - supports-color
     dev: true
+    patched: true
 
   /@humanwhocodes/config-array@0.5.0:
     resolution: {integrity: sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg==}

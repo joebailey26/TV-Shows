@@ -1,0 +1,21 @@
+diff --git a/dist/runtime/plugin.mjs b/dist/runtime/plugin.mjs
+index 11929c7a5ccd29cf9f93546ed77b90e948d572df..bc02ff3754cbe8555e0305655b10f5055776a42d 100644
+--- a/dist/runtime/plugin.mjs
++++ b/dist/runtime/plugin.mjs
+@@ -1,11 +1,14 @@
+ import { useAuth } from "./composables/useAuth.mjs";
+ import { makeCookiesFromCookieString } from "./utils.mjs";
+-import { defineNuxtPlugin, useRequestHeaders } from "#app";
++import { defineNuxtPlugin, useRequestHeaders, useRuntimeConfig } from "#app";
+ export default defineNuxtPlugin(async () => {
+   if (process.server) {
+     const { updateSession, removeSession, cookies } = useAuth();
+     const headers = useRequestHeaders();
+-    const data = await $fetch("/api/auth/session", {
++    const runtimeConfig = useRuntimeConfig();
++    // This request needs to be over HTTP so we get the Cloudflare context
++    // rather than invoking the function directly
++    const data = await $fetch(`${runtimeConfig.public.authJs.baseUrl}/api/auth/session`, {
+       headers
+     });
+     const hasSession = data && Object.keys(data).length;

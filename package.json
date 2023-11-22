@@ -47,5 +47,10 @@
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
-  ]
+  ],
+  "pnpm": {
+    "patchedDependencies": {
+      "@hebilicious/authjs-nuxt@0.3.5": "patches/@hebilicious__authjs-nuxt@0.3.5.patch"
+    }
+  }
 }

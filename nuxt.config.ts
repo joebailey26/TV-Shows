@@ -46,7 +46,7 @@ export default defineNuxtConfig({
         baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
         guestRedirectTo: '/login', // where to redirect if the user is not authenticated
         authenticatedRedirectTo: '/', // where to redirect if the user is authenticated
-        verifyClientOnEveryRequest: true // whether to hit the /auth/session endpoint on every client request
+        verifyClientOnEveryRequest: false // whether to hit the /auth/session endpoint on every client request
       }
     }
   }
