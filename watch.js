@@ -2,7 +2,7 @@ import { spawn } from 'child_process'
 import chokidar from 'chokidar'
 
 // List of folders to watch
-const foldersToWatch = ['./server', './pages', './components', './layouts', './middleware', './stores', 'nuxt.config.ts']
+const foldersToWatch = ['./server', './pages', './components', './layouts', './middleware', './stores', 'nuxt.config.ts', './plugins']
 
 // Keep track of the build process
 let buildProcess = null
