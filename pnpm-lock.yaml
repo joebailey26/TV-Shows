@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
+  '@auth/drizzle-adapter@0.3.7':
+    hash: ymtm472zqwlxpqbfgxjr6mzmsu
+    path: patches/@auth__drizzle-adapter@0.3.7.patch
   '@hebilicious/authjs-nuxt@0.3.5':
     hash: sbosp2im47oooqrb2fl7yks46u
     path: patches/@hebilicious__authjs-nuxt@0.3.5.patch
@@ -15,7 +18,7 @@ devDependencies:
     version: 0.18.2
   '@auth/drizzle-adapter':
     specifier: ^0.3.7
-    version: 0.3.7
+    version: 0.3.7(patch_hash=ymtm472zqwlxpqbfgxjr6mzmsu)
   '@cloudflare/workers-types':
     specifier: ^4.20231025.0
     version: 4.20231025.0
@@ -92,8 +95,8 @@ devDependencies:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.3.8)
   wrangler:
-    specifier: ^3.16.0
-    version: 3.16.0
+    specifier: ^3.17.1
+    version: 3.17.1
 
 packages:
 
@@ -130,13 +133,14 @@ packages:
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: true
 
-  /@auth/drizzle-adapter@0.3.7:
+  /@auth/drizzle-adapter@0.3.7(patch_hash=ymtm472zqwlxpqbfgxjr6mzmsu):
     resolution: {integrity: sha512-PUHDjkQz9/DZai1masvYWSFtVtMsFFGogeqPf9/vWcunFve6tNR/Zs8aOBeIWjLmgt+XGZpYF7SgNVYWzUQlag==}
     dependencies:
       '@auth/core': 0.18.2
     transitivePeerDependencies:
       - nodemailer
     dev: true
+    patched: true
 
   /@babel/code-frame@7.12.11:
     resolution: {integrity: sha512-Zt1yodBx1UcyiePMSkWnU4hPqhwq7hGi2nFL1LeA3EUl+q2LQx16MISgJ0+z7dnmgvP9QtIleuETGOiOH1RcIw==}
@@ -3865,7 +3869,7 @@ packages:
       hanji: 0.0.5
       json-diff: 0.9.0
       minimatch: 7.4.6
-      wrangler: 3.16.0
+      wrangler: 3.17.1
       zod: 3.22.4
     transitivePeerDependencies:
       - bufferutil
@@ -6158,8 +6162,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /miniflare@3.20231030.0:
-    resolution: {integrity: sha512-iCg1dNauUG+kNp7jizcNmV/1XFItuTDvD/6xIC34PrszgKxYCbBO2R72y5NEDJTwaqr5ohQI/320wuJ8GEe7nQ==}
+  /miniflare@3.20231030.1:
+    resolution: {integrity: sha512-Y+EkgV/aFg/3Y/xfFtImK36sLZGXvNS45avVEz0cUCA2pGpg4hGdPu1Udmz5b06SyeUEFVf/dEDMJwdRYVEgLw==}
     engines: {node: '>=16.13'}
     hasBin: true
     dependencies:
@@ -9427,8 +9431,8 @@ packages:
       '@cloudflare/workerd-windows-64': 1.20231030.0
     dev: true
 
-  /wrangler@3.16.0:
-    resolution: {integrity: sha512-MIx35sSdFKE3hnfWB6xWUnrt3OiyKK+PQnc9kFLjksLESX0tLmEk1gdvThYHliY90kkelS+nbH48SUGTFAI5BA==}
+  /wrangler@3.17.1:
+    resolution: {integrity: sha512-Pr9+/tjFkthzG63uoVm1NtVvgokT6p92fy1UsOgrntHyTu0pZMC1VJzG0NC8Vhs+z/+yTT8AqVV6AiJb3w8ZOQ==}
     engines: {node: '>=16.17.0'}
     hasBin: true
     dependencies:
@@ -9438,7 +9442,7 @@ packages:
       blake3-wasm: 2.1.5
       chokidar: 3.5.3
       esbuild: 0.17.19
-      miniflare: 3.20231030.0
+      miniflare: 3.20231030.1
       nanoid: 3.3.7
       path-to-regexp: 6.2.1
       resolve.exports: 2.0.2
