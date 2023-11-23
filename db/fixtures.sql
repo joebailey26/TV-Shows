@@ -30,7 +30,7 @@ CREATE TABLE `tv_shows` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`showId` integer NOT NULL,
 	`userId` text NOT NULL,
-	`latestWatchedEpisode_id` integer,
+	`latestWatchedEpisodeId` integer,
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint

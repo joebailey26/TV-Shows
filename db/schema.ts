@@ -7,7 +7,7 @@ export const tvShows = sqliteTable('tv_shows', {
   userId: text('userId')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  latestWatchedEpisodeId: integer('latestWatchedEpisode_id')
+  latestWatchedEpisodeId: integer('latestWatchedEpisodeId')
 }, (table) => {
   return {
     emailIdx: uniqueIndex('showUserIdx').on(table.showId, table.userId)
