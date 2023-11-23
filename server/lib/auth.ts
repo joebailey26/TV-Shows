@@ -37,9 +37,6 @@ export function useAuthOptions (event: H3Event) {
         }
         return token
       }
-    },
-    session: {
-      strategy: 'jwt'
     }
   }
 
