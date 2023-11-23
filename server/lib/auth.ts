@@ -23,21 +23,7 @@ export function useAuthOptions (event: H3Event) {
       })
     ],
     trustHost: true,
-    skipCSRFCheck,
-    callbacks: {
-      session: ({ session, token }) => {
-        if (session?.user) {
-          session.user.id = token.uid
-        }
-        return session
-      },
-      jwt: ({ user, token }) => {
-        if (user) {
-          token.uid = user.id
-        }
-        return token
-      }
-    }
+    skipCSRFCheck
   }
 
   const D1DB: D1Database = event.context.cloudflare.env.DB
