@@ -41,7 +41,7 @@ h2 {
     </button>
     <Search />
     <div style="text-align: left">
-      <a class="button" :href="`/api/calendar/${userId}`" target="_blank" :download="`tv_joebailey_xyz_calendar_${userId}`">Download calendar</a>
+      <a class="button" :href="`/api/calendar/${userEmail}`" target="_blank" :download="`tv_joebailey_xyz_calendar_${userEmail}`">Download calendar</a>
     </div>
     <h2>Currently Watching</h2>
     <transition name="fade">
@@ -66,16 +66,15 @@ definePageMeta({ middleware: 'auth' })
 
 export default defineComponent({
   async setup () {
-    const { signOut } = useAuth()
+    const { signOut, user } = useAuth()
 
     const state = reactive({
-      userId: '',
+      userEmail: '',
       signOut
     })
 
-    const { user } = useAuth()
-    if (user.value?.id) {
-      state.userId = user.value.id
+    if (user.value?.email) {
+      state.userEmail = user.value.email
     }
 
     const store = useShowsStore()
