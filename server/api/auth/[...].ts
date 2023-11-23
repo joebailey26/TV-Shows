@@ -1,10 +1,11 @@
 
 import { Auth } from '@auth/core'
+import type { RuntimeConfig } from 'nuxt/schema'
+
 import { H3Event, getRequestHeaders, getRequestURL, readRawBody } from 'h3'
-import type { NitroRuntimeConfig } from 'nitropack'
 import { useAuthOptions } from '../../lib/auth'
 
-function checkOrigin (request: Request, runtimeConfig: NitroRuntimeConfig) {
+function checkOrigin (request: Request, runtimeConfig: RuntimeConfig) {
   if (process.env.NODE_ENV === 'development') { return }
   if (request.method !== 'POST') { return }
   const requestOrigin = request.headers.get('Origin')
