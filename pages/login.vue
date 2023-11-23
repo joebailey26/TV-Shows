@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <button @click="signIn(`github`)">
+      <button @click="signIn()">
         JS Sign In
       </button>
       <button @click="signOut()">
