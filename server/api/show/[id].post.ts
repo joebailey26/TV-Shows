@@ -2,6 +2,7 @@ import getShowExists from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
 import { useAuthOptions } from '../../lib/auth'
 import { useDb } from '../../lib/db'
+import getUserByEmail from '../../lib/getUserByEmail'
 import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event) => {
@@ -13,27 +14,27 @@ export default defineEventHandler(async (event) => {
   } catch (e) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
-  if (!session?.user?.id) {
+  if (!session?.user?.email) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
-  const userId = session.user.id
+  const userEmail = session.user.email
 
   const showId = getRouterParam(event, 'id')
 
   if (!showId) {
-    setResponseStatus(event, 400)
-    return 'Missing show id'
+    throw createError({ statusMessage: 'Missing show id', statusCode: 400 })
   }
 
   // Check if the id already exists and return an error if so
-  const exists = await getShowExists(showId, userId, event)
+  const exists = await getShowExists(showId, userEmail, event)
 
   if (exists) {
-    setResponseStatus(event, 409)
-    return 'Show already exists'
+    throw createError({ statusMessage: 'Show already exists', statusCode: 409 })
   }
 
-  await DB.insert(tvShows).values({ showId: parseInt(showId), userId })
+  const user = await getUserByEmail(userEmail, event)
+
+  await DB.insert(tvShows).values({ showId: parseInt(showId), userId: user.id })
 
   setResponseStatus(event, 201)
   return 'Added successfully'

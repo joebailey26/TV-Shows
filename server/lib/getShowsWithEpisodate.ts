@@ -1,23 +1,31 @@
 import type { KVNamespace } from '@cloudflare/workers-types'
 import type { H3Event } from 'h3'
 import { eq } from 'drizzle-orm'
-import { tvShows } from '../../db/schema'
+import { tvShows, users } from '../../db/schema'
 import type { EpisodateShow, EpisodateShowDetails } from '../../types/episodate'
 import { useDb } from '../lib/db'
 
-export default async function getShows (event: H3Event, userId: string, limit = 24, offset = 0) {
+export default async function getShows (event: H3Event, userEmail: string, limit = 24, offset = 0) {
   const KV_TV_SHOWS: KVNamespace = event.context.cloudflare.env.KV_TV_SHOWS
   const DB = useDb(event)
 
   let results
   if (limit !== 0) {
     results = await DB.select({ id: tvShows.showId }).from(tvShows)
-      .where(eq(tvShows.userId, userId))
+      .leftJoin(
+        users,
+        eq(users.id, tvShows.userId)
+      )
+      .where(eq(users.email, userEmail))
       .limit(limit)
       .offset(offset)
   } else {
     results = await DB.select({ id: tvShows.showId }).from(tvShows)
-      .where(eq(tvShows.userId, userId))
+      .leftJoin(
+        users,
+        eq(users.id, tvShows.userId)
+      )
+      .where(eq(users.email, userEmail))
   }
 
   const episodesToReturn = [] as EpisodateShow[]

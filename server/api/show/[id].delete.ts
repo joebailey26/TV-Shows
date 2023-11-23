@@ -4,6 +4,7 @@ import getShowExists from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
 import { useAuthOptions } from '../../lib/auth'
 import { useDb } from '../../lib/db'
+import getUserByEmail from '../../lib/getUserByEmail'
 import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event) => {
@@ -15,31 +16,31 @@ export default defineEventHandler(async (event) => {
   } catch (e) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
-  if (!session?.user?.id) {
+  if (!session?.user?.email) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
-  const userId = session.user.id
+  const userEmail = session.user.email
 
   const showId = getRouterParam(event, 'id')
 
   if (!showId) {
-    setResponseStatus(event, 400)
-    return 'Missing show id'
+    throw createError({ statusMessage: 'Missing show id', statusCode: 400 })
   }
 
   // Check if the id already exists and return an error if it doesn't, we can't delete a show that does not exist
-  const exists = await getShowExists(showId, userId, event)
+  const exists = await getShowExists(showId, userEmail, event)
 
   if (!exists) {
-    setResponseStatus(event, 404)
-    return 'Show does not exist'
+    throw createError({ statusMessage: 'Show does not exist', statusCode: 404 })
   }
+
+  const user = await getUserByEmail(userEmail, event)
 
   await DB.delete(tvShows)
     .where(
       and(
         eq(tvShows.showId, parseInt(showId)),
-        eq(tvShows.userId, userId)
+        eq(tvShows.userId, user.id)
       )
     )
 
