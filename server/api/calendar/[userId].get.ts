@@ -3,18 +3,18 @@ import { ics } from '../../lib/ics'
 
 // Return an ICS file containing events for all episodes of all shows stored in D1. Use KV for caching.
 export default defineEventHandler(async (event) => {
-  const userEmail = getRouterParam(event, 'userEmail')
+  const userId = getRouterParam(event, 'userId')
 
-  if (!userEmail) {
+  if (!userId) {
     setResponseStatus(event, 400)
-    return 'Missing user email'
+    return 'Missing user id'
   }
 
   // Initialise a new calendar
   const cal = ics()
 
   // Get all shows
-  const shows = await getShows(event, userEmail, 0)
+  const shows = await getShows(event, userId, 0)
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode
   shows.forEach((show) => {

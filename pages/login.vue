@@ -4,14 +4,6 @@
       <button @click="signIn()">
         JS Sign In
       </button>
-      <button @click="signOut()">
-        Sign Out
-      </button>
-    </div>
-    <div>
-      <pre>{{ status }}</pre>
-      <pre>{{ session?.user }}</pre>
-      <pre>{{ cookies }}</pre>
     </div>
   </div>
 </template>
@@ -20,5 +12,5 @@
 definePageMeta({ middleware: 'guest-only' })
 </script>
 <script setup lang="ts">
-const { signIn, signOut, session, status, cookies } = useAuth()
+const { signIn } = useAuth()
 </script>

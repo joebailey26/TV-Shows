@@ -36,9 +36,12 @@ h2 {
 <template>
   <main>
     <h1>TV Shows</h1>
+    <button @click="signOut()">
+      Sign Out
+    </button>
     <Search />
     <div style="text-align: left">
-      <a class="button" :href="`/api/calendar/${userEmail}`" target="_blank" :download="`tv_joebailey_xyz_calendar_${userEmail}`">Download calendar</a>
+      <a class="button" :href="`/api/calendar/${userId}`" target="_blank" :download="`tv_joebailey_xyz_calendar_${userId}`">Download calendar</a>
     </div>
     <h2>Currently Watching</h2>
     <transition name="fade">
@@ -55,7 +58,6 @@ h2 {
 </template>
 
 <script lang="ts">
-import { useRequestHeaders } from 'nuxt/app'
 import { mapState } from 'pinia'
 import { defineComponent, reactive } from 'vue'
 import { useShowsStore } from '../stores/shows'
@@ -64,26 +66,20 @@ definePageMeta({ middleware: 'auth' })
 
 export default defineComponent({
   async setup () {
+    const { signOut } = useAuth()
+
     const state = reactive({
-      userEmail: ''
+      userId: '',
+      signOut
     })
 
     const { user } = useAuth()
-    if (user.value?.email) {
-      state.userEmail = user.value.email
+    if (user.value?.id) {
+      state.userId = user.value.id
     }
 
-    // Even though we have this function defined in Pinia,
-    // Nuxt get's confused and can't hydrate correctly,
-    // So we have to fetch the shows here and assign it to the store
-    const headers = useRequestHeaders(['cookie']) as HeadersInit
-    const { data } = await useAsyncData('shows', async () => {
-      const { data } = await useFetch('/api/shows', { headers })
-      return data
-    })
-
     const store = useShowsStore()
-    store.shows = data as unknown as EpisodateShow[]
+    await store.fetchShows()
 
     return state
   },
