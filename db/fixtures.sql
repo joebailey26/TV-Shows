@@ -50,5 +50,3 @@ CREATE TABLE `verificationToken` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `showUserIdx` ON `tv_shows` (`showId`,`userId`);
-INSERT INTO user (id, email) VALUES ('0c106c65-d348-4b58-aeb6-83737ac1fb01', 'joe@joebailey.xyz');
-INSERT INTO tv_shows (showId, userId) VALUES (1, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (2, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (3, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (4, '0c106c65-d348-4b58-aeb6-83737ac1fb01'), (5, '0c106c65-d348-4b58-aeb6-83737ac1fb01');
