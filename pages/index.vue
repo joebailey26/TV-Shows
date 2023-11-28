@@ -36,9 +36,9 @@ h2 {
 <template>
   <main>
     <h1>TV Shows</h1>
-    <button @click="signOut()">
+    <a href="/api/auth/signout">
       Sign Out
-    </button>
+    </a>
     <Search />
     <div style="text-align: left">
       <a class="button" :href="`/api/calendar/${userEmail}`" target="_blank" :download="`tv_joebailey_xyz_calendar_${userEmail}`">Download calendar</a>
@@ -66,11 +66,10 @@ definePageMeta({ middleware: 'auth' })
 
 export default defineComponent({
   async setup () {
-    const { signOut, user } = useAuth()
+    const { user } = useAuth()
 
     const state = reactive({
-      userEmail: '',
-      signOut
+      userEmail: ''
     })
 
     if (user.value?.email) {
