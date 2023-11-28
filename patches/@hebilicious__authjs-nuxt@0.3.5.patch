@@ -1,3 +1,42 @@
+diff --git a/dist/runtime/lib/client.mjs b/dist/runtime/lib/client.mjs
+index ad35f26db8c72b6226d7a9aa38e4b420336846cd..332004c928414e387dcdbf93407b947747cd9d02 100644
+--- a/dist/runtime/lib/client.mjs
++++ b/dist/runtime/lib/client.mjs
+@@ -1,12 +1,15 @@
+ import { makeNativeHeadersFromCookieObject } from "../utils.mjs";
+ import { useAuth } from "../composables/useAuth.mjs";
+ import { navigateTo, reloadNuxtApp, useRouter } from "#imports";
++
+ async function postToInternal({
+   url,
+   options,
+-  csrfToken,
+   callbackUrl
+ }) {
++  const csrfResponse = await $fetch("/api/auth/csrf");
++  const csrfToken = csrfResponse?.csrfToken
++  if (!csrfToken) throw new Error("CSRF token not found")
+   const response = await $fetch.raw(url, {
+     method: "POST",
+     headers: {
+diff --git a/dist/runtime/lib/server.mjs b/dist/runtime/lib/server.mjs
+index f8faa46f411b00261f6907188a13253f2c7fc0c9..5888c57aaa47b67afd6d6d95899c31c0428c6de7 100644
+--- a/dist/runtime/lib/server.mjs
++++ b/dist/runtime/lib/server.mjs
+@@ -1,4 +1,4 @@
+-import { Auth, skipCSRFCheck } from "@auth/core";
++import { Auth } from "@auth/core";
+ import { eventHandler, getRequestHeaders, getRequestURL } from "h3";
+ import { getToken } from "@auth/core/jwt";
+ import { checkOrigin, getAuthJsSecret, getRequestFromEvent, getServerOrigin, makeCookiesFromCookieString } from "../utils.mjs";
+@@ -15,7 +15,6 @@ if (!globalThis.crypto) {
+ export function NuxtAuthHandler(options, runtimeConfig) {
+   return eventHandler(async (event) => {
+     options.trustHost ??= true;
+-    options.skipCSRFCheck = skipCSRFCheck;
+     const request = await getRequestFromEvent(event);
+     if (request.url.includes(".js.map"))
+       return;
 diff --git a/dist/runtime/plugin.mjs b/dist/runtime/plugin.mjs
 index 11929c7a5ccd29cf9f93546ed77b90e948d572df..bc02ff3754cbe8555e0305655b10f5055776a42d 100644
 --- a/dist/runtime/plugin.mjs
