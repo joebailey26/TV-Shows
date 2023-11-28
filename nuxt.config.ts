@@ -41,6 +41,10 @@ export default defineNuxtConfig({
       clientId: process.env.NUXT_GITHUB_CLIENT_ID,
       clientSecret: process.env.NUXT_GITHUB_CLIENT_SECRET
     },
+    mailgun: {
+      endpoint: process.env.NUXT_MAILGUN_ENDPOINT,
+      sendingKey: process.env.NUXT_MAILGUN_SENDING_KEY
+    },
     public: {
       authJs: {
         baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
