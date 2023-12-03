@@ -42,5 +42,10 @@ export default defineEventHandler(async (event) => {
     return 0
   })
 
-  return shows
+  return {
+    total: '0',
+    page: 0,
+    pages: 0,
+    tv_shows: shows
+  } as EpisodateSearch
 })

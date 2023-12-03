@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-definePageMeta({ middleware: 'guest-only' })
+definePageMeta({ middleware: 'guest-only', layout: false })
 </script>
 <script setup lang="ts">
 const { signIn } = useAuth()

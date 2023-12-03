@@ -2,6 +2,8 @@
 nav {
   position: sticky;
   top: 0;
+  z-index: 9999;
+  height: 4.4375rem;
   padding: .75rem 0;
   color: white;
   background-color: rgb(0 0 0 / 40%);
@@ -16,7 +18,8 @@ nav {
   justify-content: space-between
 }
 .site-title {
-  font-size: 1.5rem
+  font-size: 1.5rem;
+  text-decoration: none
 }
 .button {
   min-height: 0
@@ -27,7 +30,7 @@ nav {
   <nav>
     <div class="inner-content">
       <div class="left">
-        <span class="site-title">TV Shows</span>
+        <a href="/my-shows" class="site-title">TV Shows</a>
         <Search />
       </div>
       <div class="right">

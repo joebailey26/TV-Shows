@@ -3,12 +3,12 @@ import { useRequestHeaders, useFetch } from 'nuxt/app'
 
 export const useShowsStore = defineStore('showsStore', {
   state: () => ({
-    shows: [] as EpisodateShow[]
+    shows: {} as EpisodateSearch
   }),
   getters: {
     getShowById: (state) => {
       return (showId: number) => {
-        return state.shows.length ? state.shows.find(show => show.id === showId) : null
+        return Array.isArray(state.shows?.tv_shows) && state.shows.tv_shows.length ? state.shows.tv_shows.find(show => show.id === showId) : null
       }
     }
   },
@@ -16,7 +16,7 @@ export const useShowsStore = defineStore('showsStore', {
     async fetchShows () {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
       const { data } = await useFetch('/api/shows', { headers })
-      this.shows = data as unknown as EpisodateShow[]
+      this.shows = data.value as EpisodateShow[]
     }
   }
 })

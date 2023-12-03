@@ -5,6 +5,7 @@
   grid-gap: .5rem;
   padding: 1rem;
   color: var(--bodyTextColor);
+  text-align: center;
   background-color: var(--whiteColor);
   box-shadow: 0 2px 5px 0 rgb(0 0 0 / 6%), 0 2px 10px 0 rgb(0 0 0 / 12%);
   img {
@@ -65,7 +66,7 @@
     height: 3em;
     margin-top: -2em;
     background-repeat: no-repeat;
-    background-position: 47% 50%;
+    background-position: center;
     background-size: 35%;
     border-radius: 50%;
     content: '';

@@ -1,20 +1,21 @@
 <template>
-  <main class="inner-content">
-    <h2>Currently Watching</h2>
-    <Shows :shows="shows" />
-  </main>
+  <div>
+    <Nav />
+    <slot />
+    <Footer />
+  </div>
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia'
 import { defineComponent } from 'vue'
 import { useShowsStore } from '../stores/shows'
 
 definePageMeta({ middleware: 'auth' })
 
 export default defineComponent({
-  computed: {
-    ...mapState(useShowsStore, ['shows'])
+  async setup () {
+    const store = useShowsStore()
+    await store.fetchShows()
   }
 })
 </script>
