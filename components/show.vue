@@ -51,7 +51,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: 375px;
   margin: 0;
   padding: 0;
   background-color: rgb(0 0 0 / 50%);

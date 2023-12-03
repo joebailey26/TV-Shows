@@ -47,7 +47,7 @@
       <div class="header__content">
         <h1>Manage your TV Shows</h1>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec rutrum neque et mi convallis tincidunt sit amet finibus velit. Donec tempus eros semper, venenatis erat ac, feugiat mauris. Cras lobortis orci nec quam iaculis vulputate. Mauris lectus nulla, blandit ut imperdiet at, euismod in purus.</p>
-        <button type="button" class="sign-in" @click="signIn()">
+        <button type="button" class="sign-in button" @click="signIn()">
           Sign Up / Sign In
         </button>
       </div>

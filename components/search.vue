@@ -9,15 +9,8 @@ form * {
 <template>
   <div class="search_container container">
     <form @submit.prevent="search">
-      <label for="search">
-        <h2>Search for a show</h2>
-        <div>
-          <input v-model="searchData" type="text" name="search">
-        </div>
-      </label>
-      <div>
-        <input type="submit" value="Search">
-      </div>
+      <input v-model="searchData" type="text" name="search">
+      <button type="submit" />
     </form>
     <transition name="fade">
       <div v-if="searchResults && !!Object.keys(searchResults).length" class="shows_container container">

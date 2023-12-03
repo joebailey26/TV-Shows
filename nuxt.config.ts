@@ -16,11 +16,13 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'manifest', href: '/site.webmanifest' },
-        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#333333' },
-        { rel: 'stylesheet', href: '/global.css' }
+        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#333333' }
       ]
     }
   },
+  css: [
+    '~/assets/scss/global.scss'
+  ],
   nitro: {
     preset: 'cloudflare_pages',
     dev: false // We need this so the worker builds properly when running locally
