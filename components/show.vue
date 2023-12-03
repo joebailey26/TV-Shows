@@ -86,7 +86,7 @@
 
 <template>
   <div class="show">
-    <img :src="show.image_path" width="250" loading="lazy">
+    <img :src="show.image_path ?? show.image_thumbnail_path" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <p :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
       Status: {{ show.status }}
