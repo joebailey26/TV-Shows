@@ -1,0 +1,49 @@
+diff --git a/lib/init.js b/lib/init.js
+index 82e87fac5e01285763711f0203a040e8be18bf83..8a0c53185570d06f378ec8e618ca01e30e1bf50d 100644
+--- a/lib/init.js
++++ b/lib/init.js
+@@ -53,6 +53,7 @@ export async function init({ authOptions, providerId, action, url, cookies: reqC
+             logo: "",
+             brandColor: "",
+             buttonText: "",
++            customCss: "",
+         },
+         // Custom options override defaults
+         ...authOptions,
+diff --git a/lib/pages/index.js b/lib/pages/index.js
+index 263b25a7159bf9456bcf8f892c6f196f84ee6c77..64e1d3e021618e7422741e00ec3826c47c33ce85 100644
+--- a/lib/pages/index.js
++++ b/lib/pages/index.js
+@@ -9,7 +9,7 @@ function send({ html, title, status, cookies, theme }) {
+         cookies,
+         status,
+         headers: { "Content-Type": "text/html" },
+-        body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style><title>${title}</title></head><body class="__next-auth-theme-${theme?.colorScheme ?? "auto"}"><div class="page">${renderToString(html)}</div></body></html>`,
++        body: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style><style>${theme?.customCss}</style><title>${title}</title></head><body class="__next-auth-theme-${theme?.colorScheme ?? "auto"}"><div class="page">${renderToString(html)}</div></body></html>`,
+     };
+ }
+ /**
+diff --git a/src/types.ts b/src/types.ts
+index 0c215a115b489a1a513e4df8b14f3097566ae2bf..ead7ba97a1afeef5a26012a70f899cb2320366cc 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -89,6 +89,7 @@ export interface Theme {
+   logo?: string
+   brandColor?: string
+   buttonText?: string
++  customCss?: string
+ }
+ 
+ /**
+diff --git a/types.d.ts b/types.d.ts
+index 36f5d0a3788f68e9000409f03dd0a17a7b8fe78f..6841fbf9db38356b7710125aa14b167224e4139e 100644
+--- a/types.d.ts
++++ b/types.d.ts
+@@ -75,6 +75,7 @@ export interface Theme {
+     logo?: string;
+     brandColor?: string;
+     buttonText?: string;
++    customCss?: string;
+ }
+ /**
+  * Different tokens returned by OAuth Providers.

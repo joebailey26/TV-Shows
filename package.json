@@ -43,7 +43,7 @@
     "typescript": "^5.3.2",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
-    "wrangler": "^3.17.1"
+    "wrangler": "^3.18.0"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
@@ -51,7 +51,8 @@
   "pnpm": {
     "patchedDependencies": {
       "@hebilicious/authjs-nuxt@0.3.5": "patches/@hebilicious__authjs-nuxt@0.3.5.patch",
-      "@auth/drizzle-adapter@0.3.7": "patches/@auth__drizzle-adapter@0.3.7.patch"
+      "@auth/drizzle-adapter@0.3.7": "patches/@auth__drizzle-adapter@0.3.7.patch",
+      "@auth/core@0.18.2": "patches/@auth__core@0.18.2.patch"
     }
   }
 }
