@@ -6,6 +6,7 @@ import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/prov
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
 import { H3Event } from 'h3'
+import customCss from './auth.css.ts'
 
 export function useAuthOptions (event: H3Event) {
   const runtimeConfig = useRuntimeConfig()
@@ -51,7 +52,10 @@ export function useAuthOptions (event: H3Event) {
         clientSecret: runtimeConfig.github.clientSecret
       })
     ],
-    trustHost: true
+    trustHost: true,
+    theme: {
+      customCss
+    }
   }
 
   const D1DB: D1Database = event.context.cloudflare.env.DB

@@ -1,88 +1,63 @@
-<style lang="scss">
-main {
-  margin: 0 auto;
-  padding: 1em;
-  text-align: center
-}
-h1, h2 {
-  text-align: left
-}
-h2 {
-  margin: 0
-}
-.container {
-  margin: 2rem 0
-}
-.shows_container {
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: repeat(auto-fit, 250px);
-  justify-content: center
-}
-
-@media (min-width: 640px) {
-  main {
-    max-width: none
+<style lang="scss" scoped>
+  header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 4rem 1rem;
+    background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/unauthenticated-header.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover
   }
-}
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0
-}
+  .header__content {
+    width: 100%;
+    max-width: 600px;
+    margin-top: -4rem;
+    padding: 1.25rem 2rem;
+    color: black;
+    background: rgb(255 255 255 / 50%);
+    border-radius: 1rem;
+    backdrop-filter: blur(5px)
+  }
+  .sign-in {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 62px;
+    padding: .75rem 1rem;
+    color: var(--buttonColor);
+    font-weight: 500;
+    font-size: 1.1rem;
+    background-color: var(--buttonBackgroundColor);
+    border-color: rgb(0 0 0 / 10%);
+    border-radius: .5rem;
+    cursor: pointer;
+    transition: all .1s ease-in-out;
+    &:hover {
+      background-color: var(--buttonHoverBackgroundColor)
+    }
+  }
 </style>
 
 <template>
-  <main>
-    <h1>TV Shows</h1>
-    <a href="/api/auth/signout">
-      Sign Out
-    </a>
-    <Search />
-    <div style="text-align: left">
-      <a class="button" :href="`/api/calendar/${userEmail}`" target="_blank" :download="`tv_joebailey_xyz_calendar_${userEmail}`">Download calendar</a>
-    </div>
-    <h2>Currently Watching</h2>
-    <transition name="fade">
-      <div v-if="shows && shows.length" class="shows_container container">
-        <Show
-          v-for="show in shows"
-          :key="show.id"
-          :show="show"
-        />
-      <!-- <Pagination /> -->
+  <header>
+    <div class="inner-content">
+      <div class="header__content">
+        <h1>Manage your TV Shows</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec rutrum neque et mi convallis tincidunt sit amet finibus velit. Donec tempus eros semper, venenatis erat ac, feugiat mauris. Cras lobortis orci nec quam iaculis vulputate. Mauris lectus nulla, blandit ut imperdiet at, euismod in purus.</p>
+        <button type="button" class="sign-in" @click="signIn()">
+          Sign Up / Sign In
+        </button>
       </div>
-    </transition>
-  </main>
+    </div>
+  </header>
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia'
-import { defineComponent, reactive } from 'vue'
-import { useShowsStore } from '../stores/shows'
-
-definePageMeta({ middleware: 'auth' })
-
-export default defineComponent({
-  async setup () {
-    const { user } = useAuth()
-
-    const state = reactive({
-      userEmail: ''
-    })
-
-    if (user.value?.email) {
-      state.userEmail = user.value.email
-    }
-
-    const store = useShowsStore()
-    await store.fetchShows()
-
-    return state
-  },
-  computed: {
-    ...mapState(useShowsStore, ['shows'])
-  }
-})
+definePageMeta({ middleware: 'guest-only' })
+</script>
+<script setup lang="ts">
+const { signIn } = useAuth()
 </script>

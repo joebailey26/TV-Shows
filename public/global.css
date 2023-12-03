@@ -1,3 +1,19 @@
+:root {
+	--bodyTextColor: #282828;
+	--whiteColor: white;
+	--greenColor: #A6CF98;
+	--yellowColor: #F1EB90;
+	--redColor: #B31312;
+  --buttonBackgroundColor: #164863;
+  --buttonHoverBackgroundColor: #427D9D;
+  --buttonColor: white;
+  --buttonHoverColor: white;
+}
+
+* {
+	box-sizing: border-box;
+}
+
 html, body {
 	position: relative;
 	width: 100%;
@@ -6,7 +22,7 @@ html, body {
 
 body {
 	margin: 0;
-	padding: 8px;
+	padding: 0;
 	box-sizing: border-box;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	background-color: #333;
@@ -55,4 +71,11 @@ button:not(:disabled):active {
 
 button:focus {
 	border-color: #666;
+}
+
+.inner-content {
+	max-width: 1400px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
 }
