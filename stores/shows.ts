@@ -16,7 +16,7 @@ export const useShowsStore = defineStore('showsStore', {
     async fetchShows () {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
       const { data } = await useFetch('/api/shows', { headers })
-      this.shows = data.value as EpisodateShow[]
+      this.shows.tv_shows = data.value as EpisodateShow[]
     }
   }
 })

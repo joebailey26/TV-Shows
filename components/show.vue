@@ -92,7 +92,7 @@
     <p :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
       Status: {{ show.status }}
     </p>
-    <p v-if="show.status !== 'Canceled/Ended' && show.status !== 'Ended'" class="next-episode">
+    <p class="next-episode">
       Next episode:
       <span v-html="showCountdownHelper(show.countdown)" />
     </p>
