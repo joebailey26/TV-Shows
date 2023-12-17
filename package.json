@@ -43,7 +43,7 @@
     "typescript": "^5.3.2",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
-    "wrangler": "^3.18.0"
+    "wrangler": "^3.21.0"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
