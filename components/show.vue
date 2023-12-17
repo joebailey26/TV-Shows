@@ -86,7 +86,7 @@
 </style>
 
 <template>
-  <div class="show">
+  <NuxtLink class="show" :href="`/show/${show.permalink}`">
     <img :src="show.image_path ?? show.image_thumbnail_path" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <p :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
@@ -97,9 +97,9 @@
       <span v-html="showCountdownHelper(show.countdown)" />
     </p>
     <p>Network: {{ show.network }}</p>
-    <a v-if="!getShowById(show.id)" href="javascript:void(0)" class="button add" @click="addShow(show.id)" />
-    <a v-else href="javascript:void(0)" class="button remove" @click="deleteShow(show.id)" />
-  </div>
+    <button v-if="!getShowById(show.id)" type="button" class="button add" @click="addShow(show.id)" />
+    <button v-else type="button" class="button remove" @click="deleteShow(show.id)" />
+  </NuxtLink>
 </template>
 
 <script lang="ts">
