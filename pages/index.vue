@@ -57,7 +57,12 @@
 
 <script lang="ts">
 definePageMeta({ middleware: 'guest-only', layout: false })
-</script>
-<script setup lang="ts">
-const { signIn } = useAuth()
+
+export default defineComponent({
+  setup () {
+    const { signIn } = useAuth()
+
+    return { signIn }
+  }
+})
 </script>

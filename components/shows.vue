@@ -5,19 +5,22 @@
   grid-template-columns: repeat(auto-fit, 250px);
   margin: 2rem 0
 }
+.pagination {
+  grid-column: 1/-1
+}
 </style>
 
 <template>
   <transition name="fade">
-    <div v-if="Array.isArray(shows?.tv_shows) && shows.tv_shows.length" class="shows_container">
+    <div v-if="Array.isArray(shows) && shows.length" class="shows_container">
       <Show
-        v-for="show in shows.tv_shows"
+        v-for="show in shows"
         :key="show.id"
         :show="show"
         :remove-show-callback="removeShowCallback"
         :add-show-callback="addShowCallback"
       />
-      <!-- <Pagination /> -->
+      <Pagination :page-count="pageCount" />
     </div>
   </transition>
 </template>
@@ -28,7 +31,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
     shows: {
-      type: {} as EpisodateSearch,
+      type: {} as EpisodateShow[],
       default: () => []
     },
     addShowCallback: {
@@ -38,6 +41,10 @@ export default defineComponent({
     removeShowCallback: {
       type: Function,
       default: () => {}
+    },
+    pageCount: {
+      type: Number,
+      required: true
     }
   }
 })

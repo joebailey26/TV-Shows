@@ -1,7 +1,7 @@
 <template>
   <main class="inner-content">
     <h2>Currently Watching</h2>
-    <Shows :shows="shows" />
+    <Shows :shows="shows.tv_shows" :page-count="shows.pages" />
   </main>
 </template>
 
