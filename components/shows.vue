@@ -20,15 +20,23 @@
         :remove-show-callback="removeShowCallback"
         :add-show-callback="addShowCallback"
       />
-      <Pagination :page-count="pageCount" />
+      <GalexiaPagination
+        :page-count="pageCount"
+        :current-page="currentPage"
+        :go-to-page="goToPage"
+      />
     </div>
   </transition>
 </template>
 
 <script lang="ts">
+import GalexiaPagination from 'nuxt-component-pagination'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
+  components: {
+    GalexiaPagination
+  },
   props: {
     shows: {
       type: Array as PropType<EpisodateShow[]>,
@@ -45,6 +53,18 @@ export default defineComponent({
     pageCount: {
       type: Number,
       required: true
+    }
+  },
+  computed: {
+    currentPage () {
+      const p = this.$route.query.p
+      const page = Array.isArray(p) ? p[0] : p
+      return page ? parseInt(page) : 1
+    }
+  },
+  methods: {
+    goToPage (page: Number) {
+      this.$router.push({ path: this.$route.path, query: { ...this.$route.query, p: page.toString() } })
     }
   }
 })

@@ -82,6 +82,9 @@ devDependencies:
   nuxt:
     specifier: ^3.8.2
     version: 3.8.2(eslint@7.32.0)(sass@1.69.5)(stylelint@15.11.0)(typescript@5.3.2)(vite@4.5.0)
+  nuxt-component-pagination:
+    specifier: github:Galexia-Agency/nuxt-component-pagination
+    version: github.com/Galexia-Agency/nuxt-component-pagination/bd4a821dba7df3e3c1f5f8a01ae7f4168708d514
   pinia:
     specifier: ^2.1.7
     version: 2.1.7(typescript@5.3.2)(vue@3.3.8)
@@ -9799,6 +9802,13 @@ packages:
       - eslint-import-resolver-webpack
       - supports-color
       - typescript
+    dev: true
+
+  github.com/Galexia-Agency/nuxt-component-pagination/bd4a821dba7df3e3c1f5f8a01ae7f4168708d514:
+    resolution: {tarball: https://codeload.github.com/Galexia-Agency/nuxt-component-pagination/tar.gz/bd4a821dba7df3e3c1f5f8a01ae7f4168708d514}
+    name: nuxt-component-pagination
+    version: 1.0.0
+    engines: {yarn: ^1.10}
     dev: true
 
   github.com/Galexia-Agency/stylelint-config/6caa5329319fa635e058b9266b2b90353ccc9e10(stylelint@15.11.0):
