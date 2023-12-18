@@ -48,8 +48,6 @@ nav {
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
 
-definePageMeta({ middleware: 'auth' })
-
 export default defineComponent({
   setup () {
     const { user } = useAuth()

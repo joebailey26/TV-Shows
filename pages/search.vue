@@ -9,10 +9,10 @@
 import { defineComponent, watch, toRefs } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-definePageMeta({ middleware: 'auth' })
-
 export default defineComponent({
   async setup () {
+    definePageMeta({ middleware: 'auth' })
+
     const state = reactive({
       searchResults: {} as EpisodateSearch | Partial<EpisodateSearch>
     })

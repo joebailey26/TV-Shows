@@ -1,13 +1,14 @@
 import type { KVNamespace } from '@cloudflare/workers-types'
 import type { H3Event } from 'h3'
 import { eq } from 'drizzle-orm'
+import { binding } from 'cf-bindings-proxy'
 import { tvShows, users } from '../../db/schema'
 import type { EpisodateShow, EpisodateShowDetails } from '../../types/episodate'
 import { useDb } from '../lib/db'
 
 export default async function getShows (event: H3Event, userEmail: string) {
-  const KV_TV_SHOWS: KVNamespace = event.context.cloudflare.env.KV_TV_SHOWS
-  const DB = useDb(event)
+  const KV_TV_SHOWS: KVNamespace = binding<KVNamespace>('KV_TV_SHOWS', { fallback: event.context.cloudflare ? event.context.cloudflare.env : null })
+  const DB = await useDb(event)
 
   const results = await DB.select({ id: tvShows.showId }).from(tvShows)
     .leftJoin(

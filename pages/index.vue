@@ -56,10 +56,10 @@
 </template>
 
 <script lang="ts">
-definePageMeta({ middleware: 'guest-only', layout: false })
-
 export default defineComponent({
   setup () {
+    definePageMeta({ middleware: 'guest-only', layout: false })
+
     const { signIn } = useAuth()
 
     return { signIn }

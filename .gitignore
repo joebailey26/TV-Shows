@@ -29,3 +29,5 @@ logs
 .stylelintcache
 
 db/migrations
+
+*.pem

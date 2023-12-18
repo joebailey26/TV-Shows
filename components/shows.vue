@@ -31,7 +31,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
     shows: {
-      type: {} as EpisodateShow[],
+      type: Array as PropType<EpisodateShow[]>,
       default: () => []
     },
     addShowCallback: {

@@ -3,7 +3,7 @@ import { useAuthOptions } from '../lib/auth'
 import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event) => {
-  const authOptions = useAuthOptions(event)
+  const authOptions = await useAuthOptions(event)
   let session
   try {
     session = await getServerSession(event, authOptions)

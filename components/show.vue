@@ -57,7 +57,7 @@
   padding: 0;
   background-color: rgb(0 0 0 / 50%);
   border: none;
-  cursor: pointer;
+  cursor: initial;
   opacity: 0;
   transition: opacity .25s ease-in;
   &:after {
@@ -69,6 +69,7 @@
     background-position: center;
     background-size: 35%;
     border-radius: 50%;
+    cursor: pointer;
     content: '';
     &:hover {
       opacity: .75

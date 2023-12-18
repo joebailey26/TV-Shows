@@ -1,14 +1,13 @@
 import GoogleProvider from '@auth/core/providers/google'
 import GithubProvider from '@auth/core/providers/github'
-import type { D1Database } from '@cloudflare/workers-types'
 import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
 import { H3Event } from 'h3'
-import customCss from './auth.css.ts'
+import customCss from './auth.css.js'
+import { useDb } from './db'
 
-export function useAuthOptions (event: H3Event) {
+export async function useAuthOptions (event: H3Event) {
   const runtimeConfig = useRuntimeConfig()
 
   const authOptions: AuthConfig = {
@@ -58,8 +57,7 @@ export function useAuthOptions (event: H3Event) {
     }
   }
 
-  const D1DB: D1Database = event.context.cloudflare.env.DB
-  const DB: DrizzleD1Database = drizzle(D1DB)
+  const DB = await useDb(event)
   authOptions.adapter = DrizzleAdapter(DB)
 
   return authOptions

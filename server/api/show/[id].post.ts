@@ -6,8 +6,8 @@ import getUserByEmail from '../../lib/getUserByEmail'
 import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event) => {
-  const DB = useDb(event)
-  const authOptions = useAuthOptions(event)
+  const DB = await useDb(event)
+  const authOptions = await useAuthOptions(event)
   let session
   try {
     session = await getServerSession(event, authOptions)
@@ -33,6 +33,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = await getUserByEmail(userEmail, event)
+
+  if (!user) {
+    throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
+  }
 
   await DB.insert(tvShows).values({ showId: parseInt(showId), userId: user.id })
 

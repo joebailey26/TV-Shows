@@ -22,7 +22,7 @@ async function getRequestFromEvent (event: H3Event) {
 export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig()
 
-  const authOptions = useAuthOptions(event)
+  const authOptions = await useAuthOptions(event)
 
   const request = await getRequestFromEvent(event)
 

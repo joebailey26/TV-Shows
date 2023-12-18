@@ -10,9 +10,10 @@ import { mapState } from 'pinia'
 import { defineComponent } from 'vue'
 import { useShowsStore } from '../stores/shows'
 
-definePageMeta({ middleware: 'auth' })
-
 export default defineComponent({
+  setup () {
+    definePageMeta({ middleware: 'auth' })
+  },
   computed: {
     ...mapState(useShowsStore, ['shows'])
   }
