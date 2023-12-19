@@ -55,5 +55,13 @@ export default defineNuxtConfig({
         verifyClientOnEveryRequest: false // whether to hit the /auth/session endpoint on every client request
       }
     }
+  },
+  build: {
+    transpile: ['@jsquash/png']
+  },
+  vite: {
+    optimizeDeps: {
+      exclude: ['@jsquash/png']
+    }
   }
 })
