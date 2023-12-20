@@ -1,8 +1,9 @@
+import type { H3Event } from 'h3'
 import getShows from '../../lib/getShowsWithEpisodate'
 import { ics } from '../../lib/ics'
 
 // Return an ICS file containing events for all episodes of all shows stored in D1. Use KV for caching.
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const userEmail = getRouterParam(event, 'userEmail')
 
   if (!userEmail) {

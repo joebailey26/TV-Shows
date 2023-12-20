@@ -1,5 +1,6 @@
 
 import { eq, and } from 'drizzle-orm'
+import type { H3Event } from 'h3'
 import getShowExists from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
 import { useAuthOptions } from '../../lib/auth'
@@ -7,7 +8,7 @@ import { useDb } from '../../lib/db'
 import getUserByEmail from '../../lib/getUserByEmail'
 import { getServerSession } from '#auth'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)
   const authOptions = await useAuthOptions(event)
   let session

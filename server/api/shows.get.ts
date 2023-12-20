@@ -1,8 +1,9 @@
+import type { H3Event } from 'h3'
 import getShows from '../lib/getShowsWithEpisodate'
 import { useAuthOptions } from '../lib/auth'
 import { getServerSession } from '#auth'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const authOptions = await useAuthOptions(event)
   let session
   try {

@@ -19,7 +19,7 @@ async function getRequestFromEvent (event: H3Event) {
   return new Request(url, { headers: getRequestHeaders(event) as HeadersInit, method, body })
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const runtimeConfig = useRuntimeConfig()
 
   const authOptions = await useAuthOptions(event)
