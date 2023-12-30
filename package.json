@@ -58,7 +58,6 @@
       "@auth/core@0.18.2": "patches/@auth__core@0.18.2.patch"
     }
   },
-  "packageManager": "^pnpm@8.0.0",
   "engines" : {
     "node" : "^18.12.0"
   }
