@@ -8,7 +8,7 @@
     "nuxt:dev": "nuxi dev",
     "cf-bindings": "cf-bindings-proxy",
     "wrangler:d1:prepare": "wrangler d1 execute tv_shows --local --file=db/fixtures.sql",
-    "postinstall": "nuxi prepare && npm run wrangler:d1:prepare",
+    "postinstall": "nuxi prepare",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
