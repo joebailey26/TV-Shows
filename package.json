@@ -20,6 +20,7 @@
     "@auth/drizzle-adapter": "^0.3.7",
     "@cloudflare/workers-types": "^4.20231025.0",
     "@hebilicious/authjs-nuxt": "^0.3.5",
+    "@nuxt/image": "^1.1.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.1",
     "@pinia/nuxt": "^0.5.1",
     "@typescript-eslint/parser": "^6.12.0",
@@ -58,7 +59,7 @@
       "@auth/core@0.18.2": "patches/@auth__core@0.18.2.patch"
     }
   },
-  "engines" : {
-    "node" : "^18.12.0"
+  "engines": {
+    "node": "^18.12.0"
   }
 }

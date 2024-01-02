@@ -5,7 +5,6 @@
     width: 100%;
     min-height: 100vh;
     padding: 4rem 1rem;
-    background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/unauthenticated-header.jpg');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover
@@ -42,7 +41,7 @@
 </style>
 
 <template>
-  <header>
+  <header :style="headerStyles">
     <div class="inner-content">
       <div class="header__content">
         <h1>Manage your TV Shows</h1>
@@ -62,7 +61,14 @@ export default defineComponent({
 
     const { signIn } = useAuth()
 
-    return { signIn }
+    const img = useImage()
+
+    const headerStyles = computed(() => {
+      const imgUrl = img('/unauthenticated-header.jpg', { width: 1920 })
+      return { backgroundImage: `linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('${imgUrl}')` }
+    })
+
+    return { signIn, headerStyles }
   }
 })
 </script>

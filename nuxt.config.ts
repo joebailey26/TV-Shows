@@ -29,8 +29,14 @@ export default defineNuxtConfig({
   },
   modules: [
     '@hebilicious/authjs-nuxt',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@nuxt/image'
   ],
+  image: {
+    format: ['avif', 'webp'],
+    domains: ['static.episodate.com'],
+    provider: 'ipxStatic'
+  },
   runtimeConfig: {
     authJs: {
       secret: process.env.NUXT_NEXTAUTH_SECRET // You can generate one with `openssl rand -base64 32`
