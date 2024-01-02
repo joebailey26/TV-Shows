@@ -12,7 +12,7 @@ patchedDependencies:
     hash: ymtm472zqwlxpqbfgxjr6mzmsu
     path: patches/@auth__drizzle-adapter@0.3.7.patch
   '@hebilicious/authjs-nuxt@0.3.5':
-    hash: mq3oagdpxnvfs7hcoalpu6z2bq
+    hash: 2bwufppwyte64qzhmtqe363oqy
     path: patches/@hebilicious__authjs-nuxt@0.3.5.patch
 
 devDependencies:
@@ -27,7 +27,7 @@ devDependencies:
     version: 4.20231025.0
   '@hebilicious/authjs-nuxt':
     specifier: ^0.3.5
-    version: 0.3.5(patch_hash=mq3oagdpxnvfs7hcoalpu6z2bq)(@auth/core@0.18.6)(nuxt@3.9.0)
+    version: 0.3.5(patch_hash=2bwufppwyte64qzhmtqe363oqy)(@auth/core@0.18.6)(nuxt@3.9.0)
   '@nuxtjs/eslint-config-typescript':
     specifier: ^12.0.1
     version: 12.1.0(eslint@8.56.0)(typescript@5.3.2)
@@ -1626,7 +1626,7 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /@hebilicious/authjs-nuxt@0.3.5(patch_hash=mq3oagdpxnvfs7hcoalpu6z2bq)(@auth/core@0.18.6)(nuxt@3.9.0):
+  /@hebilicious/authjs-nuxt@0.3.5(patch_hash=2bwufppwyte64qzhmtqe363oqy)(@auth/core@0.18.6)(nuxt@3.9.0):
     resolution: {integrity: sha512-8w4FJ+gVx41w+Oax0HFQdQ+poqYx1xxDU6F/NZOp3reIhYJEWmTqJm9Qd0u4uBOonhksZ+vVGQbjP3ZTKERONA==}
     peerDependencies:
       '@auth/core': ^0.17.0
