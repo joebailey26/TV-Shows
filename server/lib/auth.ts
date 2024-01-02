@@ -3,7 +3,7 @@ import GithubProvider from '@auth/core/providers/github'
 import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import customCss from './auth.css.js'
 import { useDb } from './db'
 
