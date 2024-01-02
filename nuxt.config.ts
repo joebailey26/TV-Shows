@@ -25,7 +25,12 @@ export default defineNuxtConfig({
     '~/assets/scss/global.scss'
   ],
   nitro: {
-    preset: 'cloudflare_pages'
+    preset: 'cloudflare_pages',
+    prerender: {
+      routes: [
+        '/_ipx/w_1920/unauthenticated-header.jpg'
+      ]
+    }
   },
   modules: [
     '@hebilicious/authjs-nuxt',
