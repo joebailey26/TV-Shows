@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
+  // @ts-expect-error
   app: {
     head: {
       htmlAttrs: {
@@ -24,8 +25,7 @@ export default defineNuxtConfig({
     '~/assets/scss/global.scss'
   ],
   nitro: {
-    preset: 'cloudflare_pages',
-    dev: false // We need this so the worker builds properly when running locally
+    preset: 'cloudflare_pages'
   },
   modules: [
     '@hebilicious/authjs-nuxt',

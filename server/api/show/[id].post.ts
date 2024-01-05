@@ -1,23 +1,15 @@
+import type { H3Event } from 'h3'
 import getShowExists from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
-import { useAuthOptions } from '../../lib/auth'
+import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import getUserByEmail from '../../lib/getUserByEmail'
-import { getServerSession } from '#auth'
+import { syncShow } from '../../lib/episodate'
 
-export default defineEventHandler(async (event) => {
-  const DB = useDb(event)
-  const authOptions = useAuthOptions(event)
-  let session
-  try {
-    session = await getServerSession(event, authOptions)
-  } catch (e) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  if (!session?.user?.email) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  const userEmail = session.user.email
+export default defineEventHandler(async (event: H3Event) => {
+  const DB = await useDb(event)
+
+  const userEmail = await getAuthenticatedUserEmail(event)
 
   const showId = getRouterParam(event, 'id')
 
@@ -33,6 +25,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = await getUserByEmail(userEmail, event)
+
+  if (!user) {
+    throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
+  }
+
+  await syncShow(parseInt(showId), event)
 
   await DB.insert(tvShows).values({ showId: parseInt(showId), userId: user.id })
 

@@ -3,7 +3,12 @@ import { useRequestHeaders, useFetch } from 'nuxt/app'
 
 export const useShowsStore = defineStore('showsStore', {
   state: () => ({
-    shows: {} as EpisodateSearch
+    shows: {
+      total: '0',
+      page: 1,
+      pages: 1,
+      tv_shows: []
+    } as EpisodateSearch
   }),
   getters: {
     getShowById: (state) => {
@@ -15,8 +20,8 @@ export const useShowsStore = defineStore('showsStore', {
   actions: {
     async fetchShows () {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
-      const { data } = await useFetch('/api/shows', { headers })
-      this.shows.tv_shows = data.value as EpisodateShow[]
+      const { data } = await useFetch('/api/shows?limit=0', { headers })
+      this.shows = data.value as EpisodateSearch
     }
   }
 })

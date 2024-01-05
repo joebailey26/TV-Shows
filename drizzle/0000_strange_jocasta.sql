@@ -1,9 +1,4 @@
-DROP TABLE IF EXISTS `account`;
-DROP TABLE IF EXISTS `session`;
-DROP TABLE IF EXISTS `tv_shows`;
-DROP TABLE IF EXISTS `user`;
-DROP TABLE IF EXISTS `verificationToken`;
-CREATE TABLE `account` (
+CREATE TABLE IF NOT EXISTS `account` (
 	`userId` text NOT NULL,
 	`type` text NOT NULL,
 	`provider` text NOT NULL,
@@ -19,14 +14,14 @@ CREATE TABLE `account` (
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `session` (
+CREATE TABLE IF NOT EXISTS `session` (
 	`sessionToken` text PRIMARY KEY NOT NULL,
 	`userId` text NOT NULL,
 	`expires` integer NOT NULL,
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `tv_shows` (
+CREATE TABLE IF NOT EXISTS `tv_shows` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`showId` integer NOT NULL,
 	`userId` text NOT NULL,
@@ -34,7 +29,7 @@ CREATE TABLE `tv_shows` (
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `user` (
+CREATE TABLE IF NOT EXISTS `user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text,
 	`email` text NOT NULL,
@@ -42,11 +37,11 @@ CREATE TABLE `user` (
 	`image` text
 );
 --> statement-breakpoint
-CREATE TABLE `verificationToken` (
+CREATE TABLE IF NOT EXISTS `verificationToken` (
 	`identifier` text NOT NULL,
 	`token` text NOT NULL,
 	`expires` integer NOT NULL,
 	PRIMARY KEY(`identifier`, `token`)
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `showUserIdx` ON `tv_shows` (`showId`,`userId`);
+CREATE UNIQUE INDEX IF NOT EXISTS `showUserIdx` ON `tv_shows` (`showId`,`userId`);

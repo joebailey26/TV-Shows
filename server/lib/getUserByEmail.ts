@@ -4,7 +4,7 @@ import { users } from '../../db/schema'
 import { useDb } from '../lib/db'
 
 export default async function getUserByEmail (email: string, event: H3Event) {
-  const DB = useDb(event)
+  const DB = await useDb(event)
 
   const foundUsers = await DB.select().from(users)
     .where(

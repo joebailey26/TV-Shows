@@ -4,7 +4,7 @@ import { tvShows, users } from '../../db/schema'
 import { useDb } from '../lib/db'
 
 export default async function getShow (showId: string, userEmail: string, event: H3Event): Promise<boolean> {
-  const DB = useDb(event)
+  const DB = await useDb(event)
 
   const response = await DB.select({ id: tvShows.showId }).from(tvShows)
     .leftJoin(

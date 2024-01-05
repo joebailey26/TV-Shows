@@ -24,7 +24,7 @@ index 263b25a7159bf9456bcf8f892c6f196f84ee6c77..64e1d3e021618e7422741e00ec3826c4
  }
  /**
 diff --git a/src/types.ts b/src/types.ts
-index 0c215a115b489a1a513e4df8b14f3097566ae2bf..ead7ba97a1afeef5a26012a70f899cb2320366cc 100644
+index 426cf47b29fe37fd082f767a23ca989690dcab63..2db2dfb6cb4b951b601eca21dfe38496aa3e389b 100644
 --- a/src/types.ts
 +++ b/src/types.ts
 @@ -89,6 +89,7 @@ export interface Theme {
@@ -36,7 +36,7 @@ index 0c215a115b489a1a513e4df8b14f3097566ae2bf..ead7ba97a1afeef5a26012a70f899cb2
  
  /**
 diff --git a/types.d.ts b/types.d.ts
-index 36f5d0a3788f68e9000409f03dd0a17a7b8fe78f..6841fbf9db38356b7710125aa14b167224e4139e 100644
+index 4e37219bb13e05b141a9be92e55b278598e1f268..3531373839d5aa3ca11813e1d3cf821389aa7146 100644
 --- a/types.d.ts
 +++ b/types.d.ts
 @@ -75,6 +75,7 @@ export interface Theme {

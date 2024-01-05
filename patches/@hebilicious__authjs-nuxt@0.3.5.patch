@@ -1,60 +1,29 @@
-diff --git a/dist/runtime/lib/client.mjs b/dist/runtime/lib/client.mjs
-index ad35f26db8c72b6226d7a9aa38e4b420336846cd..332004c928414e387dcdbf93407b947747cd9d02 100644
---- a/dist/runtime/lib/client.mjs
-+++ b/dist/runtime/lib/client.mjs
-@@ -1,12 +1,15 @@
- import { makeNativeHeadersFromCookieObject } from "../utils.mjs";
- import { useAuth } from "../composables/useAuth.mjs";
- import { navigateTo, reloadNuxtApp, useRouter } from "#imports";
-+
- async function postToInternal({
-   url,
-   options,
--  csrfToken,
-   callbackUrl
- }) {
-+  const csrfResponse = await $fetch("/api/auth/csrf");
-+  const csrfToken = csrfResponse?.csrfToken
-+  if (!csrfToken) throw new Error("CSRF token not found")
-   const response = await $fetch.raw(url, {
-     method: "POST",
-     headers: {
+diff --git a/dist/runtime/lib/server.d.ts b/dist/runtime/lib/server.d.ts
+index 241b579ff53dd34dcc2f3a2fefd5fada59db2dc4..0b8721fb1a6c74a622a3286a67f802540047770d 100644
+--- a/dist/runtime/lib/server.d.ts
++++ b/dist/runtime/lib/server.d.ts
+@@ -8,7 +8,7 @@ import type { AuthConfig, Session } from "@auth/core/types";
+  * @param runtimeConfig RuntimeConfig
+  * @returns EventHandler
+  */
+-export declare function NuxtAuthHandler(options: AuthConfig, runtimeConfig: RuntimeConfig): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<Response | undefined>>;
++export declare function NuxtAuthHandler(options: AuthConfig|Function, runtimeConfig: RuntimeConfig): import("h3").EventHandler<import("h3").EventHandlerRequest, Promise<Response | undefined>>;
+ /**
+  * Get and returns the session.
+  * @param event H3Event
 diff --git a/dist/runtime/lib/server.mjs b/dist/runtime/lib/server.mjs
-index f8faa46f411b00261f6907188a13253f2c7fc0c9..5888c57aaa47b67afd6d6d95899c31c0428c6de7 100644
+index f8faa46f411b00261f6907188a13253f2c7fc0c9..cc261bd989223356f69b4e52893400be9f64267c 100644
 --- a/dist/runtime/lib/server.mjs
 +++ b/dist/runtime/lib/server.mjs
-@@ -1,4 +1,4 @@
--import { Auth, skipCSRFCheck } from "@auth/core";
-+import { Auth } from "@auth/core";
- import { eventHandler, getRequestHeaders, getRequestURL } from "h3";
- import { getToken } from "@auth/core/jwt";
- import { checkOrigin, getAuthJsSecret, getRequestFromEvent, getServerOrigin, makeCookiesFromCookieString } from "../utils.mjs";
-@@ -15,7 +15,6 @@ if (!globalThis.crypto) {
+@@ -14,6 +14,11 @@ if (!globalThis.crypto) {
+ }
  export function NuxtAuthHandler(options, runtimeConfig) {
    return eventHandler(async (event) => {
++    // This will be fixed in https://github.com/Hebilicious/authjs-nuxt/pull/148
++    if (typeof options === 'function') {
++      options = await options(event)
++    }
++
      options.trustHost ??= true;
--    options.skipCSRFCheck = skipCSRFCheck;
+     options.skipCSRFCheck = skipCSRFCheck;
      const request = await getRequestFromEvent(event);
-     if (request.url.includes(".js.map"))
-       return;
-diff --git a/dist/runtime/plugin.mjs b/dist/runtime/plugin.mjs
-index 11929c7a5ccd29cf9f93546ed77b90e948d572df..bc02ff3754cbe8555e0305655b10f5055776a42d 100644
---- a/dist/runtime/plugin.mjs
-+++ b/dist/runtime/plugin.mjs
-@@ -1,11 +1,14 @@
- import { useAuth } from "./composables/useAuth.mjs";
- import { makeCookiesFromCookieString } from "./utils.mjs";
--import { defineNuxtPlugin, useRequestHeaders } from "#app";
-+import { defineNuxtPlugin, useRequestHeaders, useRuntimeConfig } from "#app";
- export default defineNuxtPlugin(async () => {
-   if (process.server) {
-     const { updateSession, removeSession, cookies } = useAuth();
-     const headers = useRequestHeaders();
--    const data = await $fetch("/api/auth/session", {
-+    const runtimeConfig = useRuntimeConfig();
-+    // This request needs to be over HTTP so we get the Cloudflare context
-+    // rather than invoking the function directly
-+    const data = await $fetch(`${runtimeConfig.public.authJs.baseUrl}/api/auth/session`, {
-       headers
-     });
-     const hasSession = data && Object.keys(data).length;

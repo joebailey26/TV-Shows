@@ -1,8 +1,9 @@
-import getShows from '../../lib/getShowsWithEpisodate'
+import type { H3Event } from 'h3'
+import getShows from '../../lib/getShows'
 import { ics } from '../../lib/ics'
 
-// Return an ICS file containing events for all episodes of all shows stored in D1. Use KV for caching.
-export default defineEventHandler(async (event) => {
+// Return an ICS file containing events for all episodes of all shows stored in D1.
+export default defineEventHandler(async (event: H3Event) => {
   const userEmail = getRouterParam(event, 'userEmail')
 
   if (!userEmail) {
@@ -11,14 +12,15 @@ export default defineEventHandler(async (event) => {
   }
 
   // Initialise a new calendar
+  // @ts-expect-error
   const cal = ics()
 
   // Get all shows
   const shows = await getShows(event, userEmail, 0)
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode
-  shows.forEach((show) => {
-    show.episodes.forEach((episode) => {
+  shows.forEach((show: EpisodateTvShows) => {
+    show.episodateData.episodes.forEach((episode: EpisodateShowEpisode) => {
     // Only process the episode if it has an air_date
       if (episode.air_date) {
       // Build the date for the episode
@@ -29,7 +31,7 @@ export default defineEventHandler(async (event) => {
         date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
         // Add the event to the calendar
         cal.addEvent(
-          `${show.name} | ${episode.name}`,
+          `${show.episodateData.name} | ${episode.name}`,
           '',
           '',
           date.toString(),

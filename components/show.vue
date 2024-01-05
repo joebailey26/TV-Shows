@@ -52,12 +52,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 375px;
+  height: 100%;
   margin: 0;
   padding: 0;
   background-color: rgb(0 0 0 / 50%);
   border: none;
-  cursor: pointer;
+  border-radius: 0;
+  cursor: initial;
   opacity: 0;
   transition: opacity .25s ease-in;
   &:after {
@@ -69,6 +70,7 @@
     background-position: center;
     background-size: 35%;
     border-radius: 50%;
+    cursor: pointer;
     content: '';
     &:hover {
       opacity: .75
