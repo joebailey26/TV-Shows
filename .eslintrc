@@ -4,12 +4,17 @@
   },
   "extends": [
     "galexia",
-    "@nuxtjs/eslint-config-typescript"
+    "@nuxtjs/eslint-config-typescript",
+    "plugin:drizzle/all"
   ],
   "parserOptions": {
     "parser": "@typescript-eslint/parser"
   },
   "rules": {
-    "vue/no-v-html": 0
-  }
+    "vue/no-v-html": 0,
+    "vue/multi-word-component-names": 0
+  },
+  "plugins": [
+    "drizzle"
+  ]
 }

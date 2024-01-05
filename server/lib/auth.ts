@@ -3,9 +3,28 @@ import GithubProvider from '@auth/core/providers/github'
 import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
+// eslint-disable-next-line
+import { getServerSession } from '#auth'
 import type { H3Event } from 'h3'
 import customCss from './auth.css.js'
 import { useDb } from './db'
+
+export async function getAuthenticatedUserEmail (event: H3Event) {
+  const authOptions = await useAuthOptions(event)
+
+  let session
+
+  try {
+    session = await getServerSession(event, authOptions)
+  } catch (e) {
+    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
+  }
+  if (!session?.user?.email) {
+    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
+  }
+
+  return session.user.email
+}
 
 export async function useAuthOptions (event: H3Event) {
   const runtimeConfig = useRuntimeConfig()

@@ -1,26 +1,15 @@
-
-import { eq, and } from 'drizzle-orm'
 import type { H3Event } from 'h3'
+import { eq, and } from 'drizzle-orm'
 import getShowExists from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
-import { useAuthOptions } from '../../lib/auth'
+import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import getUserByEmail from '../../lib/getUserByEmail'
-import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)
-  const authOptions = await useAuthOptions(event)
-  let session
-  try {
-    session = await getServerSession(event, authOptions)
-  } catch (e) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  if (!session?.user?.email) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  const userEmail = session.user.email
+
+  const userEmail = await getAuthenticatedUserEmail(event)
 
   const showId = getRouterParam(event, 'id')
 

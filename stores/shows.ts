@@ -20,9 +20,8 @@ export const useShowsStore = defineStore('showsStore', {
   actions: {
     async fetchShows () {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
-      const { data } = await useFetch('/api/shows', { headers })
-      this.shows.tv_shows = data.value as EpisodateShow[]
-      this.shows.total = this.shows.tv_shows.length.toString()
+      const { data } = await useFetch('/api/shows?limit=0', { headers })
+      this.shows = data.value as EpisodateSearch
     }
   }
 })
