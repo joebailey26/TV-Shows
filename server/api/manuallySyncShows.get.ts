@@ -8,9 +8,9 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const results = await DB.select().from(tvShows)
 
-  for (const show of results) {
-    await syncShow(show.showId, event)
-  }
+  const syncPromises = results.map(show => syncShow(show.showId, event))
+
+  await Promise.all(syncPromises)
 
   setResponseStatus(event, 201)
   return 'Success'
