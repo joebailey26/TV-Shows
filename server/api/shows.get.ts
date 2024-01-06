@@ -21,6 +21,6 @@ export default defineEventHandler(async (event: H3Event) => {
     total: totalShows.toString(),
     page: 0,
     pages: 0,
-    tv_shows: shows.map(result => result.episodateData)
+    tv_shows: shows
   } as EpisodateSearch
 })

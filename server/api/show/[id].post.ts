@@ -11,11 +11,13 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const userEmail = await getAuthenticatedUserEmail(event)
 
-  const showId = getRouterParam(event, 'id')
+  const showIdParam = getRouterParam(event, 'id')
 
-  if (!showId) {
+  if (!showIdParam) {
     throw createError({ statusMessage: 'Missing show id', statusCode: 400 })
   }
+
+  const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if so
   const exists = await getShowExists(showId, userEmail, event)
@@ -30,9 +32,9 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await syncShow(parseInt(showId), event)
+  await syncShow(showId, event)
 
-  await DB.insert(tvShows).values({ showId: parseInt(showId), userId: user.id })
+  await DB.insert(tvShows).values({ showId, userId: user.id })
 
   setResponseStatus(event, 201)
   return 'Added successfully'

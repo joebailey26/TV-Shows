@@ -19,11 +19,11 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const showId = parseInt(showIdParam)
 
-  // Check if the id already exists and return an error if it doesn't, we can't delete a show that does not exist
+  // Check if the id already exists and return an error if so
   const exists = await getShowExists(showId, userEmail, event)
 
   if (!exists) {
-    throw createError({ statusMessage: 'Show does not exist', statusCode: 404 })
+    throw createError({ statusMessage: 'Show does not exist', statusCode: 409 })
   }
 
   const user = await getUserByEmail(userEmail, event)
@@ -32,7 +32,21 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await DB.delete(tvShows)
+  const body = await readBody(event)
+
+  if (!body) {
+    throw createError({ statusMessage: 'You must pass a body', statusCode: 400 })
+  }
+
+  let parsedBody
+
+  try {
+    parsedBody = JSON.parse(body)
+  } catch {
+    throw createError({ statusMessage: 'Body is not valid JSON', statusCode: 400 })
+  }
+
+  await DB.update(tvShows).set({ latestWatchedEpisode: parsedBody.episodeAirDate })
     .where(
       and(
         eq(tvShows.showId, showId),
@@ -40,6 +54,6 @@ export default defineEventHandler(async (event: H3Event) => {
       )
     )
 
-  setResponseStatus(event, 201)
-  return 'Removed successfully'
+  setResponseStatus(event, 200)
+  return 'Updated successfully'
 })

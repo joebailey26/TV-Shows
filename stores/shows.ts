@@ -22,6 +22,12 @@ export const useShowsStore = defineStore('showsStore', {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
       const { data } = await useFetch('/api/shows?limit=0', { headers })
       this.shows = data.value as EpisodateSearch
+    },
+    updateLatestWatchedEpisode (showId: number, episodeAirDate: string) {
+      const show = this.getShowById(showId)
+      if (show) {
+        show.latestWatchedEpisode = episodeAirDate
+      }
     }
   }
 })

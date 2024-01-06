@@ -19,8 +19,8 @@ export default defineEventHandler(async (event: H3Event) => {
   const shows = await getShows(event, userEmail, 0)
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode
-  shows.forEach((show: EpisodateTvShows) => {
-    show.episodateData.episodes.forEach((episode: EpisodateShowEpisode) => {
+  shows.forEach((show: Show) => {
+    show.episodes.forEach((episode: EpisodateShowEpisode) => {
     // Only process the episode if it has an air_date
       if (episode.air_date) {
       // Build the date for the episode
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event: H3Event) => {
         date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
         // Add the event to the calendar
         cal.addEvent(
-          `${show.episodateData.name} | ${episode.name}`,
+          `${show.name} | ${episode.name}`,
           '',
           '',
           date.toString(),

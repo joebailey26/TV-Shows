@@ -2,21 +2,19 @@
 export { EpisodateShowCountdown, EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails }
 
 declare global {
-  interface EpisodateShowCountdown {
+  type EpisodateShowCountdown = {
     season: number;
     episode: number;
     name: string;
     air_date: Date;
   }
-
-  interface EpisodateShowEpisode {
+  type EpisodateShowEpisode = {
     season: number;
     episode: number;
     name: string;
     air_date: string;
   }
-
-  interface EpisodateShow {
+  type EpisodateShow = {
     id: number;
     name: string;
     permalink: string;
@@ -39,15 +37,16 @@ declare global {
     pictures: string[];
     episodes: Episode[];
   }
-
-  interface EpisodateShowDetails {
+  type Show = EpisodateShow & {
+    latestWatchedEpisode: string|null
+  }
+  type EpisodateShowDetails = {
     tvShow: EpisodateShow
   }
-
-  interface EpisodateSearch {
+  type EpisodateSearch = {
     total: string;
     page: number;
     pages: number;
-    tv_shows: EpisodateShow[]
+    tv_shows: Show[]
   }
 }

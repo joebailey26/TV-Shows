@@ -4,10 +4,10 @@ import { tvShows, users, episodateTvShows } from '../../db/schema'
 import { useDb } from './db'
 import { syncShows } from './episodate'
 
-export default async function getShows (event: H3Event, userEmail: string, limit = 24, offset = 0): Promise<EpisodateTvShows[]> {
+export default async function getShows (event: H3Event, userEmail: string, limit = 24, offset = 0): Promise<Show[]> {
   const DB = await useDb(event)
 
-  let query = DB.select({ episodateTvShows }).from(episodateTvShows)
+  let query = DB.select().from(episodateTvShows)
     .leftJoin(
       tvShows,
       eq(tvShows.showId, episodateTvShows.id)
@@ -26,9 +26,13 @@ export default async function getShows (event: H3Event, userEmail: string, limit
 
   const results = await query
 
-  const transformedResults = results.map(result => result.episodateTvShows)
+  event.waitUntil(syncShows(results.map(result => result.episodateTvShows), event))
 
-  event.waitUntil(syncShows(transformedResults, event))
-
-  return transformedResults
+  return results.map((result) => {
+    console.log(result)
+    return {
+      ...result.episodateTvShows.episodateData,
+      latestWatchedEpisode: result.latestWatchedEpisode
+    }
+  })
 }

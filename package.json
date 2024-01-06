@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxi build",
+    "serve": "wrangler pages dev dist",
     "dev": "run-p nuxt:dev cf-bindings",
     "nuxt:dev": "nuxi dev",
     "cf-bindings": "cf-bindings-proxy",
@@ -32,8 +33,8 @@
     "cf-bindings-proxy": "^0.7.1",
     "chokidar": "^3.5.3",
     "cross-env": "^7.0.3",
-    "drizzle-kit": "^0.20.7",
-    "drizzle-orm": "^0.29.0",
+    "drizzle-kit": "^0.20.10",
+    "drizzle-orm": "^0.29.3",
     "eslint": "^8.49.0",
     "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
     "eslint-plugin-drizzle": "^0.2.3",
@@ -46,10 +47,10 @@
     "sass": "^1.69.5",
     "stylelint": "^15.11.0",
     "stylelint-config-galexia": "github:Galexia-Agency/stylelint-config",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
-    "wrangler": "^3.22.1"
+    "wrangler": "^3.22.3"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"

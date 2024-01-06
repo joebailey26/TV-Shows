@@ -6,6 +6,7 @@
   padding: 1rem;
   color: var(--bodyTextColor);
   text-align: center;
+  text-decoration: none;
   background-color: var(--whiteColor);
   box-shadow: 0 2px 5px 0 rgb(0 0 0 / 6%), 0 2px 10px 0 rgb(0 0 0 / 12%);
   img {
@@ -43,38 +44,26 @@
 .status__running:before {
   background-color: var(--greenColor)
 }
-.show:hover .button {
-  opacity: 1
-}
 .button {
   position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+  z-index: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-height: 0;
   margin: 0;
   padding: 0;
-  background-color: rgb(0 0 0 / 50%);
+  background: none;
   border: none;
   border-radius: 0;
-  cursor: initial;
-  opacity: 0;
-  transition: opacity .25s ease-in;
   &:after {
     display: block;
-    width: 3em;
-    height: 3em;
-    margin-top: -2em;
+    width: 100%;
+    height: 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 35%;
-    border-radius: 50%;
     cursor: pointer;
-    content: '';
-    &:hover {
-      opacity: .75
-    }
+    content: ''
   }
   &.add:after {
     background-color: var(--greenColor);
@@ -88,7 +77,7 @@
 </style>
 
 <template>
-  <NuxtLink class="show" :href="`/show/${show.permalink}`">
+  <NuxtLink class="show" :href="`/show/${show.id}`">
     <img :src="show.image_path ?? show.image_thumbnail_path" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <p :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
@@ -112,7 +101,7 @@ import { useShowsStore } from '../stores/shows'
 export default defineComponent({
   props: {
     show: {
-      type: Object,
+      type: Object as PropType<EpisodateShow>,
       required: true
     },
     addShowCallback: {
@@ -129,7 +118,7 @@ export default defineComponent({
     const { getShowById } = storeToRefs(showsStore)
 
     return {
-      getShowById
+      getShowById: getShowById.value
     }
   },
   methods: {
@@ -161,14 +150,14 @@ export default defineComponent({
     },
     async addShow (id: number) {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
-      const response = await fetch(`api/show/${id}`, {
+      const response = await fetch(`/api/show/${id}`, {
         method: 'POST',
         headers
       })
 
       if (response.ok) {
         this.fetchShows()
-        if (this.addShowCallback) {
+        if (typeof this.addShowCallback === 'function') {
           this.addShowCallback()
         }
       }
@@ -176,14 +165,14 @@ export default defineComponent({
     async deleteShow (id: number) {
       if (typeof window !== 'undefined' && window.confirm('Are you sure you want to delete this show?')) {
         const headers = useRequestHeaders(['cookie']) as HeadersInit
-        const response = await fetch(`api/show/${id}`, {
+        const response = await fetch(`/api/show/${id}`, {
           method: 'DELETE',
           headers
         })
 
         if (response.ok) {
           this.fetchShows()
-          if (this.removeShowCallback) {
+          if (typeof this.removeShowCallback === 'function') {
             this.removeShowCallback()
           }
         }

@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "a97545ac-a734-409e-a3a7-85145ca671e4",
-  "prevId": "a97545ac-a734-409e-a3a7-85145ca671e3",
+  "id": "8aeec939-6637-4ec2-935c-c071ca4e73d9",
+  "prevId": "a97545ac-a734-409e-a3a7-85145ca671e4",
   "tables": {
     "account": {
       "name": "account",
@@ -218,9 +218,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "latestWatchedEpisodeId": {
-          "name": "latestWatchedEpisodeId",
-          "type": "integer",
+        "latestWatchedEpisode": {
+          "name": "latestWatchedEpisode",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
