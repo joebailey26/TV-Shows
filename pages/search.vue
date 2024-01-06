@@ -33,6 +33,13 @@ export default defineComponent({
 
     const fetchShows = async () => {
       resetSearchResults()
+      // ToDo
+      //  We should create a server API endpoint for this
+      //  It should ping the episodate.com API like below
+      //  Then search D1 for all IDs to see if they are added/not by the current user
+      //  Then return their status as part of the response
+      //  This is so that the FE does not have to know every single show
+      //  So we can then build pagination
       const { data } = await useFetch(`https://www.episodate.com/api/search?q=${route.query.q}&page=${route.query.p ?? 1}`, {
         method: 'POST'
       })

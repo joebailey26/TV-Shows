@@ -102,6 +102,10 @@ export default defineComponent({
       })
     }
 
+    // ToDo
+    //  We can't go off episode id, as this resets for each season
+    //  air_date feels a little finnicky, as 2 episodes could air on the same day, and the API might not distinguish by times?
+    //  We need some sort of combination between season and episode, maybe as JSON?
     async function updateShow (episode: EpisodateShowEpisode) {
       const response = await fetch(`/api/show/${showId}`, {
         method: 'PATCH',
@@ -112,7 +116,7 @@ export default defineComponent({
       })
 
       if (response.ok) {
-        // showsStore.updateLatestWatchedEpisode(showId, episode.air_date)
+        showsStore.updateLatestWatchedEpisode(showId, episode.air_date)
       }
     }
 
