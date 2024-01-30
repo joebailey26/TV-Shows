@@ -6,10 +6,13 @@ button {
   border-radius: 0;
   cursor: pointer
 }
+.watched {
+  color: red
+}
 </style>
 
 <template>
-  <button type="button" @click="setEpisodeCallback(episode)">
+  <button type="button" :class="{watched: episode.watched}" @click="setEpisodeCallback(episode)">
     <span v-html="`S${episode.season.toString().padStart(2, '0')}E${episode.episode.toString().padStart(2, '0')} - ${episode.name}`" />
   </button>
 </template>

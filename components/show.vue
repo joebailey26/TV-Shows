@@ -88,15 +88,13 @@
       <span v-html="showCountdownHelper(show.countdown)" />
     </p>
     <p>Network: {{ show.network }}</p>
-    <button v-if="!getShowById(show.id)" type="button" class="button add" @click="addShow(show.id)" />
+    <button v-if="!show.exists" type="button" class="button add" @click="addShow(show.id)" />
     <button v-else type="button" class="button remove" @click="deleteShow(show.id)" />
   </NuxtLink>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapActions, storeToRefs } from 'pinia'
-import { useShowsStore } from '../stores/shows'
 
 export default defineComponent({
   props: {
@@ -113,16 +111,7 @@ export default defineComponent({
       default: () => {}
     }
   },
-  setup () {
-    const showsStore = useShowsStore()
-    const { getShowById } = storeToRefs(showsStore)
-
-    return {
-      getShowById: getShowById.value
-    }
-  },
   methods: {
-    ...mapActions(useShowsStore, ['fetchShows']),
     showCountdownHelper (countdown: EpisodateShowCountdown) {
       if (countdown == null) {
         return 'Unknown'
@@ -156,7 +145,6 @@ export default defineComponent({
       })
 
       if (response.ok) {
-        this.fetchShows()
         if (typeof this.addShowCallback === 'function') {
           this.addShowCallback()
         }
@@ -171,7 +159,6 @@ export default defineComponent({
         })
 
         if (response.ok) {
-          this.fetchShows()
           if (typeof this.removeShowCallback === 'function') {
             this.removeShowCallback()
           }

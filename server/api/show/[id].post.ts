@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import getShowExists from '../../lib/getShowExists'
+import getShow from '../../lib/getShow'
 import { tvShows } from '../../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if so
-  const exists = await getShowExists(showId, userEmail, event)
+  const exists = await getShow(showId, userEmail, event)
 
   if (exists) {
     throw createError({ statusMessage: 'Show already exists', statusCode: 409 })

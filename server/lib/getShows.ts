@@ -1,10 +1,16 @@
 import type { H3Event } from 'h3'
-import { asc, eq } from 'drizzle-orm'
+import { asc, eq, isNull, isNotNull, and } from 'drizzle-orm'
 import { tvShows, users, episodateTvShows } from '../../db/schema'
 import { useDb } from './db'
 import { syncShows } from './episodate'
 
-export default async function getShows (event: H3Event, userEmail: string, limit = 24, offset = 0): Promise<Show[]> {
+type ShowCategories = {
+  currentlyWatching: boolean;
+  wantToWatch: boolean;
+  toCatchUpOn: boolean;
+}
+
+export default async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, limit = 24, offset = 0): Promise<EpisodateShow[]> {
   const DB = await useDb(event)
 
   let query = DB.select({
@@ -13,9 +19,6 @@ export default async function getShows (event: H3Event, userEmail: string, limit
       name: episodateTvShows.name,
       episodateData: episodateTvShows.episodateData,
       updatedAt: episodateTvShows.updatedAt
-    },
-    tvShows: {
-      latestWatchedEpisode: tvShows.latestWatchedEpisode
     }
   })
     .from(episodateTvShows)
@@ -35,14 +38,23 @@ export default async function getShows (event: H3Event, userEmail: string, limit
     query = query.limit(limit).offset(offset)
   }
 
-  const results = await query
+  if (showCategories.currentlyWatching) {
+    // watchedEpisodes.length = episodes.length - 1
+  }
 
-  event.waitUntil(syncShows(results.map(result => result.episodateTvShows), event))
+  if (showCategories.wantToWatch) {
+    // watchedEpisodes.length = 0
+  }
 
-  return results.map((result) => {
-    return {
-      ...result.episodateTvShows.episodateData,
-      latestWatchedEpisode: result.tvShows ? result.tvShows.latestWatchedEpisode : null
-    }
+  if (showCategories.toCatchUpOn) {
+    // watchedEpisodes.length < episodes.length - 1
+  }
+
+  const shows = await query
+
+  event.waitUntil(syncShows(shows.map(show => show.episodateTvShows), event))
+
+  return shows.map((show) => {
+    return show.episodateTvShows.episodateData
   })
 }

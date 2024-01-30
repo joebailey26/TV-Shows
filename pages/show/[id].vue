@@ -50,73 +50,34 @@ h1 {
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { storeToRefs } from 'pinia'
 import type { EpisodateShowEpisode } from '../../types/episodate'
-import { useShowsStore } from '../../stores/shows'
-
-type Season = {
-  season: number
-  episodes: EpisodateShowEpisode[]
-}
-
-type ExtendedEpisodateShow = Show & {
-  seasons: Season[];
-}
 
 export default defineComponent({
   setup () {
-    // @ts-expect-error
     const headers = useRequestHeaders(['cookie']) as HeadersInit
-    // @ts-expect-error
     definePageMeta({ middleware: 'auth' })
-    // @ts-expect-error
     const route = useRoute()
-    const showsStore = useShowsStore()
-    const { getShowById } = storeToRefs(showsStore)
+    if (Array.isArray(route.params.id)) {
+      route.params.id = route.params.id[0]
+    }
     const showId = parseInt(route.params.id)
-    const show = getShowById.value(showId) as ExtendedEpisodateShow
+    const show = getShowById.value(showId) as EpisodateShow
 
     if (!show) {
       return { name: null }
     }
 
-    const episodesBySeason = [] as Season[]
-
-    if (show.episodes) {
-      for (const episode of show.episodes) {
-        let season = episodesBySeason.find(findEpisode => episode.season === findEpisode.season)
-        if (!season) {
-          season = {
-            season: episode.season,
-            episodes: []
-          }
-          episodesBySeason.push(season)
-        }
-        season.episodes.push(episode)
-      }
-
-      show.seasons = episodesBySeason
-      show.seasons.sort((a, b) => b.season - a.season)
-      show.seasons.forEach((season) => {
-        season.episodes.sort((a, b) => new Date(a.air_date).getTime() - new Date(b.air_date).getTime())
-      })
-    }
-
-    // ToDo
-    //  We can't go off episode id, as this resets for each season
-    //  air_date feels a little finnicky, as 2 episodes could air on the same day, and the API might not distinguish by times?
-    //  We need some sort of combination between season and episode, maybe as JSON?
     async function updateShow (episode: EpisodateShowEpisode) {
       const response = await fetch(`/api/show/${showId}`, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({
-          episodeAirDate: episode.air_date
+          episode
         })
       })
 
       if (response.ok) {
-        showsStore.updateLatestWatchedEpisode(showId, episode.air_date)
+        showsStore.updateLatestWatchedEpisode(showId, episode)
       }
     }
 

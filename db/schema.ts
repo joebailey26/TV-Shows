@@ -1,13 +1,11 @@
-import { sql } from 'drizzle-orm'
+import { Many, sql } from 'drizzle-orm'
 import { sqliteTable, integer, uniqueIndex, text, primaryKey } from 'drizzle-orm/sqlite-core'
 import type { AdapterAccount } from '@auth/core/adapters'
-import type { EpisodateShow } from '../types/episodate'
 
 export const tvShows = sqliteTable('tv_shows', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   showId: integer('showId').notNull().references(() => episodateTvShows.id),
-  userId: text('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  latestWatchedEpisode: text('latestWatchedEpisode')
+  userId: text('userId').notNull().references(() => users.id, { onDelete: 'cascade' })
 }, (table) => {
   return {
     emailIdx: uniqueIndex('showUserIdx').on(table.showId, table.userId)
@@ -16,13 +14,54 @@ export const tvShows = sqliteTable('tv_shows', {
 )
 
 export const episodateTvShows = sqliteTable('episodateTvShows', {
-  // ToDo
-  //  ID and Name are stored here in columns as well as in episodateData
-  //  Can we de-duplicate somehow?
   id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  episodateData: text('episodateData', { mode: 'json' }).$type<EpisodateShow>().notNull(),
+  name: text('name'),
+  permalink: text('permalink'),
+  url: text('url'),
+  description: text('description'),
+  description_source: text('description_source'),
+  start_date: text('start_date'),
+  end_date: text('end_date'),
+  country: text('country'),
+  status: text('status'),
+  runtime: integer('runtime'),
+  network: text('network'),
+  youtube_link: text('youtube_link'),
+  image_path: text('image_path'),
+  image_thumbnail_path: text('image_thumbnail_path'),
+  rating: text('rating'),
+  rating_count: text('rating'),
+  genres: text('genres', { mode: 'json' }),
+  pictures: text('pictures', { mode: 'json' }),
+  // countdown: integer('countdown').references(() => episodes.id),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`).notNull()
+})
+
+export const seasons = sqliteTable('seasons', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  season: integer('season').notNull(),
+  episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
+})
+
+export const episodes = sqliteTable('episodes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  seasonId: integer('seasonId').notNull().references(() => seasons.id, { onDelete: 'cascade' }),
+  episode: integer('episode').notNull(),
+  name: text('name').notNull(),
+  air_date: text('air_date').notNull()
+}, (table) => {
+  return {
+    episodeSeasonIdx: uniqueIndex('episodeSeasonIdx').on(table.seasonId, table.episode)
+  }
+})
+
+export const watchedEpisodes = sqliteTable('watchedEpisodes', {
+  userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  episodeId: integer('episodeId').notNull().references(() => episodes.id, { onDelete: 'cascade' })
+}, (table) => {
+  return {
+    userEpisodeIdx: uniqueIndex('userEpisodeIdx').on(table.userId, table.episodeId)
+  }
 })
 
 export const users = sqliteTable('user', {

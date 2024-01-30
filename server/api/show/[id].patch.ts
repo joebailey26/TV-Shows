@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
-import getShowExists from '../../lib/getShowExists'
+import getShow from '../../lib/getShow'
 import { tvShows } from '../../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if so
-  const exists = await getShowExists(showId, userEmail, event)
+  const exists = await getShow(showId, userEmail, event)
 
   if (!exists) {
     throw createError({ statusMessage: 'Show does not exist', statusCode: 409 })
@@ -46,13 +46,10 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Body is not valid JSON', statusCode: 400 })
   }
 
-  await DB.update(tvShows).set({ latestWatchedEpisode: parsedBody.episodeAirDate })
-    .where(
-      and(
-        eq(tvShows.showId, showId),
-        eq(tvShows.userId, user.id)
-      )
-    )
+  const episode = parsedBody.episode
+
+  // Fetch episodes for show
+  // Add them to watched episodes if they match
 
   setResponseStatus(event, 200)
   return 'Updated successfully'

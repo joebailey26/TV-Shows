@@ -28,8 +28,7 @@ export default defineNuxtConfig({
     preset: 'cloudflare_pages'
   },
   modules: [
-    '@hebilicious/authjs-nuxt',
-    '@pinia/nuxt'
+    '@hebilicious/authjs-nuxt'
   ],
   runtimeConfig: {
     authJs: {
@@ -51,7 +50,7 @@ export default defineNuxtConfig({
       authJs: {
         baseUrl: process.env.CF_PAGES_URL ?? process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
         guestRedirectTo: '/', // where to redirect if the user is not authenticated
-        authenticatedRedirectTo: '/my-shows', // where to redirect if the user is authenticated
+        authenticatedRedirectTo: '/my-shows/currently-watching', // where to redirect if the user is authenticated
         verifyClientOnEveryRequest: false // whether to hit the /auth/session endpoint on every client request
       }
     }

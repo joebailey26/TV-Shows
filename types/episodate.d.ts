@@ -1,13 +1,7 @@
 /* eslint-disable camelcase */
-export { EpisodateShowCountdown, EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails }
+export { EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails, EpisodateSearch }
 
 declare global {
-  type EpisodateShowCountdown = {
-    season: number;
-    episode: number;
-    name: string;
-    air_date: Date;
-  }
   type EpisodateShowEpisode = {
     season: number;
     episode: number;
@@ -32,13 +26,10 @@ declare global {
     image_thumbnail_path: string;
     rating: string;
     rating_count: string;
-    countdown: Countdown;
+    countdown: EpisodateShowEpisode;
     genres: string[];
     pictures: string[];
-    episodes: Episode[];
-  }
-  type Show = EpisodateShow & {
-    latestWatchedEpisode: string|null
+    episodes: EpisodateShowEpisode[];
   }
   type EpisodateShowDetails = {
     tvShow: EpisodateShow
@@ -47,6 +38,6 @@ declare global {
     total: string;
     page: number;
     pages: number;
-    tv_shows: Show[]
+    tv_shows: EpisodateShow[]
   }
 }
