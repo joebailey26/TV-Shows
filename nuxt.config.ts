@@ -28,6 +28,8 @@ export default defineNuxtConfig({
     preset: 'cloudflare_pages'
   },
   modules: [
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/stylelint-module',
     '@hebilicious/authjs-nuxt',
     '@pinia/nuxt'
   ],
