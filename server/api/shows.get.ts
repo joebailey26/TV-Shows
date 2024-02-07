@@ -13,6 +13,8 @@ export default defineEventHandler(async (event: H3Event) => {
   limit = (typeof limit === 'string') ? parseInt(limit, 10) : 24 // Default to 24 if limit is not a string
   offset = (typeof offset === 'string') ? parseInt(offset, 10) : 0 // Default to 0 if offset is not a string
 
+  // ToDo
+  //  Handle being passed categories
   const shows = await getShows(event, userEmail, limit, offset)
 
   const totalShows = shows.length

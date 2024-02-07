@@ -26,15 +26,8 @@
     {
       "idx": 3,
       "version": "5",
-      "when": 1704497338199,
-      "tag": "0003_moaning_silvermane",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1704583949289,
-      "tag": "0004_burly_tomas",
+      "when": 1707318107477,
+      "tag": "0003_right_talon",
       "breakpoints": true
     }
   ]

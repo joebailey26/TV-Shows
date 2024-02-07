@@ -9,6 +9,10 @@
   text-decoration: none;
   background-color: var(--whiteColor);
   box-shadow: 0 2px 5px 0 rgb(0 0 0 / 6%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+  cursor: initial;
+  &.shouldGoToShow {
+    cursor: pointer
+  }
   img {
     width: calc(100% + 2rem);
     height: 375px;
@@ -77,20 +81,20 @@
 </style>
 
 <template>
-  <NuxtLink class="show" :href="`/show/${show.id}`">
-    <img :src="show.image_path ?? show.image_thumbnail_path" width="250" loading="lazy">
+  <a :class="['show', {'shouldGoToShow': shouldGoToShow}]" @click="goToShow" href="javascript:void(0)">
+    <img :src="show.image_path ?? show.image_thumbnail_path ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
-    <p :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
+    <p v-if="show.status" :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
       Status: {{ show.status }}
     </p>
-    <p class="next-episode">
+    <p class="next-episode" v-if="show.countdown">
       Next episode:
       <span v-html="showCountdownHelper(show.countdown)" />
     </p>
     <p>Network: {{ show.network }}</p>
-    <button v-if="!show.exists" type="button" class="button add" @click="addShow(show.id)" />
-    <button v-else type="button" class="button remove" @click="deleteShow(show.id)" />
-  </NuxtLink>
+    <button v-if="!show.tracked" type="button" class="button add" @click.stop="addShow(show.id)" />
+    <button v-else type="button" class="button remove" @click.stop="deleteShow(show.id)" />
+  </a>
 </template>
 
 <script lang="ts">
@@ -109,10 +113,14 @@ export default defineComponent({
     removeShowCallback: {
       type: Function,
       default: () => {}
+    },
+    shouldGoToShow: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
-    showCountdownHelper (countdown: EpisodateShowCountdown) {
+    showCountdownHelper (countdown: EpisodateShowEpisode) {
       if (countdown == null) {
         return 'Unknown'
       } else {
@@ -135,6 +143,12 @@ export default defineComponent({
         const year = date.getFullYear().toString().substring(2)
 
         return `<time datetime=${date}>${day} ${month} '${year}</time>`
+      }
+    },
+    async goToShow () {
+      if (this.shouldGoToShow) {
+        const router = useRouter()
+        router.push(`/show/${this.show.id}`)
       }
     },
     async addShow (id: number) {

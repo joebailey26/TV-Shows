@@ -10,17 +10,10 @@ type ShowCategories = {
   toCatchUpOn: boolean;
 }
 
-export default async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, limit = 24, offset = 0): Promise<EpisodateShow[]> {
+export default async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, limit = 24, offset = 0): Promise<Partial<EpisodateShow>[]> {
   const DB = await useDb(event)
 
-  let query = DB.select({
-    episodateTvShows: {
-      id: episodateTvShows.id,
-      name: episodateTvShows.name,
-      episodateData: episodateTvShows.episodateData,
-      updatedAt: episodateTvShows.updatedAt
-    }
-  })
+  let query = DB.select({episodateTvShows})
     .from(episodateTvShows)
     .leftJoin(
       tvShows,
@@ -55,6 +48,14 @@ export default async function getShows (event: H3Event, userEmail: string, showC
   event.waitUntil(syncShows(shows.map(show => show.episodateTvShows), event))
 
   return shows.map((show) => {
-    return show.episodateTvShows.episodateData
+    // ToDo
+    //  Sort out typing here
+    show.episodateTvShows.tracked = true
+    show.episodateTvShows.genres = show.episodateTvShows.genres?.split(',')
+    show.episodateTvShows.pictures = show.episodateTvShows.pictures?.split(',')
+
+    // ToDo
+    //  Should we be adding episodes here? Or only in the get single show? Performance?
+    return show.episodateTvShows as Partial<EpisodateShow>
   })
 }

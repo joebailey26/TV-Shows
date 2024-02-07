@@ -1,4 +1,4 @@
-import { Many, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { sqliteTable, integer, uniqueIndex, text, primaryKey } from 'drizzle-orm/sqlite-core'
 import type { AdapterAccount } from '@auth/core/adapters'
 
@@ -10,14 +10,15 @@ export const tvShows = sqliteTable('tv_shows', {
   return {
     emailIdx: uniqueIndex('showUserIdx').on(table.showId, table.userId)
   }
-}
-)
+})
 
 export const episodateTvShows = sqliteTable('episodateTvShows', {
   id: integer('id').primaryKey(),
   name: text('name'),
   permalink: text('permalink'),
-  url: text('url'),
+  // ToDo
+  //  When inserting, we just use permalink, so we can probably get rid of this column
+  // url: text('url'),
   description: text('description'),
   description_source: text('description_source'),
   start_date: text('start_date'),
@@ -31,30 +32,28 @@ export const episodateTvShows = sqliteTable('episodateTvShows', {
   image_thumbnail_path: text('image_thumbnail_path'),
   rating: text('rating'),
   rating_count: text('rating'),
-  genres: text('genres', { mode: 'json' }),
-  pictures: text('pictures', { mode: 'json' }),
+  genres: text('genres'),
+  pictures: text('pictures'),
+  // ToDo
+  // We need to implement this in order to show the countdown on the homepage
   // countdown: integer('countdown').references(() => episodes.id),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`).notNull()
 })
 
-export const seasons = sqliteTable('seasons', {
+export const episodes = sqliteTable('episodes', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   season: integer('season').notNull(),
+  episode: integer('episode').notNull(),
+  name: text('name').notNull(),
+  air_date: text('air_date').notNull(),
   episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
 })
 
-export const episodes = sqliteTable('episodes', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  seasonId: integer('seasonId').notNull().references(() => seasons.id, { onDelete: 'cascade' }),
-  episode: integer('episode').notNull(),
-  name: text('name').notNull(),
-  air_date: text('air_date').notNull()
-}, (table) => {
-  return {
-    episodeSeasonIdx: uniqueIndex('episodeSeasonIdx').on(table.seasonId, table.episode)
-  }
-})
-
+// ToDo
+//  Is this the correct solution to tracking watched episodes?
+//  Could we do something like:
+//   select * from episodes that have an entry in watched episodes?
+//   or select * from episodes and add a property `watched` if they have an entry in watched episodes? Subquery?
 export const watchedEpisodes = sqliteTable('watchedEpisodes', {
   userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
   episodeId: integer('episodeId').notNull().references(() => episodes.id, { onDelete: 'cascade' })

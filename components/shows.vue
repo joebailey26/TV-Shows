@@ -19,6 +19,7 @@
         :show="show"
         :remove-show-callback="removeShowCallback"
         :add-show-callback="addShowCallback"
+        :should-go-to-show="shouldGoToShow"
       />
       <GalexiaPagination
         :page-count="pageCount"
@@ -53,6 +54,10 @@ export default defineComponent({
     pageCount: {
       type: Number,
       required: true
+    },
+    shouldGoToShow: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {

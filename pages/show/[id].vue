@@ -23,9 +23,9 @@ h1 {
 </style>
 
 <template>
-  <div v-if="name" class="inner-content">
+  <div class="inner-content">
     <div class="header">
-      <img :src="image_path ?? image_thumbnail_path" width="250">
+      <img :src="image_path ?? image_thumbnail_path ?? 'https://placehold.co/250x600'" width="250">
       <div class="content">
         <h1 v-html="name" />
         <p v-html="description" />
@@ -52,8 +52,17 @@ h1 {
 import { defineComponent } from 'vue'
 import type { EpisodateShowEpisode } from '../../types/episodate'
 
+type Season = {
+  season: number;
+  episodes: EpisodateShowEpisode[];
+}
+
+interface EpisodateShowWithSeasons extends EpisodateShow {
+  seasons: Season[]
+}
+
 export default defineComponent({
-  setup () {
+  async setup () {
     const headers = useRequestHeaders(['cookie']) as HeadersInit
     definePageMeta({ middleware: 'auth' })
     const route = useRoute()
@@ -61,14 +70,34 @@ export default defineComponent({
       route.params.id = route.params.id[0]
     }
     const showId = parseInt(route.params.id)
-    const show = getShowById.value(showId) as EpisodateShow
+    const response = await useFetch(`/api/show/${showId}`, {
+      headers
+    })
 
-    if (!show) {
-      return { name: null }
+    let show = response.data.value as EpisodateShowWithSeasons
+
+    if (!show?.name) {
+      throw createError({ statusCode: 404, message: 'Page not found' })
+    }
+
+    if (show.episodes && show.episodes.length > 0) {
+      const seasons = show.episodes.reduce((acc: Record<number, EpisodateShowEpisode[]>, episode) => {
+        const seasonNumber = episode.season
+        if (!acc[seasonNumber]) {
+          acc[seasonNumber] = []
+        }
+        acc[seasonNumber].push(episode)
+        return acc
+      }, {})
+
+      show.seasons = Object.keys(seasons).map((season) => ({
+        season: parseInt(season, 10),
+        episodes: seasons[parseInt(season, 10)]
+      }))
     }
 
     async function updateShow (episode: EpisodateShowEpisode) {
-      const response = await fetch(`/api/show/${showId}`, {
+      const response = await useFetch(`/api/show/${showId}`, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({
@@ -76,12 +105,15 @@ export default defineComponent({
         })
       })
 
-      if (response.ok) {
-        showsStore.updateLatestWatchedEpisode(showId, episode)
-      }
+      // ToDo
+      //  This endpoint does not return the show at the moment. Should we, or re-call the getShow method? Or add a watcher to the getShow useFetch?
+      show = response.data.value as EpisodateShow
     }
 
-    return { ...show, updateShow }
+    return {
+      ...show,
+      updateShow
+    }
   }
 })
 </script>

@@ -1,25 +1,20 @@
 import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
-import { tvShows, users, seasons, episodes } from '../../db/schema'
+import { tvShows, users, episodes, episodateTvShows } from '../../db/schema'
 import { useDb } from '../lib/db'
 
-export default async function getShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodateShow> {
+export default async function getShow (showId: number, userEmail: string, event: H3Event): Promise<Partial<EpisodateShow> | null> {
   const DB = await useDb(event)
 
-  // return await DB.select().from(seasons)
-
-  const response = await DB.selectDistinct().from(tvShows)
+  const showResponse = await DB.selectDistinct({episodateTvShows})
+    .from(episodateTvShows)
+    .leftJoin(
+      tvShows,
+      eq(tvShows.showId, episodateTvShows.id)
+    )
     .leftJoin(
       users,
       eq(users.id, tvShows.userId)
-    )
-    .leftJoin(
-      seasons,
-      eq(tvShows.showId, seasons.episodateTvShowId)
-    )
-    .leftJoin(
-      episodes,
-      eq(seasons.id, episodes.seasonId)
     )
     .where(
       and(
@@ -28,8 +23,26 @@ export default async function getShow (showId: number, userEmail: string, event:
       )
     )
 
-  // ToDo
-  //  Place episodes back into seasons
+  const showFromDb = showResponse[0]?.episodateTvShows
 
-  return response
+  if (!showFromDb) {
+    return null
+  }
+
+  const episodeResponse = await DB.select({episodes})
+    .from(episodes)
+    .where(
+      eq(episodes.episodateTvShowId, showFromDb.id)
+    )
+
+  const episodesFromDb = episodeResponse.map(episode => episode.episodes)
+  
+  const show: Partial<EpisodateShow> = {
+    ...showFromDb,
+    genres: showFromDb?.genres?.split(','),
+    pictures: showFromDb?.pictures?.split(','),
+    episodes: episodesFromDb
+  }
+
+  return show
 }

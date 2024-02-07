@@ -1,7 +1,13 @@
 <template>
   <main class="inner-content">
     <h2>Searching for: {{ route.query.q }}</h2>
-    <Shows :shows="searchResults.tv_shows" :add-show-callback="addShowCallback" :page-count="searchResults.pages" />
+    <template v-if="searchResults?.tv_shows">
+      <Shows :shows="searchResults?.tv_shows" :add-show-callback="addShowCallback" :page-count="searchResults?.pages" :should-go-to-show="false" />
+    </template>
+    <template v-else>
+      <p>Something went wrong...</p>
+      <p>Please try again later</p>
+    </template>
   </main>
 </template>
 
@@ -46,7 +52,7 @@ export default defineComponent({
 
     const addShowCallback = () => {
       resetSearchResults()
-      router.push('/my-shows')
+      router.push('/my-shows/currently-watching')
     }
 
     return { ...refs, addShowCallback, route }

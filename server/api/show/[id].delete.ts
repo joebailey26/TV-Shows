@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
-import getShow from '../../lib/getShow'
+import getShowExists from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if it doesn't, we can't delete a show that does not exist
-  const exists = await getShow(showId, userEmail, event)
+  const exists = await getShowExists(showId, userEmail, event)
 
   if (!exists) {
     throw createError({ statusMessage: 'Show does not exist', statusCode: 404 })

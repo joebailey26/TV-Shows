@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import getShow from '../lib/getShow'
+import getShows from '../lib/getShows'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 
 export default defineEventHandler(async (event: H3Event): Promise<EpisodateSearch> => {
@@ -15,16 +15,18 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateSearc
 
   p = (typeof p === 'string') ? parseInt(p, 10) : 1 // Default to 1 if page is not a string
 
-  const response = await fetch(`https://www.episodate.com/api/search?q=${q}&page=${p}`, {
+  const fetchPromise = fetch(`https://www.episodate.com/api/search?q=${q}&page=${p}`, {
     method: 'POST'
   })
+
+  const getShowsPromise = getShows(event, userEmail, { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, 0)
+
+  const [response, shows] = await Promise.all([fetchPromise, getShowsPromise]);
 
   const data = await response.json() as EpisodateSearch
 
   for (const show of data.tv_shows) {
-    // ToDo
-    //  Work out naming for this and add it to type
-    show.tracked = !!await getShow(show.id, userEmail, event)
+    show.tracked = !!shows.find((s => s.id === show.id))
   }
 
   return data

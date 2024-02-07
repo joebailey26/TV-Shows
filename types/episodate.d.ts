@@ -10,26 +10,27 @@ declare global {
   }
   type EpisodateShow = {
     id: number;
-    name: string;
-    permalink: string;
-    url: string;
-    description: string;
+    name: string | null;
+    permalink: string | null;
+    url: string | null;
+    description: string | null;
     description_source: string | null;
-    start_date: string;
+    start_date: string | null;
     end_date: string | null;
-    country: string;
-    status: string;
-    runtime: number;
-    network: string;
+    country: string | null;
+    status: string | null;
+    runtime: number | null;
+    network: string | null;
     youtube_link: string | null;
-    image_path: string;
-    image_thumbnail_path: string;
-    rating: string;
-    rating_count: string;
-    countdown: EpisodateShowEpisode;
+    image_path: string | null;
+    image_thumbnail_path: string | null;
+    rating: string | null;
+    rating_count: string | null;
+    countdown: EpisodateShowEpisode | null;
     genres: string[];
     pictures: string[];
     episodes: EpisodateShowEpisode[];
+    tracked: boolean;
   }
   type EpisodateShowDetails = {
     tvShow: EpisodateShow

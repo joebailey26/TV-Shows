@@ -1,7 +1,7 @@
 <template>
   <main class="inner-content">
     <h2>To Catch Up On</h2>
-    <Shows :shows="tv_shows" :page-count="pages" />
+    <Shows :shows="tv_shows" :page-count="pages ?? 0" />
   </main>
 </template>
 
