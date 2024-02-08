@@ -71,7 +71,19 @@ export default defineComponent({
     }
     const showId = parseInt(route.params.id)
     const response = await useFetch(`/api/show/${showId}`, {
-      headers
+      headers,
+      // We use pick here to minimise the payload of the show that is cached
+      // If we add a property to the dom, then we need to add it here too
+      pick: [
+        'image_path',
+        'image_thumbnail_path',
+        'name',
+        'description',
+        'network',
+        'runtime',
+        'start_date',
+        'episodes'
+      ]
     })
 
     let show = response.data.value as EpisodateShowWithSeasons
