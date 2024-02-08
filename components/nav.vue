@@ -31,9 +31,21 @@ nav {
   <nav>
     <div class="inner-content">
       <div class="left">
-        <a href="/my-shows/currently-watching" class="nav-link">Currently Watching</a>
-        <a href="/my-shows/to-catch-up-on" class="nav-link">To Catch Up On</a>
-        <a href="/my-shows/want-to-watch" class="nav-link">Want To Watch</a>
+        <nuxt-link to="/my-shows/to-catch-up-on" class="nav-link">
+          To Catch Up On
+        </nuxt-link>
+        <nuxt-link to="/my-shows/currently-watching" class="nav-link">
+          Currently Watching
+        </nuxt-link>
+        <nuxt-link to="/my-shows/want-to-watch" class="nav-link">
+          Want To Watch
+        </nuxt-link>
+        <nuxt-link to="/my-shows/waiting-for" class="nav-link">
+          Waiting For
+        </nuxt-link>
+        <nuxt-link to="/my-shows/cancelled" class="nav-link">
+          Cancelled
+        </nuxt-link>
       </div>
       <div class="right">
         <Search />
