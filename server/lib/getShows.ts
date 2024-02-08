@@ -2,12 +2,12 @@ import type { H3Event } from 'h3'
 import { asc, eq } from 'drizzle-orm'
 import { tvShows, users, episodateTvShows } from '../../db/schema'
 import { useDb } from './db'
-import { syncShows } from './episodate'
-import transformShowFromDb from './transformShowFromDb'
+import { syncShow } from './syncShow'
+import { transformShowFromDb } from './transformShowFromDb'
 
 type ShowCategories = Array<'currentlyWatching'|'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'>
 
-export default async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = [], limit = 24, offset = 0): Promise<EpisodateShowTransformed[]> {
+export async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = [], limit = 24, offset = 0): Promise<EpisodateShowTransformed[]> {
   const DB = await useDb(event)
 
   let query = DB.select({ ...episodateTvShows })
@@ -56,7 +56,7 @@ export default async function getShows (event: H3Event, userEmail: string, showC
 
   // ToDo
   //  This should really be on a cron, but we do this instead each time this endpoint is hit
-  event.waitUntil(syncShows(shows, event))
+  event.waitUntil(Promise.all(shows.map(show => syncShow(show.id, event))))
 
   // ToDo
   //  Can we get the countdown episodes directly in the query above?

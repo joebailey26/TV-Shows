@@ -3,7 +3,7 @@ import { eq, and } from 'drizzle-orm'
 import { tvShows, users } from '../../db/schema'
 import { useDb } from '../lib/db'
 
-export default async function getShowExists (showId: number, userEmail: string, event: H3Event): Promise<boolean> {
+export async function getShowExists (showId: number, userEmail: string, event: H3Event): Promise<boolean> {
   const DB = await useDb(event)
 
   const showResponse = await DB.selectDistinct({ id: tvShows.id })

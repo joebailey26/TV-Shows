@@ -3,7 +3,7 @@
 import type { H3Event } from 'h3'
 import { tvShows } from '../../db/schema'
 import { useDb } from '../lib/db'
-import { syncShow } from '../lib/episodate'
+import { syncShow } from '../lib/syncShow'
 
 export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)

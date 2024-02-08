@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { episodes } from '../../db/schema'
 import { useDb } from '../lib/db'
 
-export default async function transformShowFromDb (showFromDb: EpisodateTvShows, event: H3Event): Promise<EpisodateShowTransformed> {
+export async function transformShowFromDb (showFromDb: EpisodateTvShows, event: H3Event): Promise<EpisodateShowTransformed> {
   const DB = await useDb(event)
 
   // Find countdown for show

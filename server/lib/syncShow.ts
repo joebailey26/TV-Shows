@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { episodateTvShows, episodes } from '../../db/schema'
 import { useDb } from './db'
 
@@ -60,41 +60,25 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
     set: contentToUpsert
   })
 
-  // ToDo
-  //  Use Drizzle Batch or promise.all. Perhaps we need to move to upsert?
-  //  All episodes don't seem to be being persisted either
   for (const episode of tvShow.episodes) {
-    // Check Database to see if episode exists
-    let dbEpisode = await DB.select({ id: episodes.id }).from(episodes)
-      .where(
-        and(
-          eq(episodes.episodateTvShowId, tvShow.id),
-          eq(episodes.episode, episode.episode)
-        )
-      )
-    // Update episode if so, otherwise create it
-    if (dbEpisode[0]?.id) {
-      await DB.update(episodes)
-        .set({
+    const dbEpisode = await DB.insert(episodes)
+      .values({
+        season: episode.season,
+        episode: episode.episode,
+        name: episode.name,
+        air_date: episode.air_date,
+        episodateTvShowId: tvShow.id
+      })
+      .returning({
+        id: episodes.id
+      })
+      .onConflictDoUpdate({
+        target: [episodes.episodateTvShowId, episodes.episode, episodes.season],
+        set: {
           name: episode.name,
           air_date: episode.air_date
-        })
-        .where(
-          and(
-            eq(episodes.episodateTvShowId, tvShow.id),
-            eq(episodes.episode, episode.episode)
-          )
-        )
-    } else {
-      dbEpisode = await DB.insert(episodes)
-        .values({
-          season: episode.season,
-          episode: episode.episode,
-          name: episode.name,
-          air_date: episode.air_date,
-          episodateTvShowId: tvShow.id
-        }).returning({ id: episodes.id })
-    }
+        }
+      })
 
     // Set countdown
     if (episode.episode === tvShow.countdown?.episode && episode.season === tvShow.countdown?.season) {
@@ -104,12 +88,5 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
         })
         .where(eq(episodateTvShows.id, tvShow.id))
     }
-  }
-}
-
-export async function syncShows (episodateTvShows: EpisodateTvShows[], event: H3Event): Promise<void> {
-  // Check if we need to update D1 from episodate
-  for (const show of episodateTvShows) {
-    await syncShow(show.id, event)
   }
 }

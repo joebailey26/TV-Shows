@@ -3,7 +3,7 @@ import { eq, sql } from 'drizzle-orm'
 import { episodes, users, watchedEpisodes } from '../../db/schema'
 import { useDb } from '../lib/db'
 
-export default async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodesTransformed[]> {
+export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodesTransformed[]> {
   const DB = await useDb(event)
 
   const episodesResponse = await DB.select({

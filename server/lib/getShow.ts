@@ -2,10 +2,10 @@ import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
 import { tvShows, users, episodateTvShows } from '../../db/schema'
 import { useDb } from '../lib/db'
-import transformShowFromDb from './transformShowFromDb'
-import getEpisodesForShow from './getEpisodesForShow'
+import { transformShowFromDb } from './transformShowFromDb'
+import { getEpisodesForShow } from './getEpisodesForShow'
 
-export default async function getShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodateShowTransformed | null> {
+export async function getShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodateShowTransformed | null> {
   const DB = await useDb(event)
 
   const showResponse = await DB.selectDistinct({ ...episodateTvShows })
