@@ -81,13 +81,13 @@
 </style>
 
 <template>
-  <a :class="['show', {'shouldGoToShow': shouldGoToShow}]" @click="goToShow" href="javascript:void(0)">
+  <a :class="['show', {'shouldGoToShow': shouldGoToShow}]" href="javascript:void(0)" @click="goToShow">
     <img :src="show.image_path ?? show.image_thumbnail_path ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <p v-if="show.status" :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
       Status: {{ show.status }}
     </p>
-    <p class="next-episode" v-if="show.countdown">
+    <p v-if="show.countdown" class="next-episode">
       Next episode:
       <span v-html="showCountdownHelper(show.countdown)" />
     </p>
@@ -145,7 +145,7 @@ export default defineComponent({
         return `<time datetime=${date}>${day} ${month} '${year}</time>`
       }
     },
-    async goToShow () {
+    goToShow () {
       if (this.shouldGoToShow) {
         const router = useRouter()
         router.push(`/show/${this.show.id}`)
