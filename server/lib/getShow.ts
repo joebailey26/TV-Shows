@@ -2,6 +2,7 @@ import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
 import { tvShows, users, episodes, episodateTvShows } from '../../db/schema'
 import { useDb } from '../lib/db'
+import transformShowFromDb from './transformShowFromDb'
 
 export default async function getShow (showId: number, userEmail: string, event: H3Event): Promise<Partial<EpisodateShow> | null> {
   const DB = await useDb(event)
@@ -37,12 +38,8 @@ export default async function getShow (showId: number, userEmail: string, event:
 
   const episodesFromDb = episodeResponse.map(episode => episode.episodes)
 
-  const show: Partial<EpisodateShow> = {
-    ...showFromDb,
-    genres: showFromDb?.genres?.split(','),
-    pictures: showFromDb?.pictures?.split(','),
+  return {
+    ...transformShowFromDb(showFromDb),
     episodes: episodesFromDb
   }
-
-  return show
 }
