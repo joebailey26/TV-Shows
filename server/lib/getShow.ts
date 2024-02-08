@@ -6,7 +6,7 @@ import { useDb } from '../lib/db'
 export default async function getShow (showId: number, userEmail: string, event: H3Event): Promise<Partial<EpisodateShow> | null> {
   const DB = await useDb(event)
 
-  const showResponse = await DB.selectDistinct({episodateTvShows})
+  const showResponse = await DB.selectDistinct({ episodateTvShows })
     .from(episodateTvShows)
     .leftJoin(
       tvShows,
@@ -29,14 +29,14 @@ export default async function getShow (showId: number, userEmail: string, event:
     return null
   }
 
-  const episodeResponse = await DB.select({episodes})
+  const episodeResponse = await DB.select({ episodes })
     .from(episodes)
     .where(
       eq(episodes.episodateTvShowId, showFromDb.id)
     )
 
   const episodesFromDb = episodeResponse.map(episode => episode.episodes)
-  
+
   const show: Partial<EpisodateShow> = {
     ...showFromDb,
     genres: showFromDb?.genres?.split(','),

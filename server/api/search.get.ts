@@ -21,12 +21,12 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateSearc
 
   const getShowsPromise = getShows(event, userEmail, { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, 0)
 
-  const [response, shows] = await Promise.all([fetchPromise, getShowsPromise]);
+  const [response, shows] = await Promise.all([fetchPromise, getShowsPromise])
 
   const data = await response.json() as EpisodateSearch
 
   for (const show of data.tv_shows) {
-    show.tracked = !!shows.find((s => s.id === show.id))
+    show.tracked = !!shows.find(s => s.id === show.id)
   }
 
   return data

@@ -48,7 +48,7 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
     rating: tvShow.rating,
     rating_count: tvShow.rating_count,
     genres: tvShow.genres.join(','),
-    pictures: tvShow.pictures.join(','),
+    pictures: tvShow.pictures.join(',')
     // ToDo
     // We need to implement this in order to show the countdown on the homepage
     // countdown:
@@ -68,12 +68,12 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
     for (const episode of tvShow.episodes) {
       // Check Database to see if episode exists
       const dbEpisode = await DB.select({ id: episodes.id }).from(episodes)
-      .where(
-        and(
-          eq(episodes.episodateTvShowId, tvShow.id),
-          eq(episodes.episode, episode.episode)
+        .where(
+          and(
+            eq(episodes.episodateTvShowId, tvShow.id),
+            eq(episodes.episode, episode.episode)
+          )
         )
-      )
       // Update episode if so, otherwise create it
       if (dbEpisode[0]?.id) {
         await DB.update(episodes)
