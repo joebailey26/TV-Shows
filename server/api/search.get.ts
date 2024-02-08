@@ -2,7 +2,14 @@ import type { H3Event } from 'h3'
 import getShows from '../lib/getShows'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 
-export default defineEventHandler(async (event: H3Event): Promise<EpisodateSearch> => {
+interface TrackedShow extends EpisodateShow {
+  tracked: boolean
+}
+interface CustomSearch extends EpisodateSearch {
+  tv_shows: TrackedShow[]
+}
+
+export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)
   const query = getQuery(event)
 
@@ -19,11 +26,11 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateSearc
     method: 'POST'
   })
 
-  const getShowsPromise = getShows(event, userEmail, { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, 0)
+  const getShowsPromise = getShows(event, userEmail, [], 0)
 
   const [response, shows] = await Promise.all([fetchPromise, getShowsPromise])
 
-  const data = await response.json() as EpisodateSearch
+  const data = await response.json() as CustomSearch
 
   for (const show of data.tv_shows) {
     show.tracked = !!shows.find(s => s.id === show.id)

@@ -18,6 +18,7 @@ export default async function getShowExists (showId: number, userEmail: string, 
         eq(users.email, userEmail)
       )
     )
+    .limit(1)
 
   return !!showResponse[0]?.id
 }

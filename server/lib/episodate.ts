@@ -34,6 +34,7 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
   const contentToUpsert = {
     name: tvShow.name,
     permalink: tvShow.permalink,
+    url: tvShow.url,
     description: tvShow.description,
     description_source: tvShow.description_source,
     start_date: tvShow.start_date,
@@ -49,9 +50,6 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
     rating_count: tvShow.rating_count,
     genres: tvShow.genres.join(','),
     pictures: tvShow.pictures.join(',')
-    // ToDo
-    // We need to implement this in order to show the countdown on the homepage
-    // countdown:
   }
 
   await DB.insert(episodateTvShows).values({
@@ -62,41 +60,49 @@ export async function syncShow (showId: number, event: H3Event, force: boolean =
     set: contentToUpsert
   })
 
-  if (tvShow?.episodes) {
-    // ToDo
-    //  Use Drizzle Batch or promise.all. Perhaps we need to move to upsert?
-    for (const episode of tvShow.episodes) {
-      // Check Database to see if episode exists
-      const dbEpisode = await DB.select({ id: episodes.id }).from(episodes)
+  // ToDo
+  //  Use Drizzle Batch or promise.all. Perhaps we need to move to upsert?
+  //  All episodes don't seem to be being persisted either
+  for (const episode of tvShow.episodes) {
+    // Check Database to see if episode exists
+    let dbEpisode = await DB.select({ id: episodes.id }).from(episodes)
+      .where(
+        and(
+          eq(episodes.episodateTvShowId, tvShow.id),
+          eq(episodes.episode, episode.episode)
+        )
+      )
+    // Update episode if so, otherwise create it
+    if (dbEpisode[0]?.id) {
+      await DB.update(episodes)
+        .set({
+          name: episode.name,
+          air_date: episode.air_date
+        })
         .where(
           and(
             eq(episodes.episodateTvShowId, tvShow.id),
             eq(episodes.episode, episode.episode)
           )
         )
-      // Update episode if so, otherwise create it
-      if (dbEpisode[0]?.id) {
-        await DB.update(episodes)
-          .set({
-            name: episode.name,
-            air_date: episode.air_date
-          })
-          .where(
-            and(
-              eq(episodes.episodateTvShowId, tvShow.id),
-              eq(episodes.episode, episode.episode)
-            )
-          )
-      } else {
-        await DB.insert(episodes)
-          .values({
-            season: episode.season,
-            episode: episode.episode,
-            name: episode.name,
-            air_date: episode.air_date,
-            episodateTvShowId: tvShow.id
-          })
-      }
+    } else {
+      dbEpisode = await DB.insert(episodes)
+        .values({
+          season: episode.season,
+          episode: episode.episode,
+          name: episode.name,
+          air_date: episode.air_date,
+          episodateTvShowId: tvShow.id
+        }).returning({ id: episodes.id })
+    }
+
+    // Set countdown
+    if (episode.episode === tvShow.countdown?.episode && episode.season === tvShow.countdown?.season) {
+      await DB.update(episodateTvShows)
+        .set({
+          countdown: dbEpisode[0].id
+        })
+        .where(eq(episodateTvShows.id, tvShow.id))
     }
   }
 }

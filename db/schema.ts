@@ -16,9 +16,7 @@ export const episodateTvShows = sqliteTable('episodateTvShows', {
   id: integer('id').primaryKey(),
   name: text('name'),
   permalink: text('permalink'),
-  // ToDo
-  //  When inserting, we just use permalink, so we can probably get rid of this column
-  // url: text('url'),
+  url: text('url'),
   description: text('description'),
   description_source: text('description_source'),
   start_date: text('start_date'),
@@ -31,12 +29,10 @@ export const episodateTvShows = sqliteTable('episodateTvShows', {
   image_path: text('image_path'),
   image_thumbnail_path: text('image_thumbnail_path'),
   rating: text('rating'),
-  rating_count: text('rating'),
+  rating_count: text('rating_count'),
   genres: text('genres'),
   pictures: text('pictures'),
-  // ToDo
-  // We need to implement this in order to show the countdown on the homepage
-  // countdown: integer('countdown').references(() => episodes.id),
+  countdown: integer('countdown').references(() => episodes.id),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`).notNull()
 })
 
@@ -49,11 +45,6 @@ export const episodes = sqliteTable('episodes', {
   episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
 })
 
-// ToDo
-//  Is this the correct solution to tracking watched episodes?
-//  Could we do something like:
-//   select * from episodes that have an entry in watched episodes?
-//   or select * from episodes and add a property `watched` if they have an entry in watched episodes? Subquery?
 export const watchedEpisodes = sqliteTable('watchedEpisodes', {
   userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
   episodeId: integer('episodeId').notNull().references(() => episodes.id, { onDelete: 'cascade' })

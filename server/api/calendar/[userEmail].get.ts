@@ -16,11 +16,11 @@ export default defineEventHandler(async (event: H3Event) => {
   const cal = ics()
 
   // Get all shows
-  const shows = await getShows(event, userEmail, { currentlyWatching: true, wantToWatch: true, toCatchUpOn: false }, 0)
+  const shows = await getShows(event, userEmail, [], 0)
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode
-  shows.forEach((show: EpisodateShow) => {
-    show.episodes.forEach((episode: EpisodateShowEpisode) => {
+  shows.forEach((show) => {
+    show.episodes.forEach((episode) => {
     // Only process the episode if it has an air_date
       if (episode.air_date) {
       // Build the date for the episode

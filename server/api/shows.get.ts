@@ -2,7 +2,11 @@ import type { H3Event } from 'h3'
 import getShows from '../lib/getShows'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 
-export default defineEventHandler(async (event: H3Event) => {
+interface CustomSearch extends EpisodateSearch {
+  tv_shows: EpisodateShowTransformed[]
+}
+
+export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)
 
   const query = getQuery(event)
@@ -15,7 +19,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   // ToDo
   //  Handle being passed categories
-  const shows = await getShows(event, userEmail, limit, offset)
+  const shows = await getShows(event, userEmail, [], limit, offset)
 
   const totalShows = shows.length
 
@@ -24,5 +28,5 @@ export default defineEventHandler(async (event: H3Event) => {
     page: 0,
     pages: 0,
     tv_shows: shows
-  } as EpisodateSearch
+  }
 })

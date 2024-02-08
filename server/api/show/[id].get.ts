@@ -3,7 +3,7 @@ import getShow from '../../lib/getShow'
 import getShowExists from '../../lib/getShowExists'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 
-export default defineEventHandler(async (event: H3Event): Promise<Partial<EpisodateShow | null>> => {
+export default defineEventHandler(async (event: H3Event) => {
   const userEmail = await getAuthenticatedUserEmail(event)
 
   const showIdParam = getRouterParam(event, 'id')

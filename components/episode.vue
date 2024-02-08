@@ -12,7 +12,7 @@ button {
 </style>
 
 <template>
-  <button type="button" :class="{watched: episode.watched}" @click="setEpisodeCallback(episode)">
+  <button type="button" :class="{watched: episode.watched}" @click="setEpisodeCallback(episode.id)">
     <span v-html="`S${episode.season.toString().padStart(2, '0')}E${episode.episode.toString().padStart(2, '0')} - ${episode.name}`" />
   </button>
 </template>
@@ -23,7 +23,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
     episode: {
-      type: Object as PropType<EpisodateShowEpisode>,
+      type: Object as PropType<EpisodesTransformed>,
       required: true
     },
     setEpisodeCallback: {

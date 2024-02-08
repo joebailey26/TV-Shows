@@ -1,4 +1,7 @@
 /* eslint-disable camelcase */
+/* DO NOT EDIT THESE */
+/* These are the types of the data coming from the EpisoDate API */
+
 export { EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails, EpisodateSearch }
 
 declare global {
@@ -30,7 +33,6 @@ declare global {
     genres: string[];
     pictures: string[];
     episodes: EpisodateShowEpisode[];
-    tracked: boolean;
   }
   type EpisodateShowDetails = {
     tvShow: EpisodateShow

@@ -46,7 +46,7 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Body is not valid JSON', statusCode: 400 })
   }
 
-  const episode = parsedBody.episode
+  const episode: Number = parsedBody.episode
 
   // Fetch episodes for show
   // Add them to watched episodes if they match

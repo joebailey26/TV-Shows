@@ -50,15 +50,10 @@ h1 {
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import type { EpisodateShowEpisode } from '../../types/episodate'
 
 interface Season {
   season: number;
-  episodes: EpisodateShowEpisode[];
-}
-
-interface EpisodateShowWithSeasons extends EpisodateShow {
-  seasons: Season[];
+  episodes: Episodes[];
 }
 
 export default defineComponent({
@@ -82,33 +77,37 @@ export default defineComponent({
         'network',
         'runtime',
         'start_date',
-        'episodes'
+        'episodes',
+        'countdown'
       ]
     })
 
-    let show = response.data.value as EpisodateShowWithSeasons
+    let show = response.data.value
 
     if (!show?.name) {
       throw createError({ statusCode: 404, message: 'Page not found' })
     }
 
-    if (show.episodes && show.episodes.length > 0) {
-      const seasons = show.episodes.reduce((acc: Record<number, EpisodateShowEpisode[]>, episode) => {
-        const seasonNumber = episode.season
-        if (!acc[seasonNumber]) {
-          acc[seasonNumber] = []
-        }
-        acc[seasonNumber].push(episode)
-        return acc
-      }, {})
+    const seasons: ComputedRef<Season[]> = computed(() => {
+      if (show && show.episodes.length > 0) {
+        const seasons = show.episodes.reduce((acc: Record<number, EpisodesTransformed[]>, episode: EpisodesTransformed) => {
+          const seasonNumber = episode.season
+          if (!acc[seasonNumber]) {
+            acc[seasonNumber] = []
+          }
+          acc[seasonNumber].push(episode)
+          return acc
+        }, {})
 
-      show.seasons = Object.keys(seasons).map(season => ({
-        season: parseInt(season, 10),
-        episodes: seasons[parseInt(season, 10)]
-      }))
-    }
+        return Object.keys(seasons).map(season => ({
+          season: parseInt(season, 10),
+          episodes: seasons[parseInt(season, 10)]
+        }))
+      }
+      return []
+    })
 
-    async function updateShow (episode: EpisodateShowEpisode) {
+    async function updateShow (episode: Number) {
       const response = await useFetch(`/api/show/${showId}`, {
         method: 'PATCH',
         headers,
@@ -116,15 +115,13 @@ export default defineComponent({
           episode
         })
       })
-
-      // ToDo
-      //  This endpoint does not return the show at the moment. Should we, or re-call the getShow method? Or add a watcher to the getShow useFetch?
-      show = response.data.value as EpisodateShow
+      show = response.data.value
     }
 
     return {
-      ...show,
-      updateShow
+      ...toRefs(show),
+      updateShow,
+      seasons
     }
   }
 })

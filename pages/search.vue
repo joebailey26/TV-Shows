@@ -51,7 +51,6 @@ export default defineComponent({
     await fetchShows()
 
     const addShowCallback = () => {
-      resetSearchResults()
       router.push('/my-shows/currently-watching')
     }
 
