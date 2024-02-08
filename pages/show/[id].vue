@@ -52,13 +52,13 @@ h1 {
 import { defineComponent } from 'vue'
 import type { EpisodateShowEpisode } from '../../types/episodate'
 
-type Season = {
+interface Season {
   season: number;
   episodes: EpisodateShowEpisode[];
 }
 
 interface EpisodateShowWithSeasons extends EpisodateShow {
-  seasons: Season[]
+  seasons: Season[];
 }
 
 export default defineComponent({
@@ -90,7 +90,7 @@ export default defineComponent({
         return acc
       }, {})
 
-      show.seasons = Object.keys(seasons).map((season) => ({
+      show.seasons = Object.keys(seasons).map(season => ({
         season: parseInt(season, 10),
         episodes: seasons[parseInt(season, 10)]
       }))

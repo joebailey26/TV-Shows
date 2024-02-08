@@ -4,7 +4,7 @@ import { tvShows, users, episodateTvShows } from '../../db/schema'
 import { useDb } from './db'
 import { syncShows } from './episodate'
 
-type ShowCategories = {
+interface ShowCategories {
   currentlyWatching: boolean;
   wantToWatch: boolean;
   toCatchUpOn: boolean;
@@ -13,7 +13,7 @@ type ShowCategories = {
 export default async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = { currentlyWatching: true, wantToWatch: true, toCatchUpOn: true }, limit = 24, offset = 0): Promise<Partial<EpisodateShow>[]> {
   const DB = await useDb(event)
 
-  let query = DB.select({episodateTvShows})
+  let query = DB.select({ episodateTvShows })
     .from(episodateTvShows)
     .leftJoin(
       tvShows,
