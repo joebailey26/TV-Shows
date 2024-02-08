@@ -13,7 +13,7 @@ export const tvShows = sqliteTable('tv_shows', {
 })
 
 export const episodateTvShows = sqliteTable('episodateTvShows', {
-  id: integer('id').primaryKey(),
+  id: integer('id').notNull().primaryKey(),
   name: text('name'),
   permalink: text('permalink'),
   url: text('url'),
@@ -32,17 +32,20 @@ export const episodateTvShows = sqliteTable('episodateTvShows', {
   rating_count: text('rating_count'),
   genres: text('genres'),
   pictures: text('pictures'),
-  countdown: integer('countdown').references(() => episodes.id),
   updatedAt: text('updatedAt').default(sql`CURRENT_TIMESTAMP`).notNull()
 })
 
 export const episodes = sqliteTable('episodes', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+  id: integer('id').notNull().primaryKey({ autoIncrement: true }),
   season: integer('season').notNull(),
   episode: integer('episode').notNull(),
   name: text('name').notNull(),
   air_date: text('air_date').notNull(),
   episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
+}, (table) => {
+  return {
+    showEpisodeIdx: uniqueIndex('showEpisodeIdx').on(table.episodateTvShowId, table.season, table.episode)
+  }
 })
 
 export const watchedEpisodes = sqliteTable('watchedEpisodes', {
@@ -50,7 +53,7 @@ export const watchedEpisodes = sqliteTable('watchedEpisodes', {
   episodeId: integer('episodeId').notNull().references(() => episodes.id, { onDelete: 'cascade' })
 }, (table) => {
   return {
-    userEpisodeIdx: uniqueIndex('userEpisodeIdx').on(table.userId, table.episodeId)
+    userWatchedEpisodeIdx: uniqueIndex('userEpisodeIdx').on(table.userId, table.episodeId)
   }
 })
 

@@ -1,13 +1,6 @@
 import type { H3Event } from 'h3'
-import getShows from '../lib/getShows'
+import { getShows } from '../lib/getShows'
 import { getAuthenticatedUserEmail } from '../lib/auth'
-
-interface TrackedShow extends EpisodateShow {
-  tracked: boolean
-}
-interface CustomSearch extends EpisodateSearch {
-  tv_shows: TrackedShow[]
-}
 
 export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)

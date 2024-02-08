@@ -12,8 +12,8 @@ export default defineComponent({
   async setup () {
     definePageMeta({ middleware: 'auth' })
     const headers = useRequestHeaders(['cookie']) as HeadersInit
-    const { data } = await useFetch('/api/shows?cancelled=1', { headers })
-    return data.value as EpisodateSearch
+    const { data } = await useFetch('/api/shows?showCategories[]=cancelled', { headers })
+    return data.value
   }
 })
 </script>

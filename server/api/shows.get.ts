@@ -1,10 +1,6 @@
 import type { H3Event } from 'h3'
-import getShows from '../lib/getShows'
+import { getShows } from '../lib/getShows'
 import { getAuthenticatedUserEmail } from '../lib/auth'
-
-interface CustomSearch extends EpisodateSearch {
-  tv_shows: EpisodateShowTransformed[]
-}
 
 export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)
@@ -17,9 +13,9 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   limit = (typeof limit === 'string') ? parseInt(limit, 10) : 24 // Default to 24 if limit is not a string
   offset = (typeof offset === 'string') ? parseInt(offset, 10) : 0 // Default to 0 if offset is not a string
 
-  // ToDo
-  //  Handle being passed categories
-  const shows = await getShows(event, userEmail, [], limit, offset)
+  const showCategories = Array.isArray(query.showCategories) ? query.showCategories : [query.showCategories]
+
+  const shows = await getShows(event, userEmail, showCategories, limit, offset)
 
   const totalShows = shows.length
 

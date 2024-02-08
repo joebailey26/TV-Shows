@@ -103,7 +103,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
     show: {
-      type: Object as PropType<EpisodateShow>,
+      type: Object as PropType<EpisodateShowTransformed>,
       required: true
     },
     addShowCallback: {
@@ -120,7 +120,7 @@ export default defineComponent({
     }
   },
   methods: {
-    showCountdownHelper (countdown: EpisodateShowEpisode) {
+    showCountdownHelper (countdown: Episodes) {
       if (countdown == null) {
         return 'Unknown'
       } else {

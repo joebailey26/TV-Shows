@@ -13,7 +13,7 @@ export default defineComponent({
     definePageMeta({ middleware: 'auth' })
     const headers = useRequestHeaders(['cookie']) as HeadersInit
     const { data } = await useFetch('/api/shows?toCatchUpOn=1', { headers })
-    return data.value as EpisodateSearch
+    return data.value
   }
 })
 </script>

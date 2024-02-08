@@ -48,8 +48,9 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const episode: Number = parsedBody.episode
 
-  // Fetch episodes for show
-  // Add them to watched episodes if they match
+  // ToDo
+  //  Fetch episodes for show
+  //  Add them to watched episodes if they match
 
   setResponseStatus(event, 200)
   return 'Updated successfully'

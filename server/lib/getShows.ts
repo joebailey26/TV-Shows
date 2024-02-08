@@ -28,7 +28,9 @@ export async function getShows (event: H3Event, userEmail: string, showCategorie
     query = query.limit(limit).offset(offset)
   }
 
-  // At the moment, we're only going to allow specifying one category
+  // ToDo
+  //  At the moment, we're only going to allow specifying one category
+  //  We can revisit this in the future
   for (const category of showCategories) {
     if (category === 'currentlyWatching') {
       // watchedEpisodes.length = episodes.length - 1
@@ -43,7 +45,7 @@ export async function getShows (event: H3Event, userEmail: string, showCategorie
       break
     }
     if (category === 'waitingFor') {
-      // countdown is null
+      // latest episode is in future
       break
     }
     if (category === 'cancelled') {
@@ -56,15 +58,11 @@ export async function getShows (event: H3Event, userEmail: string, showCategorie
 
   // ToDo
   //  This should really be on a cron, but we do this instead each time this endpoint is hit
-  event.waitUntil(Promise.all(shows.map(show => syncShow(show.id, event))))
+  event.waitUntil(Promise.all(shows.map(show => syncShow(show, event))))
 
   // ToDo
-  //  Can we get the countdown episodes directly in the query above?
-  const transformedShows = shows.map((show) => {
-    // ToDo
-    //  Should we be adding episodes here? Or only in the get single show? Performance?
-    return transformShowFromDb(show, event)
-  })
-
-  return await Promise.all(transformedShows)
+  //  Should we be adding episodes here? Or only in the get single show? Performance?
+  // ToDo
+  //  Add countdown
+  return shows.map(show => transformShowFromDb(show))
 }

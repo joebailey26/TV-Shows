@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 export function ics (uidDomain, prodId) {
   'use strict';

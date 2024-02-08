@@ -30,14 +30,13 @@ export async function getShow (showId: number, userEmail: string, event: H3Event
     return null
   }
 
-  // ToDo
-  //  Can we get the episodes within 1 query?
   const episodesFromDb = await getEpisodesForShow(showResponse[0].id, userEmail, event)
 
-  const transformedShow = await transformShowFromDb(showResponse[0], event)
+  // ToDo
+  //  Add countdown
 
   return {
-    ...transformedShow,
+    ...transformShowFromDb(showResponse[0]),
     episodes: episodesFromDb
   }
 }

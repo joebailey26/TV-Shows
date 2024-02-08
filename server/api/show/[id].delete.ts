@@ -1,10 +1,10 @@
 import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
-import getShowExists from '../../lib/getShowExists'
+import { getShowExists } from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
-import getUserByEmail from '../../lib/getUserByEmail'
+import { getUserByEmail } from '../../lib/getUserByEmail'
 
 export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)

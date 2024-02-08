@@ -12,8 +12,8 @@ export default defineComponent({
   async setup () {
     definePageMeta({ middleware: 'auth' })
     const headers = useRequestHeaders(['cookie']) as HeadersInit
-    const { data } = await useFetch('/api/shows?wantToWatch=1', { headers })
-    return data.value as EpisodateSearch
+    const { data } = await useFetch('/api/shows?showCategories[]=wantToWatch', { headers })
+    return data.value
   }
 })
 </script>

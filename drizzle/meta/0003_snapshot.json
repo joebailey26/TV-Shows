@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "2dda4c67-027f-4084-b87e-360f8da1ee42",
+  "id": "bac0a4d1-239f-43ac-a9b3-1a83b037c024",
   "prevId": "a97545ac-a734-409e-a3a7-85145ca671e4",
   "tables": {
     "account": {
@@ -136,6 +136,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "description": {
           "name": "description",
           "type": "text",
@@ -220,6 +227,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "rating_count": {
+          "name": "rating_count",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "genres": {
           "name": "genres",
           "type": "text",
@@ -294,7 +308,17 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "showEpisodeIdx": {
+          "name": "showEpisodeIdx",
+          "columns": [
+            "episodateTvShowId",
+            "season",
+            "episode"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "episodes_episodateTvShowId_episodateTvShows_id_fk": {
           "name": "episodes_episodateTvShowId_episodateTvShows_id_fk",
