@@ -63,21 +63,17 @@
 </style>
 
 <template>
-  <a :class="['show', {'shouldGoToShow': shouldGoToShow}]" href="javascript:void(0)" @click="goToShow">
+  <nuxt-link :class="['show', {'shouldGoToShow': shouldGoToShow}]" :href="shouldGoToShow ? `/show/${show.id}` : '#'">
     <img :src="show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <Status v-if="show.status" :status="show.status" class="show__status" />
     <button v-if="!show.tracked" type="button" class="button add" @click.stop="addShow(show.id)" />
     <button v-else type="button" class="button remove" @click.stop="deleteShow(show.id)" />
-  </a>
+  </nuxt-link>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-
-interface ShowCallback {
-  (id: number): void;
-}
 
 export default defineComponent({
   props: {
@@ -99,12 +95,6 @@ export default defineComponent({
     }
   },
   methods: {
-    goToShow () {
-      if (this.shouldGoToShow) {
-        const router = useRouter()
-        router.push(`/show/${this.show.id}`)
-      }
-    },
     async addShow (id: number) {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
       const response = await fetch(`/api/show/${id}`, {

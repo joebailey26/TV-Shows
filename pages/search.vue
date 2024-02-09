@@ -20,7 +20,7 @@ export default defineComponent({
     definePageMeta({ middleware: 'auth' })
 
     const state = reactive({
-      searchResults: {} as EpisodateSearch
+      searchResults: {} as CustomSearch
     })
 
     const refs = toRefs(state)
@@ -40,7 +40,7 @@ export default defineComponent({
     const fetchShows = async () => {
       resetSearchResults()
       const { data } = await useFetch(`/api/search?q=${route.query.q}&p=${route.query.p ?? 1}`)
-      refs.searchResults.value = data.value as EpisodateSearch
+      refs.searchResults.value = data.value as CustomSearch
     }
 
     watch(() => [route.query.p], async () => {

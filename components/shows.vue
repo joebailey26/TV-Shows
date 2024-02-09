@@ -40,15 +40,15 @@ export default defineComponent({
   },
   props: {
     shows: {
-      type: Array as PropType<EpisodateShow[]>,
+      type: Array as PropType<EpisodateShowFromSearchTransformed[]>,
       default: () => []
     },
     addShowCallback: {
-      type: Function,
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
     deleteShowCallback: {
-      type: Function,
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
     pageCount: {
