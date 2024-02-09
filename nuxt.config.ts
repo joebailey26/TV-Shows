@@ -1,5 +1,4 @@
 export default defineNuxtConfig({
-  // @ts-expect-error
   app: {
     head: {
       htmlAttrs: {
