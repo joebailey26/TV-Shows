@@ -41,7 +41,6 @@ h1 {
 <template>
   <div class="inner-content">
     <div class="header">
-      <!-- ToDo: Componentize show so we can use it both in the small component and this full page one. For example, status. -->
       <div class="image-wrapper">
         <img :src="image_path ?? image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600'" width="250">
         <GalexiaDate
@@ -62,6 +61,7 @@ h1 {
           <span v-if="runtime">Average Runtime: {{ runtime }} minutes</span>
           <span v-if="start_date">Start Date: <PrettyDate :date="new Date(start_date)" /></span>
           <span v-if="countdown?.air_date">Next Episode Date: <PrettyDate :date="new Date(countdown.air_date)" /></span>
+          <Status v-if="status" :status="status" />
         </div>
       </div>
       <div class="episodes">

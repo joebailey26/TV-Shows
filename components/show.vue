@@ -27,26 +27,8 @@
     margin: 0
   }
 }
-.status {
-  display: flex;
-  align-items: center;
+.show__status {
   justify-content: center
-}
-.status:before {
-  display: block;
-  width: 1em;
-  height: 1em;
-  margin-right: .5em;
-  background-color: var(--yellowColor);
-  border-radius: 50%;
-  content: ''
-}
-.status__canceled-ended:before,
-.status__ended:before {
-  background-color: var(--redColor)
-}
-.status__running:before {
-  background-color: var(--greenColor)
 }
 .button {
   position: absolute;
@@ -84,9 +66,7 @@
   <a :class="['show', {'shouldGoToShow': shouldGoToShow}]" href="javascript:void(0)" @click="goToShow">
     <img :src="show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
-    <p v-if="show.status" :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
-      Status: {{ show.status }}
-    </p>
+    <Status v-if="show.status" :status="show.status" class="show__status" />
     <button v-if="!show.tracked" type="button" class="button add" @click.stop="addShow(show.id)" />
     <button v-else type="button" class="button remove" @click.stop="deleteShow(show.id)" />
   </a>

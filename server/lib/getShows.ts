@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { asc, eq, inArray, and, countDistinct, gt, sql, max, notInArray } from 'drizzle-orm'
+import { asc, eq, inArray, and, countDistinct, gt, sql, notInArray } from 'drizzle-orm'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../../db/schema'
 import { useDb } from './db'
 import { syncShow } from './syncShow'
