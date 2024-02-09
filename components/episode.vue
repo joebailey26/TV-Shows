@@ -13,7 +13,9 @@ button {
 
 <template>
   <button type="button" :class="{watched: episode.watched}" @click="setEpisodeCallback(episode.id)">
-    <span v-html="`S${episode.season.toString().padStart(2, '0')}E${episode.episode.toString().padStart(2, '0')} - ${episode.name}`" />
+    <span v-html="`S${episode.season.toString().padStart(2, '0')}E${episode.episode.toString().padStart(2, '0')}`" />
+    <span v-html="` - ${episode.name} - `" />
+    <PrettyDate :date="new Date(episode.air_date)" />
   </button>
 </template>
 
