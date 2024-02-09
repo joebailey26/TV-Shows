@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { asc, eq, inArray, and, countDistinct, gt, sql, max } from 'drizzle-orm'
+import { asc, eq, inArray, and, countDistinct, gt, sql, max, notInArray } from 'drizzle-orm'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../../db/schema'
 import { useDb } from './db'
 import { syncShow } from './syncShow'
@@ -21,10 +21,7 @@ export async function getShows (event: H3Event, userEmail: string, category: Sho
     image_thumbnail_path: episodateTvShows.image_thumbnail_path,
     updatedAt: episodateTvShows.updatedAt,
     episodeCount: countDistinct(episodes.id),
-    watchedEpisodeCount: countDistinct(watchedEpisodes.id),
-    // ToDo
-    //  Might need to change this column to a date type?
-    latestEpisodeDate: max(episodes.air_date)
+    watchedEpisodeCount: countDistinct(watchedEpisodes.id)
   })
     .from(episodateTvShows)
     .leftJoin(
@@ -75,10 +72,10 @@ export async function getShows (event: H3Event, userEmail: string, category: Sho
     query.having(({ watchedEpisodeCount }) => eq(watchedEpisodeCount, 0))
   } else if (category === 'toCatchUpOn') {
     // watchedEpisodes.length < episodes.length - 1
-    query.having(({ watchedEpisodeCount, episodeCount }) => gt(watchedEpisodeCount, sql`${episodeCount} - 1`))
+    query.having(({ watchedEpisodeCount, episodeCount }) => gt(sql`${episodeCount} - 1`, watchedEpisodeCount))
   } else if (category === 'waitingFor') {
-    // watchedEpisodes.length = episodes.length && latest episode is in future
-    query.having(({ watchedEpisodeCount, episodeCount, latestEpisodeDate }) => and(eq(watchedEpisodeCount, episodeCount), gt(latestEpisodeDate, sql`date('now')`)))
+    // watchedEpisodes.length = episodes.length && not cancelled
+    query.having(({ watchedEpisodeCount, episodeCount }) => and(eq(watchedEpisodeCount, episodeCount), notInArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])))
   }
 
   const shows = await query
