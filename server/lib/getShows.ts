@@ -1,13 +1,29 @@
 import type { H3Event } from 'h3'
-import { asc, eq } from 'drizzle-orm'
-import { tvShows, users, episodateTvShows } from '../../db/schema'
+import { asc, eq, inArray, and, countDistinct, gt, sql, max, notInArray } from 'drizzle-orm'
+import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../../db/schema'
 import { useDb } from './db'
-import { syncShows } from './episodate'
+import { syncShow } from './syncShow'
 
-export default async function getShows (event: H3Event, userEmail: string, limit = 24, offset = 0): Promise<EpisodateTvShows[]> {
+type ShowCategory = 'currentlyWatching'|'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'|''
+
+export async function getShows (event: H3Event, userEmail: string, category: ShowCategory = '', limit = 24, offset = 0): Promise<EpisodateShowFromSearchTransformed[]> {
   const DB = await useDb(event)
 
-  let query = DB.select({ episodateTvShows }).from(episodateTvShows)
+  const query = DB.select({
+    id: episodateTvShows.id,
+    name: episodateTvShows.name,
+    permalink: episodateTvShows.permalink,
+    start_date: episodateTvShows.start_date,
+    end_date: episodateTvShows.end_date,
+    country: episodateTvShows.country,
+    network: episodateTvShows.network,
+    status: episodateTvShows.status,
+    image_thumbnail_path: episodateTvShows.image_thumbnail_path,
+    updatedAt: episodateTvShows.updatedAt,
+    episodeCount: countDistinct(episodes.id),
+    watchedEpisodeCount: countDistinct(watchedEpisodes.id)
+  })
+    .from(episodateTvShows)
     .leftJoin(
       tvShows,
       eq(tvShows.showId, episodateTvShows.id)
@@ -16,19 +32,63 @@ export default async function getShows (event: H3Event, userEmail: string, limit
       users,
       eq(users.id, tvShows.userId)
     )
-    .where(eq(users.email, userEmail))
+    .leftJoin(
+      episodes,
+      eq(episodes.episodateTvShowId, episodateTvShows.id)
+    )
+    .leftJoin(
+      watchedEpisodes,
+      and(
+        eq(
+          watchedEpisodes.episodeId, episodes.id
+        ),
+        eq(
+          watchedEpisodes.userId, tvShows.userId
+        )
+      )
+    )
     .orderBy(asc(episodateTvShows.name))
+    .groupBy(episodateTvShows.id)
 
   if (limit !== 0) {
-    // @ts-expect-error
-    query = query.limit(limit).offset(offset)
+    query.limit(limit).offset(offset)
   }
 
-  const results = await query
+  if (category === 'cancelled') {
+    query.where(
+      and(
+        eq(users.email, userEmail),
+        inArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])
+      )
+    )
+  } else {
+    query.where(eq(users.email, userEmail))
+  }
+  if (category === 'currentlyWatching') {
+    // watchedEpisodes.length = episodes.length - 1
+    query.having(({ watchedEpisodeCount, episodeCount }) => eq(watchedEpisodeCount, sql`${episodeCount} - 1`))
+  } else if (category === 'wantToWatch') {
+    // watchedEpisodes.length = 0
+    query.having(({ watchedEpisodeCount }) => eq(watchedEpisodeCount, 0))
+  } else if (category === 'toCatchUpOn') {
+    // watchedEpisodes.length < episodes.length - 1
+    query.having(({ watchedEpisodeCount, episodeCount }) => gt(sql`${episodeCount} - 1`, watchedEpisodeCount))
+  } else if (category === 'waitingFor') {
+    // watchedEpisodes.length = episodes.length && not cancelled
+    query.having(({ watchedEpisodeCount, episodeCount }) => and(eq(watchedEpisodeCount, episodeCount), notInArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])))
+  }
 
-  const transformedResults = results.map(result => result.episodateTvShows)
+  const shows = await query
+  const showsToReturn = shows.map((show) => {
+    return {
+      ...show,
+      tracked: true
+    }
+  })
 
-  event.waitUntil(syncShows(transformedResults, event))
+  // ToDo
+  //  This should really be on a cron, but we do this instead each time this endpoint is hit
+  event.waitUntil(Promise.all(showsToReturn.map(show => syncShow(show as EpisodateShowFromSearchTransformed, event))))
 
-  return transformedResults
+  return showsToReturn
 }

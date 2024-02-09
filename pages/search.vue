@@ -1,7 +1,13 @@
 <template>
   <main class="inner-content">
     <h2>Searching for: {{ route.query.q }}</h2>
-    <Shows :shows="searchResults.tv_shows" :add-show-callback="addShowCallback" :page-count="searchResults.pages" />
+    <template v-if="searchResults?.tv_shows">
+      <Shows :shows="searchResults?.tv_shows" :add-show-callback="addShowCallback" :page-count="searchResults?.pages" :should-go-to-show="false" />
+    </template>
+    <template v-else>
+      <p>Something went wrong...</p>
+      <p>Please try again later</p>
+    </template>
   </main>
 </template>
 
@@ -14,7 +20,7 @@ export default defineComponent({
     definePageMeta({ middleware: 'auth' })
 
     const state = reactive({
-      searchResults: {} as EpisodateSearch | Partial<EpisodateSearch>
+      searchResults: {} as EpisodateSearch
     })
 
     const refs = toRefs(state)
@@ -22,23 +28,29 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
 
-    const fetchShows = async () => {
-      refs.searchResults.value = {}
-      const { data } = await useFetch(`https://www.episodate.com/api/search?q=${route.query.q}&page=${route.query.p ?? 1}`, {
-        method: 'POST'
-      })
-      refs.searchResults.value = data.value as EpisodateSearch
+    const resetSearchResults = () => {
+      refs.searchResults.value = {
+        total: '0',
+        page: 0,
+        pages: 0,
+        tv_shows: []
+      }
     }
 
-    await fetchShows()
+    const fetchShows = async () => {
+      resetSearchResults()
+      const { data } = await useFetch(`/api/search?q=${route.query.q}&p=${route.query.p ?? 1}`)
+      refs.searchResults.value = data.value as EpisodateSearch
+    }
 
     watch(() => [route.query.p], async () => {
       await fetchShows()
       window.scrollTo(0, 0)
     }, { immediate: false })
 
+    await fetchShows()
+
     const addShowCallback = () => {
-      refs.searchResults.value = {} as Partial<EpisodateSearch>
       router.push('/my-shows')
     }
 

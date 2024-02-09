@@ -3,7 +3,7 @@ nav {
   position: sticky;
   top: 0;
   z-index: 9999;
-  height: 4.4375rem;
+  min-height: 4.4375rem;
   padding: .75rem 0;
   color: white;
   background-color: rgb(0 0 0 / 40%);
@@ -13,12 +13,13 @@ nav {
 .left,
 .right {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
   justify-content: space-between
 }
-.site-title {
-  font-size: 1.5rem;
+.nav-link {
+  font-size: 1.1rem;
   text-decoration: none
 }
 .button {
@@ -30,10 +31,27 @@ nav {
   <nav>
     <div class="inner-content">
       <div class="left">
-        <a href="/my-shows" class="site-title">TV Shows</a>
-        <Search />
+        <nuxt-link to="/my-shows" class="nav-link">
+          All Shows
+        </nuxt-link>
+        <nuxt-link to="/my-shows?category=toCatchUpOn" class="nav-link">
+          To Catch Up On
+        </nuxt-link>
+        <nuxt-link to="/my-shows?category=currentlyWatching" class="nav-link">
+          Currently Watching
+        </nuxt-link>
+        <nuxt-link to="/my-shows?category=wantToWatch" class="nav-link">
+          Want To Watch
+        </nuxt-link>
+        <nuxt-link to="/my-shows?category=waitingFor" class="nav-link">
+          Waiting For
+        </nuxt-link>
+        <nuxt-link to="/my-shows?category=cancelled" class="nav-link">
+          Cancelled
+        </nuxt-link>
       </div>
       <div class="right">
+        <Search />
         <a class="download-calendar button" :href="`/api/calendar/${userEmail}`" :download="`tv_joebailey_xyz_calendar_${userEmail}`">
           Download calendar
         </a>

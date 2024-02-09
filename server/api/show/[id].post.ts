@@ -1,21 +1,23 @@
 import type { H3Event } from 'h3'
-import getShowExists from '../../lib/getShowExists'
+import { getShowExists } from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
-import getUserByEmail from '../../lib/getUserByEmail'
-import { syncShow } from '../../lib/episodate'
+import { getUserByEmail } from '../../lib/getUserByEmail'
+import { syncShow } from '../../lib/syncShow'
 
 export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)
 
   const userEmail = await getAuthenticatedUserEmail(event)
 
-  const showId = getRouterParam(event, 'id')
+  const showIdParam = getRouterParam(event, 'id')
 
-  if (!showId) {
+  if (!showIdParam) {
     throw createError({ statusMessage: 'Missing show id', statusCode: 400 })
   }
+
+  const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if so
   const exists = await getShowExists(showId, userEmail, event)
@@ -30,9 +32,9 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await syncShow(parseInt(showId), event)
+  await syncShow(showId, event, true)
 
-  await DB.insert(tvShows).values({ showId: parseInt(showId), userId: user.id })
+  await DB.insert(tvShows).values({ showId, userId: user.id })
 
   setResponseStatus(event, 201)
   return 'Added successfully'

@@ -1,8 +1,8 @@
 import type { H3Event } from 'h3'
-import getShows from '../lib/getShows'
+import { getShows } from '../lib/getShows'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)
 
   const query = getQuery(event)
@@ -13,7 +13,9 @@ export default defineEventHandler(async (event: H3Event) => {
   limit = (typeof limit === 'string') ? parseInt(limit, 10) : 24 // Default to 24 if limit is not a string
   offset = (typeof offset === 'string') ? parseInt(offset, 10) : 0 // Default to 0 if offset is not a string
 
-  const shows = await getShows(event, userEmail, limit, offset)
+  const showCategory = Array.isArray(query.showCategory) ? query.showCategory[0] : query.showCategory
+
+  const shows = await getShows(event, userEmail, showCategory, limit, offset)
 
   const totalShows = shows.length
 
@@ -21,6 +23,6 @@ export default defineEventHandler(async (event: H3Event) => {
     total: totalShows.toString(),
     page: 0,
     pages: 0,
-    tv_shows: shows.map(result => result.episodateData)
-  } as EpisodateSearch
+    tv_shows: shows
+  }
 })

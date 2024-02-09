@@ -77,6 +77,7 @@ export async function useAuthOptions (event: H3Event) {
   }
 
   const DB = await useDb(event)
+  // @ts-expect-error
   authOptions.adapter = DrizzleAdapter(DB)
 
   return authOptions
