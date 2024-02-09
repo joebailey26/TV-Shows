@@ -17,7 +17,9 @@ export default defineComponent({
       route.query.category = route.query.category[0]
     }
 
-    const { data } = await useFetch(`/api/shows?showCategory=${route.query.category}`, { headers })
+    // ToDo
+    //  Implement setting limit and offset for pagination
+    const { data } = await useFetch(`/api/shows?showCategory=${route.query.category}&limit=0`, { headers })
 
     const shows = toRef(data.value?.tv_shows)
 
