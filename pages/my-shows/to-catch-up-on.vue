@@ -12,7 +12,7 @@ export default defineComponent({
   async setup () {
     definePageMeta({ middleware: 'auth' })
     const headers = useRequestHeaders(['cookie']) as HeadersInit
-    const { data } = await useFetch('/api/shows?toCatchUpOn=1', { headers })
+    const { data } = await useFetch('/api/shows?showCategory=toCatchUpOn', { headers })
     return data.value
   }
 })

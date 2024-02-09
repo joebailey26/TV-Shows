@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "bac0a4d1-239f-43ac-a9b3-1a83b037c024",
+  "id": "59f1c245-0861-4f16-934d-6b7790e2203c",
   "prevId": "a97545ac-a734-409e-a3a7-85145ca671e4",
   "tables": {
     "account": {
@@ -532,6 +532,13 @@
     "watchedEpisodes": {
       "name": "watchedEpisodes",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
         "userId": {
           "name": "userId",
           "type": "integer",

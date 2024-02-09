@@ -49,6 +49,7 @@ export const episodes = sqliteTable('episodes', {
 })
 
 export const watchedEpisodes = sqliteTable('watchedEpisodes', {
+  id: integer('id').notNull().primaryKey({ autoIncrement: true }),
   userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
   episodeId: integer('episodeId').notNull().references(() => episodes.id, { onDelete: 'cascade' })
 }, (table) => {

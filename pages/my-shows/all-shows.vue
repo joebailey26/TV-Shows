@@ -1,6 +1,6 @@
 <template>
   <main class="inner-content">
-    <h2>Waiting For</h2>
+    <h2>All Shows</h2>
     <Shows :shows="tv_shows" :page-count="pages ?? 0" />
   </main>
 </template>
@@ -12,7 +12,7 @@ export default defineComponent({
   async setup () {
     definePageMeta({ middleware: 'auth' })
     const headers = useRequestHeaders(['cookie']) as HeadersInit
-    const { data } = await useFetch('/api/shows?showCategory=waitingFor', { headers })
+    const { data } = await useFetch('/api/shows', { headers })
     return data.value
   }
 })

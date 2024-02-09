@@ -13,9 +13,9 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   limit = (typeof limit === 'string') ? parseInt(limit, 10) : 24 // Default to 24 if limit is not a string
   offset = (typeof offset === 'string') ? parseInt(offset, 10) : 0 // Default to 0 if offset is not a string
 
-  const showCategories = Array.isArray(query.showCategories) ? query.showCategories : [query.showCategories]
+  const showCategory = Array.isArray(query.showCategory) ? query.showCategory[0] : query.showCategory
 
-  const shows = await getShows(event, userEmail, showCategories, limit, offset)
+  const shows = await getShows(event, userEmail, showCategory, limit, offset)
 
   const totalShows = shows.length
 

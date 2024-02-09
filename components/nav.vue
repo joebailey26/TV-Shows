@@ -31,6 +31,9 @@ nav {
   <nav>
     <div class="inner-content">
       <div class="left">
+        <nuxt-link to="/my-shows/all-shows" class="nav-link">
+          All Shows
+        </nuxt-link>
         <nuxt-link to="/my-shows/to-catch-up-on" class="nav-link">
           To Catch Up On
         </nuxt-link>
