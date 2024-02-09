@@ -37,9 +37,6 @@ nav {
         <nuxt-link to="/my-shows?category=toCatchUpOn" class="nav-link">
           To Catch Up On
         </nuxt-link>
-        <nuxt-link to="/my-shows?category=currentlyWatching" class="nav-link">
-          Currently Watching
-        </nuxt-link>
         <nuxt-link to="/my-shows?category=wantToWatch" class="nav-link">
           Want To Watch
         </nuxt-link>
