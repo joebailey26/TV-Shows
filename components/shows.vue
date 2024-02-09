@@ -17,7 +17,7 @@
         v-for="show in shows"
         :key="show.id"
         :show="show"
-        :remove-show-callback="removeShowCallback"
+        :delete-show-callback="deleteShowCallback"
         :add-show-callback="addShowCallback"
         :should-go-to-show="shouldGoToShow"
       />
@@ -47,7 +47,7 @@ export default defineComponent({
       type: Function,
       default: () => {}
     },
-    removeShowCallback: {
+    deleteShowCallback: {
       type: Function,
       default: () => {}
     },

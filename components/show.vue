@@ -95,6 +95,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+interface ShowCallback {
+  (id: number): void;
+}
+
 export default defineComponent({
   props: {
     show: {
@@ -102,11 +106,11 @@ export default defineComponent({
       required: true
     },
     addShowCallback: {
-      type: Function,
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
-    removeShowCallback: {
-      type: Function,
+    deleteShowCallback: {
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
     shouldGoToShow: {
@@ -130,7 +134,7 @@ export default defineComponent({
 
       if (response.ok) {
         if (typeof this.addShowCallback === 'function') {
-          this.addShowCallback()
+          this.addShowCallback(id)
         }
       }
     },
@@ -143,8 +147,8 @@ export default defineComponent({
         })
 
         if (response.ok) {
-          if (typeof this.removeShowCallback === 'function') {
-            this.removeShowCallback()
+          if (typeof this.deleteShowCallback === 'function') {
+            this.deleteShowCallback(id)
           }
         }
       }
