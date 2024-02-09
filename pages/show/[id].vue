@@ -70,7 +70,7 @@ h1 {
         </h2>
         <div v-for="season in seasons" :key="season.season">
           Season {{ season.season }}
-          <div v-for="episode in season.episodes" :key="episode.episode">
+          <div v-for="episode in season.episodes" :key="`${episode.id}-${episode.watched}`">
             <Episode v-if="episode.episode" :episode="episode" :set-episode-callback="updateShow" />
           </div>
         </div>
@@ -85,7 +85,7 @@ import GalexiaDate from 'nuxt-component-date/index.vue'
 
 interface Season {
   season: number;
-  episodes: Episodes[];
+  episodes: EpisodesTransformed[];
 }
 
 export default defineComponent({
@@ -100,32 +100,21 @@ export default defineComponent({
       route.params.id = route.params.id[0]
     }
     const showId = parseInt(route.params.id)
+    const show = ref(null) as Ref<EpisodateShowTransformed|null>
+
     const response = await useFetch(`/api/show/${showId}`, {
-      headers,
-      // We use pick here to minimise the payload of the show that is cached
-      // If we add a property to the dom, then we need to add it here too
-      pick: [
-        'image_path',
-        'image_thumbnail_path',
-        'name',
-        'description',
-        'network',
-        'runtime',
-        'start_date',
-        'episodes',
-        'countdown'
-      ]
+      headers
     })
 
-    let show = response.data.value
-
-    if (!show?.name) {
+    if (response.data.value) {
+      show.value = reactive(response.data.value)
+    } else {
       throw createError({ statusCode: 404, message: 'Page not found' })
     }
 
     const seasons: ComputedRef<Season[]> = computed(() => {
-      if (show && show.episodes.length > 0) {
-        const seasons = show.episodes.reduce((acc: Record<number, EpisodesTransformed[]>, episode: EpisodesTransformed) => {
+      if (show.value && show.value.episodes.length > 0) {
+        const seasons = show.value.episodes.reduce((acc: Record<number, EpisodesTransformed[]>, episode) => {
           const seasonNumber = episode.season
           if (!acc[seasonNumber]) {
             acc[seasonNumber] = []
@@ -150,11 +139,14 @@ export default defineComponent({
           episode
         })
       })
-      show = response.data.value
+
+      if (response.data.value) {
+        show.value = reactive(response.data.value)
+      }
     }
 
     return {
-      ...toRefs(show),
+      ...toRefs(show.value),
       updateShow,
       seasons
     }

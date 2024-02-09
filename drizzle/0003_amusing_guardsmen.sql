@@ -10,7 +10,7 @@ CREATE TABLE `episodes` (
 --> statement-breakpoint
 CREATE TABLE `watchedEpisodes` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`userId` integer NOT NULL,
+	`userId` text NOT NULL,
 	`episodeId` integer NOT NULL,
 	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`episodeId`) REFERENCES `episodes`(`id`) ON UPDATE no action ON DELETE cascade

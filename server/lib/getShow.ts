@@ -6,6 +6,7 @@ import { useDb } from '../lib/db'
 export async function getShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodateShowTransformed | null> {
   const DB = await useDb(event)
 
+  // @ts-expect-error
   const showResponse = await DB.selectDistinct({ ...episodateTvShows })
     .from(episodateTvShows)
     .leftJoin(
@@ -29,7 +30,12 @@ export async function getShow (showId: number, userEmail: string, event: H3Event
   }
 
   const episodesFromDb = await DB.select({
-    ...episodes,
+    id: episodes.id,
+    season: episodes.season,
+    episode: episodes.episode,
+    name: episodes.name,
+    air_date: episodes.air_date,
+    episodateTvShowId: episodes.episodateTvShowId,
     watched: sql`EXISTS (
       SELECT 1 FROM ${watchedEpisodes} AS we
       JOIN ${users} AS u ON u.id = we.userId

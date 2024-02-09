@@ -1,10 +1,11 @@
 import type { H3Event } from 'h3'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, inArray } from 'drizzle-orm'
 import { getShowExists } from '../../lib/getShowExists'
-import { tvShows } from '../../../db/schema'
+import { episodes, watchedEpisodes } from '../../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'
+import { getShow } from '../../lib/getShow'
 
 export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)
@@ -38,20 +39,72 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'You must pass a body', statusCode: 400 })
   }
 
-  let parsedBody
-
-  try {
-    parsedBody = JSON.parse(body)
-  } catch {
-    throw createError({ statusMessage: 'Body is not valid JSON', statusCode: 400 })
+  if (!body.episode) {
+    throw createError({ statusMessage: 'You must pass an episode', statusCode: 400 })
   }
 
-  const episode: Number = parsedBody.episode
-
   // ToDo
-  //  Fetch episodes for show
-  //  Add them to watched episodes if they match
+  //  Combine these queries to be more efficient
 
-  setResponseStatus(event, 200)
-  return 'Updated successfully'
+  const watchedEpisode = await DB.selectDistinct()
+    .from(episodes)
+    .where(
+      and(
+        eq(episodes.id, body.episode),
+        eq(episodes.episodateTvShowId, showId)
+      )
+    )
+    .limit(1)
+
+  if (!watchedEpisode[0]) {
+    throw createError({ statusMessage: 'Invalid Episode', statusCode: 400 })
+  }
+
+  const episodesFromDb = await DB.select()
+    .from(episodes)
+    .where(eq(episodes.episodateTvShowId, showId))
+
+  const watchedEpisodesToPush = []
+
+  for (const episode of episodesFromDb) {
+    if (episode.season < watchedEpisode[0].season) {
+      watchedEpisodesToPush.push(episode)
+    } else if (episode.season === watchedEpisode[0].season) {
+      if (episode.episode <= watchedEpisode[0].episode) {
+        watchedEpisodesToPush.push(episode)
+      }
+    }
+  }
+
+  const watchedEpisodesInDb = await DB.select({ id: watchedEpisodes.id })
+    .from(watchedEpisodes)
+    .where(
+      and(
+        eq(episodes.episodateTvShowId, showId),
+        eq(watchedEpisodes.userId, user.id)
+      )
+    )
+    .leftJoin(
+      episodes,
+      eq(watchedEpisodes.episodeId, episodes.id)
+    )
+
+  // Clear current watched episodes
+  if (watchedEpisodesInDb.length > 0) {
+    await DB.delete(watchedEpisodes)
+      .where(
+        inArray(watchedEpisodes.id, watchedEpisodesInDb.map(episode => episode.id))
+      )
+  }
+
+  // Add watched episodes
+  watchedEpisodesToPush.forEach(async (episode) => {
+    await DB.insert(watchedEpisodes)
+      .values({
+        userId: user.id,
+        episodeId: episode.id
+      })
+  })
+
+  return getShow(showId, userEmail, event)
 })

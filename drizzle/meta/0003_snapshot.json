@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "59f1c245-0861-4f16-934d-6b7790e2203c",
+  "id": "3efd1cf7-c42a-4497-98d2-07e0e3a96bf6",
   "prevId": "a97545ac-a734-409e-a3a7-85145ca671e4",
   "tables": {
     "account": {
@@ -541,7 +541,7 @@
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
