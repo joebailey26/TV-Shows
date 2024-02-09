@@ -3,14 +3,24 @@ import { asc, eq } from 'drizzle-orm'
 import { tvShows, users, episodateTvShows } from '../../db/schema'
 import { useDb } from './db'
 import { syncShow } from './syncShow'
-import { transformShowFromDb } from './transformShowFromDb'
 
 type ShowCategories = Array<'currentlyWatching'|'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'>
 
-export async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = [], limit = 24, offset = 0): Promise<EpisodateShowTransformed[]> {
+export async function getShows (event: H3Event, userEmail: string, showCategories: ShowCategories = [], limit = 24, offset = 0): Promise<EpisodateShowFromSearchTransformed[]> {
   const DB = await useDb(event)
 
-  let query = DB.select({ ...episodateTvShows })
+  let query = DB.select({
+    id: episodateTvShows.id,
+    name: episodateTvShows.name,
+    permalink: episodateTvShows.permalink,
+    start_date: episodateTvShows.start_date,
+    end_date: episodateTvShows.end_date,
+    country: episodateTvShows.country,
+    network: episodateTvShows.network,
+    status: episodateTvShows.status,
+    image_thumbnail_path: episodateTvShows.image_thumbnail_path,
+    updatedAt: episodateTvShows.updatedAt
+  })
     .from(episodateTvShows)
     .leftJoin(
       tvShows,
@@ -58,11 +68,12 @@ export async function getShows (event: H3Event, userEmail: string, showCategorie
 
   // ToDo
   //  This should really be on a cron, but we do this instead each time this endpoint is hit
-  event.waitUntil(Promise.all(shows.map(show => syncShow(show, event))))
+  event.waitUntil(Promise.all(shows.map(show => syncShow(show as EpisodateShowFromSearchTransformed, event))))
 
-  // ToDo
-  //  Should we be adding episodes here? Or only in the get single show? Performance?
-  // ToDo
-  //  Add countdown
-  return shows.map(show => transformShowFromDb(show))
+  return shows.map((show) => {
+    return {
+      ...show,
+      tracked: true
+    }
+  })
 }

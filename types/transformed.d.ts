@@ -1,17 +1,20 @@
 export { EpisodesTransformed, EpisodateShowTransformed }
 
 declare global {
+  interface EpisodateShowFromSearchTransformed extends EpisodateShowFromSearch {
+    tracked: boolean
+    updatedAt: string
+  }
+  interface CustomSearch extends EpisodateSearch {
+    tv_shows: EpisodateShowFromSearchTransformed[]
+  }
   interface EpisodesTransformed extends Episodes {
     watched: boolean
   }
-  interface TrackedShow extends EpisodateShow {
+  interface EpisodateShowTransformed extends EpisodateShow {
     tracked: boolean
-  }
-  interface EpisodateShowTransformed extends TrackedShow {
-    countdown: Episodes
+    updatedAt: string
+    countdown: EpisodesTransformed | null
     episodes: EpisodesTransformed[]
-  }
-  interface CustomSearch extends EpisodateSearch {
-    tv_shows: TrackedShow[]
   }
 }

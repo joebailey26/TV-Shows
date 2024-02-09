@@ -11,22 +11,24 @@ declare global {
     name: string;
     air_date: string;
   }
-  type EpisodateShow = {
+  type EpisodateShowFromSearch = {
     id: number;
     name: string | null;
     permalink: string | null;
-    url: string | null;
-    description: string | null;
-    description_source: string | null;
     start_date: string | null;
     end_date: string | null;
     country: string | null;
-    status: string | null;
-    runtime: number | null;
     network: string | null;
+    status: string | null;
+    image_thumbnail_path: string | null;
+  }
+  type EpisodateShow = EpisodateShowFromSearch & {
+    url: string | null;
+    description: string | null;
+    description_source: string | null;
+    runtime: number | null;
     youtube_link: string | null;
     image_path: string | null;
-    image_thumbnail_path: string | null;
     rating: string | null;
     rating_count: string | null;
     countdown: EpisodateShowEpisode | null;
@@ -41,6 +43,6 @@ declare global {
     total: string;
     page: number;
     pages: number;
-    tv_shows: EpisodateShow[]
+    tv_shows: EpisodateShowFromSearch[]
   }
 }

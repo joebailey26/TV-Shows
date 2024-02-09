@@ -23,11 +23,11 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   const [response, shows] = await Promise.all([fetchPromise, getShowsPromise])
 
-  const data = await response.json() as CustomSearch
+  const data = await response.json() as EpisodateSearch
 
   for (const show of data.tv_shows) {
     show.tracked = !!shows.find(s => s.id === show.id)
   }
 
-  return data
+  return data as CustomSearch
 })

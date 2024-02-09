@@ -82,16 +82,11 @@
 
 <template>
   <a :class="['show', {'shouldGoToShow': shouldGoToShow}]" href="javascript:void(0)" @click="goToShow">
-    <img :src="show.image_path ?? show.image_thumbnail_path ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
+    <img :src="show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <p v-if="show.status" :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
       Status: {{ show.status }}
     </p>
-    <p v-if="show.countdown" class="next-episode">
-      Next episode:
-      <span v-html="showCountdownHelper(show.countdown)" />
-    </p>
-    <p>Network: {{ show.network }}</p>
     <button v-if="!show.tracked" type="button" class="button add" @click.stop="addShow(show.id)" />
     <button v-else type="button" class="button remove" @click.stop="deleteShow(show.id)" />
   </a>
@@ -103,7 +98,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   props: {
     show: {
-      type: Object as PropType<EpisodateShowTransformed>,
+      type: Object as PropType<EpisodateShowFromSearchTransformed>,
       required: true
     },
     addShowCallback: {
@@ -120,31 +115,6 @@ export default defineComponent({
     }
   },
   methods: {
-    showCountdownHelper (countdown: Episodes) {
-      if (countdown == null) {
-        return 'Unknown'
-      } else {
-        const date = new Date(countdown.air_date)
-        const day = date.getDate()
-        const monthArr = []
-        monthArr[0] = 'Jan'
-        monthArr[1] = 'Feb'
-        monthArr[2] = 'Mar'
-        monthArr[3] = 'Apr'
-        monthArr[4] = 'May'
-        monthArr[5] = 'Jun'
-        monthArr[6] = 'Jul'
-        monthArr[7] = 'Aug'
-        monthArr[8] = 'Sep'
-        monthArr[9] = 'Oct'
-        monthArr[10] = 'Nov'
-        monthArr[11] = 'Dec'
-        const month = monthArr[date.getMonth()]
-        const year = date.getFullYear().toString().substring(2)
-
-        return `<time datetime=${date}>${day} ${month} '${year}</time>`
-      }
-    },
     goToShow () {
       if (this.shouldGoToShow) {
         const router = useRouter()

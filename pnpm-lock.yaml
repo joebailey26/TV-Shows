@@ -33,7 +33,7 @@ devDependencies:
     version: 4.1.0(eslint@8.56.0)(vite@5.1.0)(webpack@5.90.1)
   '@nuxtjs/stylelint-module':
     specifier: ^5.2.0
-    version: 5.2.0(postcss@8.4.31)(stylelint@15.11.0)(vite@5.1.0)(webpack@5.90.1)
+    version: 5.2.0(postcss@8.4.33)(stylelint@15.11.0)(vite@5.1.0)(webpack@5.90.1)
   '@typescript-eslint/parser':
     specifier: ^6.21.0
     version: 6.21.0(eslint@8.56.0)(typescript@5.3.3)
@@ -85,6 +85,9 @@ devDependencies:
   nuxt:
     specifier: ^3.10.1
     version: 3.10.1(eslint@8.56.0)(sass@1.70.0)(stylelint@15.11.0)(typescript@5.3.3)(vite@5.1.0)
+  nuxt-component-date:
+    specifier: github:Galexia-Agency/nuxt-component-date
+    version: github.com/Galexia-Agency/nuxt-component-date/21ef623712edf203291198a29e08d70a34b9cd03
   nuxt-component-pagination:
     specifier: github:Galexia-Agency/nuxt-component-pagination
     version: github.com/Galexia-Agency/nuxt-component-pagination/bd4a821dba7df3e3c1f5f8a01ae7f4168708d514
@@ -2324,7 +2327,7 @@ packages:
       - webpack
     dev: true
 
-  /@nuxtjs/stylelint-module@5.2.0(postcss@8.4.31)(stylelint@15.11.0)(vite@5.1.0)(webpack@5.90.1):
+  /@nuxtjs/stylelint-module@5.2.0(postcss@8.4.33)(stylelint@15.11.0)(vite@5.1.0)(webpack@5.90.1):
     resolution: {integrity: sha512-CMGZORt5fM1pK+5Xj3p2uajkK9DZ9Sja7jewXa8LZFNMjt7GIsKaoAvH4poCUMorhIVBS0lGQZ9BlRmg3MWxvg==}
     peerDependencies:
       stylelint: '>=13'
@@ -2334,7 +2337,7 @@ packages:
       pathe: 1.1.2
       stylelint: 15.11.0(typescript@5.3.3)
       stylelint-webpack-plugin: 5.0.0(stylelint@15.11.0)(webpack@5.90.1)
-      vite-plugin-stylelint: 5.3.1(postcss@8.4.31)(stylelint@15.11.0)(vite@5.1.0)
+      vite-plugin-stylelint: 5.3.1(postcss@8.4.33)(stylelint@15.11.0)(vite@5.1.0)
     transitivePeerDependencies:
       - '@types/stylelint'
       - postcss
@@ -5494,7 +5497,7 @@ packages:
       micromatch: 4.0.5
       normalize-path: 3.0.0
       schema-utils: 4.2.0
-      webpack: 5.90.1(esbuild@0.19.12)
+      webpack: 5.90.1(esbuild@0.17.19)
     dev: true
 
   /eslint@8.56.0:
@@ -9694,7 +9697,7 @@ packages:
       normalize-path: 3.0.0
       schema-utils: 4.2.0
       stylelint: 15.11.0(typescript@5.3.3)
-      webpack: 5.90.1(esbuild@0.19.12)
+      webpack: 5.90.1(esbuild@0.17.19)
     dev: true
 
   /stylelint@15.11.0(typescript@5.3.3):
@@ -9847,7 +9850,7 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /terser-webpack-plugin@5.3.10(esbuild@0.19.12)(webpack@5.90.1):
+  /terser-webpack-plugin@5.3.10(esbuild@0.17.19)(webpack@5.90.1):
     resolution: {integrity: sha512-BKFPWlPDndPs+NGGCr1U59t0XScL5317Y0UReNrHaw9/FwhPENlq6bfgs+4yPfyP51vqC1bQ4rp1EfXW5ZSH9w==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -9864,12 +9867,12 @@ packages:
         optional: true
     dependencies:
       '@jridgewell/trace-mapping': 0.3.22
-      esbuild: 0.19.12
+      esbuild: 0.17.19
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.27.0
-      webpack: 5.90.1(esbuild@0.19.12)
+      webpack: 5.90.1(esbuild@0.17.19)
     dev: true
 
   /terser@5.24.0:
@@ -10519,7 +10522,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-stylelint@5.3.1(postcss@8.4.31)(stylelint@15.11.0)(vite@5.1.0):
+  /vite-plugin-stylelint@5.3.1(postcss@8.4.33)(stylelint@15.11.0)(vite@5.1.0):
     resolution: {integrity: sha512-M/hSdfOwnOVghbJDeuuYIU2xO/MMukYR8QcEyNKFPG8ro1L+DlTdViix2B2d/FvAw14WPX88ckA5A7NvUjJz8w==}
     engines: {node: '>=14.18'}
     peerDependencies:
@@ -10539,7 +10542,7 @@ packages:
       '@rollup/pluginutils': 5.1.0(rollup@4.9.6)
       chokidar: 3.6.0
       debug: 4.3.4
-      postcss: 8.4.31
+      postcss: 8.4.33
       stylelint: 15.11.0(typescript@5.3.3)
       vite: 5.1.0(sass@1.70.0)
     transitivePeerDependencies:
@@ -10755,7 +10758,7 @@ packages:
     resolution: {integrity: sha512-poXpCylU7ExuvZK8z+On3kX+S8o/2dQ/SVYueKA0D4WEMXROXgY8Ez50/bQEUmvoSMMrWcrJqCHuhAbsiwg7Dg==}
     dev: true
 
-  /webpack@5.90.1(esbuild@0.19.12):
+  /webpack@5.90.1(esbuild@0.17.19):
     resolution: {integrity: sha512-SstPdlAC5IvgFnhiRok8hqJo/+ArAbNv7rhU4fnWGHNVfN59HSQFaxZDSAL3IFG2YmqxuRs+IU33milSxbPlog==}
     engines: {node: '>=10.13.0'}
     hasBin: true
@@ -10786,7 +10789,7 @@ packages:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(esbuild@0.19.12)(webpack@5.90.1)
+      terser-webpack-plugin: 5.3.10(esbuild@0.17.19)(webpack@5.90.1)
       watchpack: 2.4.0
       webpack-sources: 3.2.3
     transitivePeerDependencies:
@@ -11051,6 +11054,13 @@ packages:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
+    dev: true
+
+  github.com/Galexia-Agency/nuxt-component-date/21ef623712edf203291198a29e08d70a34b9cd03:
+    resolution: {tarball: https://codeload.github.com/Galexia-Agency/nuxt-component-date/tar.gz/21ef623712edf203291198a29e08d70a34b9cd03}
+    name: nuxt-component-date
+    version: 1.0.0
+    engines: {yarn: ^1.10}
     dev: true
 
   github.com/Galexia-Agency/nuxt-component-pagination/bd4a821dba7df3e3c1f5f8a01ae7f4168708d514:
