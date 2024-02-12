@@ -1,7 +1,8 @@
 /*
-  We've removed some Wasm files due the 1mb limit on Cloudflare Functions
+  We've removed some Wasm files due the 1mb limit on Cloudflare Workers
   The paid plan has a 10mb limit if we need it
   If we were paying, we'd just use Cloudflare Images anyway
+  Or maybe we could have a function per content type?
 */
 
 import type { H3Event } from 'h3'
