@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { cacheApi } from 'cf-bindings-proxy'
 
 const MIME_TYPE_JPEG = 'image/jpeg'
 const MIME_TYPE_PNG = 'image/png'
@@ -73,46 +74,51 @@ async function encode (outputType: String, imageData: ImageData): Promise<ArrayB
   }
 }
 
-async function convert (contentType: String, outputType: String, fileBuffer: ArrayBuffer) {
-  // ToDo
-  //  Handle resizing
-  const imageData = await decode(contentType, fileBuffer)
+async function convert (contentType: String, outputType: String, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain') {
+  let imageData = await decode(contentType, fileBuffer)
+
+  if (width && height) {
+    const module = await import('@jsquash/resize')
+    const wasm = await fetch('https://unpkg.com/@jsquash/resize/lib/resize/squoosh_resize_bg.wasm')
+    if (!wasm.ok) {
+      throw createError({ statusMessage: 'Could not load Wasm', statusCode: 500 })
+    }
+    const wasmBuffer = await wasm.arrayBuffer()
+    const wasmModule = await WebAssembly.compile(wasmBuffer) as WebAssembly.Module
+    await module.initResize(wasmModule)
+    imageData = await module.default(imageData, { width, height, fitMethod })
+  }
+
   return await encode(outputType, imageData)
 }
 
 export default defineEventHandler(async (event: H3Event) => {
   const query = getQuery(event)
-  const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
-  const isAvifSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_AVIF) ?? false
   const imageUrl = query.u
   if (!imageUrl) {
     throw createError({ statusMessage: 'Bad request', statusCode: 404 })
   }
-  // const width = query.w
-  // const length = query.l
-  // const fit = query.fit
-  let imageBuffer
 
-  // const cachedImage = await cache.match(imageUrl)
-  // if (cachedImage) {
-  //   // Return cached image if available
-  //   imageData = await cachedImage.arrayBuffer()
-  // } else {
+  const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
+  const isAvifSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_AVIF) ?? false
+
+  let imageBuffer
   const imageFetch = await fetch(new URL(imageUrl.toString()))
   if (!imageFetch.ok) {
     throw createError({ statusMessage: 'Not found', statusCode: 404 })
   }
-
-  // const cacheResponse = new Response(imageData)
-  // event.context.waitUntil(cache.put(imageUrl, cacheResponse.clone()))
-
   imageBuffer = await imageFetch.arrayBuffer()
-  // }
-  const contentType = imageFetch.headers.get('content-type')
 
+  const contentType = imageFetch.headers.get('content-type')
   if (!contentType) {
     throw createError({ statusMessage: 'Could not work out image content type', statusCode: 500 })
   }
+
+  let width = Array.isArray(query.w) ? query.w[0] : query.w
+  width = (typeof width === 'string') ? parseInt(width) : null
+  let height = Array.isArray(query.h) ? query.h[0] : query.h
+  height = (typeof height === 'string') ? parseInt(height) : null
+  const fit = query.fit === 'contain' ? 'contain' : 'stretch'
 
   let outputType
   if (isAvifSupported) {
@@ -124,19 +130,28 @@ export default defineEventHandler(async (event: H3Event) => {
   } else if (contentType === MIME_TYPE_JPEG) {
     outputType = MIME_TYPE_JPEG
   }
-
-  if (outputType) {
-    // ToDo
-    //  Check if image can be fetched from cache
-    //  or
-    imageBuffer = await convert(contentType, outputType, imageBuffer)
-    // Store image in cache
-    // Use waitUntil so you can return the response without blocking on
-    // event.context.cloudflare.context.waitUntil(cache.put(cacheKey, response.clone()))
+  if (!outputType) {
+    throw createError({ statusMessage: 'Could not work out image output type', statusCode: 500 })
   }
 
   setHeader(event, 'Content-Type', outputType ?? contentType)
   setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
 
-  return new Response(imageBuffer)
+  const cache = await cacheApi()
+  // @ts-expect-error
+  const cacheKey = new Request(new URL(`${event.node.req.url}?format=${outputType}`, `http://${event.node.req.headers.host}`), event.node.req)
+  // @ts-expect-error
+  const cachedImage = await cache.match(cacheKey)
+  if (cachedImage) {
+    setHeader(event, 'X-Image-Cache', 'Hit')
+    return cachedImage
+  }
+  setHeader(event, 'X-Image-Cache', 'Miss')
+
+  imageBuffer = await convert(contentType, outputType, imageBuffer, width, height, fit)
+  const response = new Response(imageBuffer)
+  // @ts-expect-error
+  event.waitUntil(await cache.put(cacheKey, response.clone()))
+
+  return response
 })
