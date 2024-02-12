@@ -8,8 +8,11 @@
 import type { H3Event } from 'h3'
 import { cacheApi } from 'cf-bindings-proxy'
 
+// ToDo
+//  Reimplement fetching the wasm from url to fix local development
+
 import decodeJpeg, { init as initJpegDecWasm } from '@jsquash/jpeg/decode'
-// import decodePng, { init as initPngDecWasm } from '@jsquash/png/decode'
+import decodePng, { init as initPngDecWasm } from '@jsquash/png/decode'
 // import decodeWebp, { init as initWebpDecWasm } from '@jsquash/webp/decode'
 // import decodeAvif, { init as initAvifDecWasm } from '@jsquash/avif/decode'
 
@@ -22,7 +25,7 @@ import resize, { initResize } from '@jsquash/resize'
 
 // @ts-expect-error
 import JPEG_DEC_WASM from '@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm'
-// import PNG_DEC_WASM from '@jsquash/png/codec/squoosh_png_bg.wasm'
+import PNG_DEC_WASM from '@jsquash/png/codec/squoosh_png_bg.wasm'
 // import WEBP_DEC_WASM from '@jsquash/webp/codec/dec/webp_dec.wasm'
 // import AVIF_DEC_WASM from '@jsquash/avif/codec/dec/avif_dec.wasm'
 
@@ -49,10 +52,10 @@ async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<Ima
       await initJpegDecWasm(JPEG_DEC_WASM)
       return decodeJpeg(fileBuffer)
     }
-    // case MIME_TYPE_PNG: {
-    //   await initPngDecWasm(PNG_DEC_WASM)
-    //   return decodePng(fileBuffer)
-    // }
+    case MIME_TYPE_PNG: {
+      await initPngDecWasm(PNG_DEC_WASM)
+      return decodePng(fileBuffer)
+    }
     // case MIME_TYPE_WEBP: {
     //   await initWebpDecWasm(WEBP_DEC_WASM)
     //   return decodeWebp(fileBuffer)
@@ -127,7 +130,7 @@ export default defineEventHandler(async (event: H3Event) => {
   width = (typeof width === 'string') ? parseInt(width) : null
   let height = Array.isArray(query.h) ? query.h[0] : query.h
   height = (typeof height === 'string') ? parseInt(height) : null
-  const fit = query.fit === 'contain' ? 'contain' : 'stretch'
+  const fit = query.fit === 'stretch' ? 'stretch' : 'contain'
 
   let outputType
   if (isAvifSupported) {

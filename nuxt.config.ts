@@ -1,5 +1,5 @@
 import { dirname, resolve, join } from 'node:path'
-import { rename, readdir, mkdir } from 'fs/promises'
+import { copyFile, readdir, mkdir } from 'fs/promises'
 
 export default defineNuxtConfig({
   app: {
@@ -63,39 +63,44 @@ export default defineNuxtConfig({
     }
   },
   // Move wasm files from wasm folder to chunk folder
+  // ToDo
+  //  This breaks deploys when built on Cloudflare
+  //  When published to Cloudflare from a local machine, it works fine
   hooks: {
     'nitro:init': (nitro) => {
-      // nitro.hooks.hook('compiled', async (_nitro) => {
-      //   let configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
-      //   configuredEntry = typeof configuredEntry === 'string' ? configuredEntry : 'index.mjs'
-      //   const serverDir = dirname(resolve(_nitro.options.output.serverDir, configuredEntry))
-      //   const wasmDir = join(serverDir, 'wasm')
-      //   const chunksDir = join(serverDir, 'chunks')
-      //   const files = await readdir(wasmDir)
+      nitro.hooks.hook('compiled', async (_nitro) => {
+        let configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
+        configuredEntry = typeof configuredEntry === 'string' ? configuredEntry : 'index.mjs'
+        const serverDir = dirname(resolve(_nitro.options.output.serverDir, configuredEntry))
+        const wasmDir = join(serverDir, 'wasm')
+        const chunksDir = join(serverDir, 'chunks')
+        const files = await readdir(wasmDir)
 
-      //   for (const file of files) {
-      //     // Strip out the hash
-      //     const _file = file.replace(/-([0-9a-f]+)/, '')
-      //     // Hack to place the wasms in the correct folder
-      //     let nodePath
-      //     if (_file === 'mozjpeg_dec.wasm') {
-      //       nodePath = '@jsquash/jpeg/codec/dec/'
-      //     } else if (_file === 'webp_enc_simd.wasm') {
-      //       nodePath = '@jsquash/webp/codec/enc/'
-      //     } else if (_file === 'squoosh_resize_bg.wasm') {
-      //       nodePath = '@jsquash/resize/lib/resize/'
-      //     }
-      //     if (nodePath) {
-      //       const srcPath = join(wasmDir, file)
-      //       const destPath = join(chunksDir, join(nodePath, _file))
+        for (const file of files) {
+          // Strip out the hash
+          const _file = file.replace(/-([0-9a-f]+)/, '')
+          // Hack to place the wasms in the correct folder
+          let nodePath
+          if (_file === 'mozjpeg_dec.wasm') {
+            nodePath = '@jsquash/jpeg/codec/dec/'
+          } else if (_file === 'webp_enc_simd.wasm') {
+            nodePath = '@jsquash/webp/codec/enc/'
+          } else if (_file === 'squoosh_resize_bg.wasm') {
+            nodePath = '@jsquash/resize/lib/resize/'
+          } else if (_file === 'squoosh_png_bg.wasm') {
+            nodePath = '@jsquash/png/codec/'
+          }
+          if (nodePath) {
+            const srcPath = join(wasmDir, file)
+            const destPath = join(chunksDir, join(nodePath, _file))
 
-      //       const destDir = dirname(destPath)
-      //       await mkdir(destDir, { recursive: true })
+            const destDir = dirname(destPath)
+            await mkdir(destDir, { recursive: true })
 
-      //       await rename(srcPath, destPath)
-      //     }
-      //   }
-      // })
+            await copyFile(srcPath, destPath)
+          }
+        }
+      })
     }
   }
 })
