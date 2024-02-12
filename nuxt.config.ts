@@ -63,9 +63,6 @@ export default defineNuxtConfig({
     }
   },
   // Move wasm files from wasm folder to chunk folder
-  // ToDo
-  //  This breaks deploys when built on Cloudflare
-  //  When published to Cloudflare from a local machine, it works fine
   hooks: {
     'nitro:init': (nitro) => {
       nitro.hooks.hook('compiled', async (_nitro) => {
