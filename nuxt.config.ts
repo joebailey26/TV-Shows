@@ -1,5 +1,5 @@
 import { dirname, resolve, join } from 'node:path'
-import { rename, readdir } from 'fs/promises'
+import { rename, readdir, mkdir } from 'fs/promises'
 
 export default defineNuxtConfig({
   app: {
@@ -74,8 +74,24 @@ export default defineNuxtConfig({
         const files = await readdir(wasmDir)
 
         for (const file of files) {
+          // Strip out the hash
+          const _file = file.replace(/-([0-9a-f]+)/, '')
+          // Hack to place the wasms in the correct folder
+          let nodePath
+          if (_file === 'mozjpeg_dec.wasm') {
+            nodePath = '@jsquash/jpeg/codec/dec/'
+          } else if (_file === 'webp_enc_simd.wasm') {
+            nodePath = '@jsquash/webp/codec/enc/'
+          } else if (_file === 'squoosh_resize_bg.wasm') {
+            nodePath = '@jsquash/resize/lib/resize/'
+          } else {
+            return
+          }
           const srcPath = join(wasmDir, file)
-          const destPath = join(chunksDir, file)
+          const destPath = join(chunksDir, join(nodePath, _file))
+
+          const destDir = dirname(destPath)
+          await mkdir(destDir, { recursive: true })
 
           await rename(srcPath, destPath)
         }
