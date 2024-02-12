@@ -1,10 +1,22 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq, isNotNull } from 'drizzle-orm'
 import type { H3Event } from 'h3'
 import { users, episodes, watchedEpisodes } from '../../db/schema'
 import { useDb } from '../lib/db'
 
 export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event) {
   const DB = await useDb(event)
+
+  const watched = DB.selectDistinct({
+    episodeId: watchedEpisodes.episodeId
+  })
+    .from(watchedEpisodes)
+    .leftJoin(users,
+      eq(users.id, watchedEpisodes.userId)
+    )
+    .where(
+      eq(users.email, userEmail)
+    )
+    .as('watched')
 
   return DB.select({
     id: episodes.id,
@@ -13,12 +25,12 @@ export async function getEpisodesForShow (showId: number, userEmail: string, eve
     name: episodes.name,
     air_date: episodes.air_date,
     episodateTvShowId: episodes.episodateTvShowId,
-    watched: sql`EXISTS (
-      SELECT 1 FROM ${watchedEpisodes} AS we
-      JOIN ${users} AS u ON u.id = we.userId
-      WHERE we.episodeId = ${episodes}.id AND u.email = ${userEmail}
-    )`
+    watched: isNotNull(watched.episodeId)
   })
     .from(episodes)
-    .where(eq(episodes.episodateTvShowId, showId)) as Promise<EpisodesTransformed[]>
+    .where(eq(episodes.episodateTvShowId, showId))
+    .leftJoin(
+      watched,
+      eq(episodes.id, watched.episodeId)
+    ) as Promise<EpisodesTransformed[]>
 }
