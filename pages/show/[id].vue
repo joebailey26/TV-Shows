@@ -140,8 +140,16 @@ export default defineComponent({
         })
       })
 
-      if (response.data.value) {
-        show.value = reactive(response.data.value)
+      const watchedEpisodes = response.data.value
+
+      if (show.value && watchedEpisodes) {
+        show.value.episodes.forEach((episode) => {
+          if (watchedEpisodes.find(watchedEpisode => watchedEpisode === episode.id)) {
+            episode.watched = true
+          } else {
+            episode.watched = false
+          }
+        })
       }
     }
 
