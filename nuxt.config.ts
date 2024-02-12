@@ -84,16 +84,16 @@ export default defineNuxtConfig({
             nodePath = '@jsquash/webp/codec/enc/'
           } else if (_file === 'squoosh_resize_bg.wasm') {
             nodePath = '@jsquash/resize/lib/resize/'
-          } else {
-            return
           }
-          const srcPath = join(wasmDir, file)
-          const destPath = join(chunksDir, join(nodePath, _file))
+          if (nodePath) {
+            const srcPath = join(wasmDir, file)
+            const destPath = join(chunksDir, join(nodePath, _file))
 
-          const destDir = dirname(destPath)
-          await mkdir(destDir, { recursive: true })
+            const destDir = dirname(destPath)
+            await mkdir(destDir, { recursive: true })
 
-          await rename(srcPath, destPath)
+            await rename(srcPath, destPath)
+          }
         }
       })
     }
