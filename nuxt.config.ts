@@ -24,7 +24,10 @@ export default defineNuxtConfig({
     '~/assets/scss/global.scss'
   ],
   nitro: {
-    preset: 'cloudflare_pages'
+    preset: 'cloudflare_pages',
+    experimental: {
+      wasm: true
+    }
   },
   modules: [
     '@nuxtjs/eslint-module',

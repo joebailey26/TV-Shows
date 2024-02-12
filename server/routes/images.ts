@@ -1,6 +1,30 @@
 import type { H3Event } from 'h3'
 import { cacheApi } from 'cf-bindings-proxy'
 
+import decodeJpeg, { init as initJpegDecWasm } from '@jsquash/jpeg/decode'
+import decodePng, { init as initPngDecWasm } from '@jsquash/png/decode'
+import decodeWebp, { init as initWebpDecWasm } from '@jsquash/webp/decode'
+import decodeAvif, { init as initAvifDecWasm } from '@jsquash/avif/decode'
+
+import encodeJpeg, { init as initJpegEncWasm } from '@jsquash/jpeg/encode'
+// import encodePng, { init as initPngEncWasm } from '@jsquash/png/encode'
+import encodeWebp, { init as initWebpEncWasm } from '@jsquash/webp/encode'
+import encodeAvif, { init as initAvifEncWasm } from '@jsquash/avif/encode'
+
+import resize, { initResize } from '@jsquash/resize'
+
+import JPEG_DEC_WASM from '@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm'
+import PNG_DEC_WASM from '@jsquash/png/codec/squoosh_png_bg.wasm'
+import WEBP_DEC_WASM from '@jsquash/webp/codec/dec/webp_dec.wasm'
+import AVIF_DEC_WASM from '@jsquash/avif/codec/dec/avif_dec.wasm'
+
+import JPEG_ENC_WASM from '@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm'
+// import PNG_ENC_WASM from '@jsquash/png/codec/squoosh_png_enc.wasm'
+import WEBP_ENC_WASM from '@jsquash/webp/codec/enc/webp_enc_simd.wasm'
+import AVIF_ENC_WASM from '@jsquash/avif/codec/enc/avif_enc.wasm'
+
+import RESIZE_WASM from '@jsquash/resize/lib/resize/squoosh_resize_bg.wasm'
+
 const MIME_TYPE_JPEG = 'image/jpeg'
 const MIME_TYPE_PNG = 'image/png'
 const MIME_TYPE_WEBP = 'image/webp'
@@ -9,38 +33,23 @@ const MIME_TYPE_AVIF = 'image/avif'
 const MONTH_IN_SECONDS = 30 * 24 * 60 * 60
 const CDN_CACHE_AGE = 6 * MONTH_IN_SECONDS // 6 Months
 
-// @ts-expect-error
-async function loadWasmModule (wasmUrl: string, module): Promise<void> {
-  const wasm = await fetch(wasmUrl)
-  if (!wasm.ok) {
-    throw createError({ statusMessage: 'Could not load Wasm', statusCode: 500 })
-  }
-  const wasmBuffer = await wasm.arrayBuffer()
-  const wasmModule = await WebAssembly.compile(wasmBuffer) as WebAssembly.Module
-  await module.init(wasmModule)
-}
-
 async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<ImageData> {
   switch (sourceType) {
     case MIME_TYPE_JPEG: {
-      const module = await import('@jsquash/jpeg/decode')
-      await loadWasmModule('https://unpkg.com/@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm', module)
-      return await module.default(fileBuffer)
+      await initJpegDecWasm(JPEG_DEC_WASM)
+      return decodeJpeg(fileBuffer)
     }
     case MIME_TYPE_PNG: {
-      const module = await import('@jsquash/png/decode')
-      await loadWasmModule('https://unpkg.com/@jsquash/png/codec/squoosh_png_bg.wasm', module)
-      return await module.default(fileBuffer)
+      await initPngDecWasm(PNG_DEC_WASM)
+      return decodePng(fileBuffer)
     }
     case MIME_TYPE_WEBP: {
-      const module = await import('@jsquash/webp/decode')
-      await loadWasmModule('https://unpkg.com/@jsquash/webp/codec/dec/webp_dec.wasm', module)
-      return await module.default(fileBuffer)
+      await initWebpDecWasm(WEBP_DEC_WASM)
+      return decodeWebp(fileBuffer)
     }
     case MIME_TYPE_AVIF: {
-      const module = await import('@jsquash/avif/decode')
-      await loadWasmModule('https://unpkg.com/@jsquash/avif/codec/dec/avif_dec.wasm', module)
-      return await module.default(fileBuffer)
+      await initAvifDecWasm(AVIF_DEC_WASM)
+      return decodeAvif(fileBuffer)
     }
     default:
       throw new Error(`Unknown source type: ${sourceType}`)
@@ -50,24 +59,20 @@ async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<Ima
 async function encode (outputType: String, imageData: ImageData): Promise<ArrayBuffer> {
   switch (outputType) {
     case MIME_TYPE_JPEG: {
-      const module = await import('@jsquash/jpeg/encode')
-      await loadWasmModule('https://unpkg.com/@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm', module)
-      return await module.default(imageData)
+      await initJpegEncWasm(JPEG_ENC_WASM)
+      return encodeJpeg(imageData)
     }
-    case MIME_TYPE_PNG: {
-      const module = await import('@jsquash/png/encode')
-      await loadWasmModule('https://unpkg.com/@jsquash/png/codec/squoosh_png_enc.wasm', module)
-      return await module.default(imageData)
-    }
+    // case MIME_TYPE_PNG: {
+    //   await initPngEncWasm(PNG_ENC_WASM)
+    //   return encodePng(imageData)
+    // }
     case MIME_TYPE_WEBP: {
-      const module = await import('@jsquash/webp/encode')
-      await loadWasmModule('https://unpkg.com/@jsquash/webp/codec/enc/webp_enc_simd.wasm', module)
-      return await module.default(imageData)
+      await initWebpEncWasm(WEBP_ENC_WASM)
+      return encodeWebp(imageData)
     }
     case MIME_TYPE_AVIF: {
-      const module = await import('@jsquash/avif/encode')
-      await loadWasmModule('https://unpkg.com/@jsquash/avif/codec/enc/avif_enc.wasm', module)
-      return await module.default(imageData)
+      await initAvifEncWasm(AVIF_ENC_WASM)
+      return encodeAvif(imageData)
     }
     default:
       throw new Error(`Unknown output type: ${outputType}`)
@@ -78,15 +83,8 @@ async function convert (contentType: String, outputType: String, fileBuffer: Arr
   let imageData = await decode(contentType, fileBuffer)
 
   if (width && height) {
-    const module = await import('@jsquash/resize')
-    const wasm = await fetch('https://unpkg.com/@jsquash/resize/lib/resize/squoosh_resize_bg.wasm')
-    if (!wasm.ok) {
-      throw createError({ statusMessage: 'Could not load Wasm', statusCode: 500 })
-    }
-    const wasmBuffer = await wasm.arrayBuffer()
-    const wasmModule = await WebAssembly.compile(wasmBuffer) as WebAssembly.Module
-    await module.initResize(wasmModule)
-    imageData = await module.default(imageData, { width, height, fitMethod })
+    await initResize(RESIZE_WASM)
+    imageData = await resize(imageData, { width, height, fitMethod })
   }
 
   return await encode(outputType, imageData)
