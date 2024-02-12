@@ -1,31 +1,23 @@
-
+import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
-import getShowExists from '../../lib/getShowExists'
+import { getShowExists } from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
-import { useAuthOptions } from '../../lib/auth'
+import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
-import getUserByEmail from '../../lib/getUserByEmail'
-import { getServerSession } from '#auth'
+import { getUserByEmail } from '../../lib/getUserByEmail'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)
-  const authOptions = await useAuthOptions(event)
-  let session
-  try {
-    session = await getServerSession(event, authOptions)
-  } catch (e) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  if (!session?.user?.email) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  const userEmail = session.user.email
 
-  const showId = getRouterParam(event, 'id')
+  const userEmail = await getAuthenticatedUserEmail(event)
 
-  if (!showId) {
+  const showIdParam = getRouterParam(event, 'id')
+
+  if (!showIdParam) {
     throw createError({ statusMessage: 'Missing show id', statusCode: 400 })
   }
+
+  const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if it doesn't, we can't delete a show that does not exist
   const exists = await getShowExists(showId, userEmail, event)
@@ -43,7 +35,7 @@ export default defineEventHandler(async (event) => {
   await DB.delete(tvShows)
     .where(
       and(
-        eq(tvShows.showId, parseInt(showId)),
+        eq(tvShows.showId, showId),
         eq(tvShows.userId, user.id)
       )
     )

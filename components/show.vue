@@ -6,8 +6,13 @@
   padding: 1rem;
   color: var(--bodyTextColor);
   text-align: center;
+  text-decoration: none;
   background-color: var(--whiteColor);
   box-shadow: 0 2px 5px 0 rgb(0 0 0 / 6%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+  cursor: initial;
+  &.shouldGoToShow {
+    cursor: pointer
+  }
   img {
     width: calc(100% + 2rem);
     height: 375px;
@@ -22,58 +27,29 @@
     margin: 0
   }
 }
-.status {
-  display: flex;
-  align-items: center;
+.show__status {
   justify-content: center
-}
-.status:before {
-  display: block;
-  width: 1em;
-  height: 1em;
-  margin-right: .5em;
-  background-color: var(--yellowColor);
-  border-radius: 50%;
-  content: ''
-}
-.status__canceled-ended:before,
-.status__ended:before {
-  background-color: var(--redColor)
-}
-.status__running:before {
-  background-color: var(--greenColor)
-}
-.show:hover .button {
-  opacity: 1
 }
 .button {
   position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 375px;
+  z-index: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-height: 0;
   margin: 0;
   padding: 0;
-  background-color: rgb(0 0 0 / 50%);
+  background: none;
   border: none;
-  cursor: initial;
-  opacity: 0;
-  transition: opacity .25s ease-in;
+  border-radius: 0;
   &:after {
     display: block;
-    width: 3em;
-    height: 3em;
-    margin-top: -2em;
+    width: 100%;
+    height: 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 35%;
-    border-radius: 50%;
     cursor: pointer;
-    content: '';
-    &:hover {
-      opacity: .75
-    }
+    content: ''
   }
   &.add:after {
     background-color: var(--greenColor);
@@ -87,103 +63,62 @@
 </style>
 
 <template>
-  <div class="show">
-    <img :src="show.image_path ?? show.image_thumbnail_path" width="250" loading="lazy">
+  <nuxt-link :class="['show', {'shouldGoToShow': shouldGoToShow}]" :href="shouldGoToShow ? `/show/${show.id}` : '#'">
+    <img :src="show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600'" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
-    <p :class="['status', `status__${show.status.toLowerCase().replaceAll('/', '-')}`]">
-      Status: {{ show.status }}
-    </p>
-    <p class="next-episode">
-      Next episode:
-      <span v-html="showCountdownHelper(show.countdown)" />
-    </p>
-    <p>Network: {{ show.network }}</p>
-    <a v-if="!getShowById(show.id)" href="javascript:void(0)" class="button add" @click="addShow(show.id)" />
-    <a v-else href="javascript:void(0)" class="button remove" @click="deleteShow(show.id)" />
-  </div>
+    <Status v-if="show.status" :status="show.status" class="show__status" />
+    <button v-if="!show.tracked" type="button" class="button add" @click.stop="addShow(show.id)" />
+    <button v-else type="button" class="button remove" @click.stop="deleteShow(show.id)" />
+  </nuxt-link>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapActions, storeToRefs } from 'pinia'
-import { useShowsStore } from '../stores/shows'
 
 export default defineComponent({
   props: {
     show: {
-      type: Object,
+      type: Object as PropType<EpisodateShowFromSearchTransformed>,
       required: true
     },
     addShowCallback: {
-      type: Function,
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
-    removeShowCallback: {
-      type: Function,
+    deleteShowCallback: {
+      type: Function as PropType<ShowCallback>,
       default: () => {}
-    }
-  },
-  setup () {
-    const showsStore = useShowsStore()
-    const { getShowById } = storeToRefs(showsStore)
-
-    return {
-      getShowById
+    },
+    shouldGoToShow: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
-    ...mapActions(useShowsStore, ['fetchShows']),
-    showCountdownHelper (countdown: EpisodateShowCountdown) {
-      if (countdown == null) {
-        return 'Unknown'
-      } else {
-        const date = new Date(countdown.air_date)
-        const day = date.getDate()
-        const monthArr = []
-        monthArr[0] = 'Jan'
-        monthArr[1] = 'Feb'
-        monthArr[2] = 'Mar'
-        monthArr[3] = 'Apr'
-        monthArr[4] = 'May'
-        monthArr[5] = 'Jun'
-        monthArr[6] = 'Jul'
-        monthArr[7] = 'Aug'
-        monthArr[8] = 'Sep'
-        monthArr[9] = 'Oct'
-        monthArr[10] = 'Nov'
-        monthArr[11] = 'Dec'
-        const month = monthArr[date.getMonth()]
-        const year = date.getFullYear().toString().substring(2)
-
-        return `<time datetime=${date}>${day} ${month} '${year}</time>`
-      }
-    },
     async addShow (id: number) {
       const headers = useRequestHeaders(['cookie']) as HeadersInit
-      const response = await fetch(`api/show/${id}`, {
+      const response = await fetch(`/api/show/${id}`, {
         method: 'POST',
         headers
       })
 
       if (response.ok) {
-        this.fetchShows()
-        if (this.addShowCallback) {
-          this.addShowCallback()
+        if (typeof this.addShowCallback === 'function') {
+          this.addShowCallback(id)
         }
       }
     },
     async deleteShow (id: number) {
       if (typeof window !== 'undefined' && window.confirm('Are you sure you want to delete this show?')) {
         const headers = useRequestHeaders(['cookie']) as HeadersInit
-        const response = await fetch(`api/show/${id}`, {
+        const response = await fetch(`/api/show/${id}`, {
           method: 'DELETE',
           headers
         })
 
         if (response.ok) {
-          this.fetchShows()
-          if (this.removeShowCallback) {
-            this.removeShowCallback()
+          if (typeof this.deleteShowCallback === 'function') {
+            this.deleteShowCallback(id)
           }
         }
       }

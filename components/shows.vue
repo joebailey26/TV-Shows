@@ -17,8 +17,9 @@
         v-for="show in shows"
         :key="show.id"
         :show="show"
-        :remove-show-callback="removeShowCallback"
+        :delete-show-callback="deleteShowCallback"
         :add-show-callback="addShowCallback"
+        :should-go-to-show="shouldGoToShow"
       />
       <GalexiaPagination
         :page-count="pageCount"
@@ -39,20 +40,24 @@ export default defineComponent({
   },
   props: {
     shows: {
-      type: Array as PropType<EpisodateShow[]>,
+      type: Array as PropType<EpisodateShowFromSearchTransformed[]>,
       default: () => []
     },
     addShowCallback: {
-      type: Function,
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
-    removeShowCallback: {
-      type: Function,
+    deleteShowCallback: {
+      type: Function as PropType<ShowCallback>,
       default: () => {}
     },
     pageCount: {
       type: Number,
       required: true
+    },
+    shouldGoToShow: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {

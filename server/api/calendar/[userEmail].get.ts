@@ -1,8 +1,11 @@
-import getShows from '../../lib/getShowsWithEpisodate'
+import type { H3Event } from 'h3'
+import { eq, and, sql } from 'drizzle-orm'
 import { ics } from '../../lib/ics'
+import { episodateTvShows, episodes, tvShows, users, watchedEpisodes } from '~/db/schema'
+import { useDb } from '~/server/lib/db'
 
-// Return an ICS file containing events for all episodes of all shows stored in D1. Use KV for caching.
-export default defineEventHandler(async (event) => {
+// Return an ICS file containing events for all episodes of all shows stored in D1.
+export default defineEventHandler(async (event: H3Event) => {
   const userEmail = getRouterParam(event, 'userEmail')
 
   if (!userEmail) {
@@ -11,32 +14,60 @@ export default defineEventHandler(async (event) => {
   }
 
   // Initialise a new calendar
+  // @ts-expect-error
   const cal = ics()
 
+  const DB = await useDb(event)
+
   // Get all shows
-  const shows = await getShows(event, userEmail)
+  const episodesFromDb = await DB.selectDistinct({
+    name: episodes.name,
+    air_date: episodes.air_date,
+    showName: sql<string>`${episodateTvShows.name} as showName`
+  })
+    .from(episodes)
+    .leftJoin(
+      episodateTvShows,
+      eq(episodateTvShows.id, episodes.episodateTvShowId)
+    )
+    .leftJoin(
+      tvShows,
+      eq(tvShows.showId, episodateTvShows.id)
+    )
+    .leftJoin(
+      users,
+      eq(users.id, tvShows.userId)
+    )
+    .where(
+      and(
+        eq(users.email, userEmail),
+        sql`NOT EXISTS (
+          SELECT 1 FROM ${watchedEpisodes} AS we
+          JOIN ${users} AS u ON u.id = we.userId
+          WHERE we.episodeId = ${episodes}.id AND u.email = ${userEmail}
+        )`
+      )
+    )
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode
-  shows.forEach((show) => {
-    show.episodes.forEach((episode) => {
-    // Only process the episode if it has an air_date
-      if (episode.air_date) {
-      // Build the date for the episode
-        let date = new Date(episode.air_date)
-        // Set the date to plus one to allow pirates to upload it
-        date.setDate(date.getDate() + 1)
-        // Strip the time from the date as we don't need it
-        date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-        // Add the event to the calendar
-        cal.addEvent(
-          `${show.name} | ${episode.name}`,
-          '',
-          '',
-          date.toString(),
-          date.toString()
-        )
-      }
-    })
+  episodesFromDb.forEach((episode) => {
+  // Only process the episode if it has an air_date
+    if (episode.air_date) {
+    // Build the date for the episode
+      let date = new Date(episode.air_date)
+      // Set the date to plus one to allow for time to be added to streaming platforms etc.
+      date.setDate(date.getDate() + 1)
+      // Strip the time from the date as we don't need it
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+      // Add the event to the calendar
+      cal.addEvent(
+        `${episode.showName} | ${episode.name}`,
+        '',
+        '',
+        date.toString(),
+        date.toString()
+      )
+    }
   })
 
   // Send the correct content type header so the browser knows what to do with it.

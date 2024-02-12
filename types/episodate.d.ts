@@ -1,53 +1,48 @@
 /* eslint-disable camelcase */
-export { EpisodateShowCountdown, EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails }
+/* DO NOT EDIT THESE */
+/* These are the types of the data coming from the EpisoDate API */
+
+export { EpisodateShowEpisode, EpisodateShow, EpisodateShowDetails, EpisodateSearch }
 
 declare global {
-  interface EpisodateShowCountdown {
-    season: number;
-    episode: number;
-    name: string;
-    air_date: Date;
-  }
-
-  interface EpisodateShowEpisode {
+  type EpisodateShowEpisode = {
     season: number;
     episode: number;
     name: string;
     air_date: string;
   }
-
-  interface EpisodateShow {
+  type EpisodateShowFromSearch = {
     id: number;
-    name: string;
-    permalink: string;
-    url: string;
-    description: string;
-    description_source: string | null;
-    start_date: string;
+    name: string | null;
+    permalink: string | null;
+    start_date: string | null;
     end_date: string | null;
-    country: string;
-    status: string;
-    runtime: number;
-    network: string;
+    country: string | null;
+    network: string | null;
+    status: string | null;
+    image_thumbnail_path: string | null;
+  }
+  type EpisodateShow = EpisodateShowFromSearch & {
+    url: string | null;
+    description: string | null;
+    description_source: string | null;
+    runtime: number | null;
     youtube_link: string | null;
-    image_path: string;
-    image_thumbnail_path: string;
-    rating: string;
-    rating_count: string;
-    countdown: Countdown;
+    image_path: string | null;
+    rating: string | null;
+    rating_count: string | null;
+    countdown: EpisodateShowEpisode | null;
     genres: string[];
     pictures: string[];
-    episodes: Episode[];
+    episodes: EpisodateShowEpisode[];
   }
-
-  interface EpisodateShowDetails {
+  type EpisodateShowDetails = {
     tvShow: EpisodateShow
   }
-
-  interface EpisodateSearch {
+  type EpisodateSearch = {
     total: string;
     page: number;
     pages: number;
-    tv_shows: EpisodateShow[]
+    tv_shows: EpisodateShowFromSearch[]
   }
 }

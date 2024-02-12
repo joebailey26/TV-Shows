@@ -1,29 +1,23 @@
-import getShowExists from '../../lib/getShowExists'
+import type { H3Event } from 'h3'
+import { getShowExists } from '../../lib/getShowExists'
 import { tvShows } from '../../../db/schema'
-import { useAuthOptions } from '../../lib/auth'
+import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
-import getUserByEmail from '../../lib/getUserByEmail'
-import { getServerSession } from '#auth'
+import { getUserByEmail } from '../../lib/getUserByEmail'
+import { syncShow } from '../../lib/syncShow'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb(event)
-  const authOptions = await useAuthOptions(event)
-  let session
-  try {
-    session = await getServerSession(event, authOptions)
-  } catch (e) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  if (!session?.user?.email) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-  const userEmail = session.user.email
 
-  const showId = getRouterParam(event, 'id')
+  const userEmail = await getAuthenticatedUserEmail(event)
 
-  if (!showId) {
+  const showIdParam = getRouterParam(event, 'id')
+
+  if (!showIdParam) {
     throw createError({ statusMessage: 'Missing show id', statusCode: 400 })
   }
+
+  const showId = parseInt(showIdParam)
 
   // Check if the id already exists and return an error if so
   const exists = await getShowExists(showId, userEmail, event)
@@ -38,7 +32,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await DB.insert(tvShows).values({ showId: parseInt(showId), userId: user.id })
+  await syncShow(showId, event, true)
+
+  await DB.insert(tvShows).values({ showId, userId: user.id })
 
   setResponseStatus(event, 201)
   return 'Added successfully'

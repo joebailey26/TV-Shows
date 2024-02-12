@@ -25,11 +25,11 @@ export default defineNuxtConfig({
   ],
   nitro: {
     preset: 'cloudflare_pages'
-    // dev: false // We need this so the worker builds properly when running locally
   },
   modules: [
-    '@hebilicious/authjs-nuxt',
-    '@pinia/nuxt'
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/stylelint-module',
+    '@hebilicious/authjs-nuxt'
   ],
   runtimeConfig: {
     authJs: {
