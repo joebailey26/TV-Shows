@@ -1,3 +1,6 @@
+import { dirname, resolve, join } from 'node:path'
+import { rename, readdir } from 'fs/promises'
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -59,35 +62,24 @@ export default defineNuxtConfig({
       }
     }
   },
+  // Move wasm files from wasm folder to chunk folder
   hooks: {
-    'nitro:init': {
-      async (nitro) {
-        const wasmPaths = [
-          '@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm',
-          '@jsquash/webp/codec/enc/webp_enc_simd.wasm',
-          '@jsquash/resize/lib/resize/squoosh_resize_bg.wasm'
-        ]
-        nitro.hooks.hook('compiled', async (_nitro) => {
-          const target = resolveNitroPreset(_nitro.options)
-          const compatibility = getNitroPresetCompatibility(target)
-          if (compatibility.wasm?.esmImport !== true) { return }
-          const configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
-          let serverEntry = resolve(_nitro.options.output.serverDir, typeof configuredEntry === 'string'
-            ? configuredEntry
-            : 'index.mjs')
-          if (target === 'cloudflare-pages')
-          // this is especially hacky
-          { serverEntry = resolve(dirname(serverEntry), './chunks/wasm.mjs') }
-          const contents = (await readFile(serverEntry, 'utf-8'))
-          wasmPaths.forEach(async (wasmPath) => {
-            const hash = sha1(await readFile(await resolvePath(wasmPath)))
-            const postfix = target === 'vercel-edge' ? '?module' : ''
-            const path = target === 'cloudflare-pages' ? '../wasm/' : './wasm/'
-            await writeFile(serverEntry, contents
-              .replaceAll(`"${wasmPath}"`, `"${path}-${hash}.wasm${postfix}"`), { encoding: 'utf-8' })
-          })
-        })
-      }
+    'nitro:init': (nitro) => {
+      nitro.hooks.hook('compiled', async (_nitro) => {
+        let configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
+        configuredEntry = typeof configuredEntry === 'string' ? configuredEntry : 'index.mjs'
+        const serverDir = dirname(resolve(_nitro.options.output.serverDir, configuredEntry))
+        const wasmDir = join(serverDir, 'wasm')
+        const chunksDir = join(serverDir, 'chunks')
+        const files = await readdir(wasmDir)
+
+        for (const file of files) {
+          const srcPath = join(wasmDir, file)
+          const destPath = join(chunksDir, file)
+
+          await rename(srcPath, destPath)
+        }
+      })
     }
   }
 })
