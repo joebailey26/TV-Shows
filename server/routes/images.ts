@@ -67,7 +67,7 @@ async function convert (contentType: string, fileBuffer: ArrayBuffer, width: num
   return module.default(imageData)
 }
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event): Promise<ArrayBuffer> => {
   setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
 
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
@@ -83,10 +83,11 @@ export default defineEventHandler(async (event: H3Event) => {
     if (cachedImage) {
       setHeader(event, 'X-Image-Cache', 'Hit')
       setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
-      return cachedImage
+      return cachedImage.arrayBuffer()
     }
+    setHeader(event, 'X-Image-Cache', 'Miss')
   }
-  setHeader(event, 'X-Image-Cache', 'Miss')
+  setHeader(event, 'X-Image-Cache', 'Bypass')
 
   const query = getQuery(event)
   const imageUrl = query.u
@@ -119,11 +120,10 @@ export default defineEventHandler(async (event: H3Event) => {
   try {
     const image = await convert(contentType, imageBuffer, width, height, fit)
 
-    const response = new Response(image)
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
     // @ts-expect-error
-    event.waitUntil(await cache.put(cacheKey, response.clone()))
-    return response
+    event.waitUntil(await cache.put(cacheKey, new Response(image)))
+    return image
   } catch (e) {
     setHeader(event, 'Content-Type', contentType)
     return imageBuffer
