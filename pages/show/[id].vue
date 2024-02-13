@@ -45,7 +45,7 @@ h1 {
   <div class="inner-content">
     <div class="header">
       <div class="image-wrapper">
-        <img :src="`/images?u=${encodeURIComponent(image_path ?? image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=350&h=490`" width="350">
+        <img :src="`/images/transform?u=${encodeURIComponent(image_path ?? image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=350&h=490`" width="350">
         <GalexiaDate
           v-if="countdown"
           class="countdown"

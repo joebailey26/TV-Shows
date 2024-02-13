@@ -62,7 +62,7 @@ export default defineComponent({
     const { signIn } = useAuth()
 
     const headerBackgroundImage = computed(() => {
-      return `linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/images?u=${process.env.NUXT_NEXTAUTH_URL}/unauthenticated-header.jpg&w=1920&h=1080')`
+      return `linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/images/transform?u=${process.env.NUXT_NEXTAUTH_URL}/unauthenticated-header.jpg&w=1920&h=1080')`
     })
 
     return { signIn, headerBackgroundImage }

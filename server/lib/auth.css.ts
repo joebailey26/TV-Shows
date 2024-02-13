@@ -9,7 +9,7 @@ body.__next-auth-theme-dark {
   display: flex;
   align-items: center;
   padding: 4rem 1rem;
-  background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/images?u=${process.env.NUXT_NEXTAUTH_URL}/unauthenticated-header.jpg&w=1920&h=1080');
+  background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/images/transform?u=${process.env.NUXT_NEXTAUTH_URL}/unauthenticated-header.jpg&w=1920&h=1080');
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover

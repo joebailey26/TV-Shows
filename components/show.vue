@@ -64,7 +64,7 @@
 
 <template>
   <nuxt-link :class="['show', {'shouldGoToShow': shouldGoToShow}]" :href="shouldGoToShow ? `/show/${show.id}` : '#'">
-    <img :src="`/images?u=${encodeURIComponent(show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=250&h=375`" width="250" loading="lazy">
+    <img :src="`/images/transform?u=${encodeURIComponent(show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=250&h=375`" width="250" loading="lazy">
     <h3>{{ show.name }}</h3>
     <Status v-if="show.status" :status="show.status" class="show__status" />
     <button v-if="!show.tracked" type="button" class="button add" @click.stop="addShow(show.id)" />
