@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import type { Response as CloudflareResponse } from '@cloudflare/workers-types'
 import { cacheApi } from 'cf-bindings-proxy'
 
 // @ts-expect-error
@@ -67,7 +68,7 @@ async function convert (contentType: string, fileBuffer: ArrayBuffer, width: num
   return module.default(imageData)
 }
 
-export default defineEventHandler(async (event: H3Event): Promise<ArrayBuffer> => {
+export default defineEventHandler(async (event: H3Event): Promise<Response|CloudflareResponse> => {
   setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
 
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
@@ -83,7 +84,7 @@ export default defineEventHandler(async (event: H3Event): Promise<ArrayBuffer> =
     if (cachedImage) {
       setHeader(event, 'X-Image-Cache', 'Hit')
       setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
-      return cachedImage.arrayBuffer()
+      return cachedImage
     }
     setHeader(event, 'X-Image-Cache', 'Miss')
   }
@@ -108,7 +109,7 @@ export default defineEventHandler(async (event: H3Event): Promise<ArrayBuffer> =
 
   if (!isWebpSupported) {
     setHeader(event, 'Content-Type', contentType)
-    return imageBuffer
+    return new Response(imageBuffer)
   }
 
   let width = Array.isArray(query.w) ? query.w[0] : query.w
@@ -118,14 +119,14 @@ export default defineEventHandler(async (event: H3Event): Promise<ArrayBuffer> =
   const fit = query.fit === 'stretch' ? 'stretch' : 'contain'
 
   try {
-    const image = await convert(contentType, imageBuffer, width, height, fit)
-
+    const convertedImage = await convert(contentType, imageBuffer, width, height, fit)
+    const response = new Response(convertedImage)
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
     // @ts-expect-error
-    event.waitUntil(await cache.put(cacheKey, new Response(image)))
-    return image
+    event.waitUntil(await cache.put(cacheKey, response))
+    return response
   } catch (e) {
     setHeader(event, 'Content-Type', contentType)
-    return imageBuffer
+    return new Response(imageBuffer)
   }
 })
