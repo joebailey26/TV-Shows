@@ -1,5 +1,5 @@
 import { dirname, resolve, join } from 'node:path'
-import { copyFile, readdir, mkdir } from 'fs/promises'
+import { copyFile, mkdir } from 'fs/promises'
 
 export default defineNuxtConfig({
   app: {
@@ -62,40 +62,35 @@ export default defineNuxtConfig({
       }
     }
   },
-  // Move wasm files from wasm folder to chunk folder
+  // Copy wasm files into build
   hooks: {
     'nitro:init': (nitro) => {
       nitro.hooks.hook('compiled', async (_nitro) => {
         let configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
         configuredEntry = typeof configuredEntry === 'string' ? configuredEntry : 'index.mjs'
         const serverDir = dirname(resolve(_nitro.options.output.serverDir, configuredEntry))
-        const wasmDir = join(serverDir, 'wasm')
         const chunksDir = join(serverDir, 'chunks')
-        const files = await readdir(wasmDir)
+
+        const files = [
+          '@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm',
+          '@jsquash/png/codec/squoosh_png_bg.wasm',
+          // '@jsquash/webp/codec/dec/webp_dec.wasm',
+          // '@jsquash/avif/codec/dec/avif_dec.wasm',
+          // '@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm',
+          // '@jsquash/png/codec/squoosh_png_enc.wasm',
+          '@jsquash/webp/codec/enc/webp_enc_simd.wasm',
+          // '@jsquash/avif/codec/enc/avif_enc.wasm',
+          '@jsquash/resize/lib/resize/squoosh_resize_bg.wasm'
+        ]
 
         for (const file of files) {
-          // Strip out the hash
-          const _file = file.replace(/-([0-9a-f]+)/, '')
-          // Hack to place the wasms in the correct folder
-          let nodePath
-          if (_file === 'mozjpeg_dec.wasm') {
-            nodePath = '@jsquash/jpeg/codec/dec/'
-          } else if (_file === 'webp_enc_simd.wasm') {
-            nodePath = '@jsquash/webp/codec/enc/'
-          } else if (_file === 'squoosh_resize_bg.wasm') {
-            nodePath = '@jsquash/resize/lib/resize/'
-          } else if (_file === 'squoosh_png_bg.wasm') {
-            nodePath = '@jsquash/png/codec/'
-          }
-          if (nodePath) {
-            const srcPath = join(wasmDir, file)
-            const destPath = join(chunksDir, join(nodePath, _file))
+          const srcPath = join('node_modules', file)
+          const destPath = join(chunksDir, file)
 
-            const destDir = dirname(destPath)
-            await mkdir(destDir, { recursive: true })
+          const destDir = dirname(destPath)
+          await mkdir(destDir, { recursive: true })
 
-            await copyFile(srcPath, destPath)
-          }
+          await copyFile(srcPath, destPath)
         }
       })
     }
