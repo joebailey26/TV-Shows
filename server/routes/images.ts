@@ -93,10 +93,17 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
   const query = getQuery(event)
   const imageUrl = query.u
   if (!imageUrl) {
-    throw createError({ statusMessage: 'Bad request', statusCode: 404 })
+    throw createError({ statusMessage: 'Bad request', statusCode: 400 })
   }
 
-  const imageFetch = await fetch(new URL(imageUrl.toString()))
+  const url = new URL(imageUrl.toString())
+
+  // Only allow processing of images on the static.episodate.com domain
+  if (url.host !== 'static.episodate.com') {
+    throw createError({ statusMessage: 'Bad request', statusCode: 400 })
+  }
+
+  const imageFetch = await fetch(url)
   if (!imageFetch.ok) {
     throw createError({ statusMessage: 'Not found', statusCode: 404 })
   }
