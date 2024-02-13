@@ -45,7 +45,7 @@ async function decode (sourceType: string, fileBuffer: ArrayBuffer): Promise<Ima
     }
     case MIME_TYPE_PNG: {
       const module = await import('@jsquash/png/decode.js')
-      await loadWasmModule('@jsquash/png/codec/squoosh_png_bg.wasm', module)
+      await loadWasmModule('@jsquash/png/codec/pkg/squoosh_png_bg.wasm', module)
       return module.default(fileBuffer)
     }
     default:

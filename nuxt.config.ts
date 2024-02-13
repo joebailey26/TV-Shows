@@ -73,7 +73,7 @@ export default defineNuxtConfig({
 
         const files = [
           '@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm',
-          '@jsquash/png/codec/squoosh_png_bg.wasm',
+          '@jsquash/png/codec/pkg/squoosh_png_bg.wasm',
           '@jsquash/webp/codec/enc/webp_enc_simd.wasm',
           '@jsquash/resize/lib/resize/squoosh_resize_bg.wasm'
         ]
