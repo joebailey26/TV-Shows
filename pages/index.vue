@@ -5,6 +5,7 @@
     width: 100%;
     min-height: 100vh;
     padding: 4rem 1rem;
+    background-image: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?q=80&w=1920&auto=format&fit=crop');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover
@@ -41,7 +42,7 @@
 </style>
 
 <template>
-  <header :style="{ backgroundImage: headerBackgroundImage }">
+  <header>
     <div class="inner-content">
       <div class="header__content">
         <h1>Manage your TV Shows</h1>
@@ -61,11 +62,7 @@ export default defineComponent({
 
     const { signIn } = useAuth()
 
-    const headerBackgroundImage = computed(() => {
-      return `linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), url('/images?u=${process.env.NUXT_NEXTAUTH_URL}/unauthenticated-header.jpg&w=1920&h=1080')`
-    })
-
-    return { signIn, headerBackgroundImage }
+    return { signIn }
   }
 })
 </script>
