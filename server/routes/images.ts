@@ -1,9 +1,3 @@
-/*
-  We've removed Encode to Avif due the 1mb limit on Cloudflare Workers
-  The paid plan has a 10mb limit if we need it
-  If we were paying, we'd just use Cloudflare Images anyway
-*/
-
 import type { H3Event } from 'h3'
 import { cacheApi } from 'cf-bindings-proxy'
 
@@ -38,7 +32,6 @@ async function loadWasmModule (wasmPath: string, module): Promise<void> {
 const MIME_TYPE_JPEG = 'image/jpeg'
 const MIME_TYPE_PNG = 'image/png'
 const MIME_TYPE_WEBP = 'image/webp'
-const MIME_TYPE_AVIF = 'image/avif'
 
 const MONTH_IN_SECONDS = 30 * 24 * 60 * 60
 const CDN_CACHE_AGE = 6 * MONTH_IN_SECONDS // 6 Months
@@ -60,55 +53,28 @@ async function decode (sourceType: string, fileBuffer: ArrayBuffer): Promise<Ima
   }
 }
 
-async function encode (outputType: string, imageData: ImageData): Promise<ArrayBuffer> {
-  switch (outputType) {
-    case MIME_TYPE_WEBP: {
-      const module = await import('@jsquash/webp/encode.js')
-      await loadWasmModule('@jsquash/webp/codec/enc/webp_enc_simd.wasm', module)
-      return module.default(imageData)
-    }
-    // case MIME_TYPE_AVIF: {
-    //   const module = await import('@jsquash/avif/encode.js')
-    //   await loadWasmModule('@jsquash/avif/codec/enc/avif_enc.wasm', module)
-    //   return module.default(imageData)
-    // }
-    default:
-      throw new Error(`Unknown output type: ${outputType}`)
+async function convert (contentType: string, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain'): Promise<ArrayBuffer> {
+  let imageData = await decode(contentType, fileBuffer)
+
+  if (width && height) {
+    const module = await import('@jsquash/resize')
+    await loadWasmModule('@jsquash/resize/lib/resize/squoosh_resize_bg.wasm', module)
+    imageData = await module.default(imageData, { width, height, fitMethod })
   }
-}
 
-async function convert (contentType: string, outputType: string, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain') {
-  try {
-    let imageData = await decode(contentType, fileBuffer)
-
-    if (width && height) {
-      const module = await import('@jsquash/resize')
-      await loadWasmModule('@jsquash/resize/lib/resize/squoosh_resize_bg.wasm', module)
-      imageData = await module.default(imageData, { width, height, fitMethod })
-    }
-
-    return {
-      contentType: outputType,
-      fileBuffer: await encode(outputType, imageData)
-    }
-  } catch (e) {
-    return {
-      contentType,
-      fileBuffer
-    }
-  }
+  const module = await import('@jsquash/webp/encode.js')
+  await loadWasmModule('@jsquash/webp/codec/enc/webp_enc_simd.wasm', module)
+  return module.default(imageData)
 }
 
 export default defineEventHandler(async (event: H3Event) => {
+  setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
+
   const query = getQuery(event)
   const imageUrl = query.u
   if (!imageUrl) {
     throw createError({ statusMessage: 'Bad request', statusCode: 404 })
   }
-
-  const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
-  // const isAvifSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_AVIF) ?? false
-  const isAvifSupported = false
 
   const imageFetch = await fetch(new URL(imageUrl.toString()))
   if (!imageFetch.ok) {
@@ -121,27 +87,15 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not work out image content type', statusCode: 500 })
   }
 
-  let width = Array.isArray(query.w) ? query.w[0] : query.w
-  width = (typeof width === 'string') ? parseInt(width) : null
-  let height = Array.isArray(query.h) ? query.h[0] : query.h
-  height = (typeof height === 'string') ? parseInt(height) : null
-  const fit = query.fit === 'stretch' ? 'stretch' : 'contain'
-
-  setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
-
-  let outputType
-  if (isAvifSupported) {
-    outputType = MIME_TYPE_AVIF
-  } else if (isWebpSupported) {
-    outputType = MIME_TYPE_WEBP
-  } else {
+  const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
+  if (!isWebpSupported) {
     setHeader(event, 'Content-Type', contentType)
     return imageBuffer
   }
 
   const cache = await cacheApi()
   // @ts-expect-error
-  const cacheKey = new Request(new URL(`${event.node.req.url}?format=${outputType}`, `http://${event.node.req.headers.host}`), event.node.req)
+  const cacheKey = new Request(new URL(event.node.req.url, `http://${event.node.req.headers.host}`), event.node.req)
   // @ts-expect-error
   const cachedImage = await cache.match(cacheKey)
   if (cachedImage) {
@@ -150,11 +104,22 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   setHeader(event, 'X-Image-Cache', 'Miss')
 
-  const image = await convert(contentType, outputType, imageBuffer, width, height, fit)
-  setHeader(event, 'Content-Type', image.contentType)
-  const response = new Response(image.fileBuffer)
-  // @ts-expect-error
-  event.waitUntil(await cache.put(cacheKey, response.clone()))
+  let width = Array.isArray(query.w) ? query.w[0] : query.w
+  width = (typeof width === 'string') ? parseInt(width) : null
+  let height = Array.isArray(query.h) ? query.h[0] : query.h
+  height = (typeof height === 'string') ? parseInt(height) : null
+  const fit = query.fit === 'stretch' ? 'stretch' : 'contain'
 
-  return response
+  try {
+    const image = await convert(contentType, imageBuffer, width, height, fit)
+
+    const response = new Response(image.fileBuffer)
+    // @ts-expect-error
+    event.waitUntil(await cache.put(cacheKey, response.clone()))
+    setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
+    return response
+  } catch (e) {
+    setHeader(event, 'Content-Type', contentType)
+    return imageBuffer
+  }
 })
