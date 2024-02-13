@@ -70,6 +70,23 @@ async function convert (contentType: string, fileBuffer: ArrayBuffer, width: num
 export default defineEventHandler(async (event: H3Event) => {
   setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
 
+  const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
+  const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache' ?? false
+
+  if (isWebpSupported && !bypassCache) {
+    const cache = await cacheApi()
+    // @ts-expect-error
+    const cacheKey = new Request(new URL(event.node.req.url, `http://${event.node.req.headers.host}`), event.node.req)
+    // @ts-expect-error
+    const cachedImage = await cache.match(cacheKey)
+    if (cachedImage) {
+      setHeader(event, 'X-Image-Cache', 'Hit')
+      setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
+      return cachedImage
+    }
+    setHeader(event, 'X-Image-Cache', 'Miss')
+  }
+
   const query = getQuery(event)
   const imageUrl = query.u
   if (!imageUrl) {
@@ -87,22 +104,10 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not work out image content type', statusCode: 500 })
   }
 
-  const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
   if (!isWebpSupported) {
     setHeader(event, 'Content-Type', contentType)
     return imageBuffer
   }
-
-  const cache = await cacheApi()
-  // @ts-expect-error
-  const cacheKey = new Request(new URL(event.node.req.url, `http://${event.node.req.headers.host}`), event.node.req)
-  // @ts-expect-error
-  const cachedImage = await cache.match(cacheKey)
-  if (cachedImage) {
-    setHeader(event, 'X-Image-Cache', 'Hit')
-    return cachedImage
-  }
-  setHeader(event, 'X-Image-Cache', 'Miss')
 
   let width = Array.isArray(query.w) ? query.w[0] : query.w
   width = (typeof width === 'string') ? parseInt(width) : null
