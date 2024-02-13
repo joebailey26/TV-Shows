@@ -43,7 +43,7 @@ const MIME_TYPE_AVIF = 'image/avif'
 const MONTH_IN_SECONDS = 30 * 24 * 60 * 60
 const CDN_CACHE_AGE = 6 * MONTH_IN_SECONDS // 6 Months
 
-async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<ImageData> {
+async function decode (sourceType: string, fileBuffer: ArrayBuffer): Promise<ImageData> {
   switch (sourceType) {
     case MIME_TYPE_JPEG: {
       const module = await import('@jsquash/jpeg/decode.js')
@@ -60,7 +60,7 @@ async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<Ima
   }
 }
 
-async function encode (outputType: String, imageData: ImageData): Promise<ArrayBuffer> {
+async function encode (outputType: string, imageData: ImageData): Promise<ArrayBuffer> {
   switch (outputType) {
     case MIME_TYPE_WEBP: {
       const module = await import('@jsquash/webp/encode.js')
@@ -77,7 +77,7 @@ async function encode (outputType: String, imageData: ImageData): Promise<ArrayB
   }
 }
 
-async function convert (contentType: String, outputType: String, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain'): Promise<ArrayBuffer> {
+async function convert (contentType: string, outputType: string, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain') {
   try {
     let imageData = await decode(contentType, fileBuffer)
 
@@ -87,9 +87,15 @@ async function convert (contentType: String, outputType: String, fileBuffer: Arr
       imageData = await module.default(imageData, { width, height, fitMethod })
     }
 
-    return await encode(outputType, imageData)
+    return {
+      contentType: outputType,
+      fileBuffer: await encode(outputType, imageData)
+    }
   } catch (e) {
-    return fileBuffer
+    return {
+      contentType,
+      fileBuffer
+    }
   }
 }
 
@@ -104,12 +110,11 @@ export default defineEventHandler(async (event: H3Event) => {
   // const isAvifSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_AVIF) ?? false
   const isAvifSupported = false
 
-  let imageBuffer
   const imageFetch = await fetch(new URL(imageUrl.toString()))
   if (!imageFetch.ok) {
     throw createError({ statusMessage: 'Not found', statusCode: 404 })
   }
-  imageBuffer = await imageFetch.arrayBuffer()
+  const imageBuffer = await imageFetch.arrayBuffer()
 
   const contentType = imageFetch.headers.get('content-type')
   if (!contentType) {
@@ -122,17 +127,17 @@ export default defineEventHandler(async (event: H3Event) => {
   height = (typeof height === 'string') ? parseInt(height) : null
   const fit = query.fit === 'stretch' ? 'stretch' : 'contain'
 
+  setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
+
   let outputType
   if (isAvifSupported) {
     outputType = MIME_TYPE_AVIF
   } else if (isWebpSupported) {
     outputType = MIME_TYPE_WEBP
   } else {
+    setHeader(event, 'Content-Type', contentType)
     return imageBuffer
   }
-
-  setHeader(event, 'Content-Type', outputType ?? contentType)
-  setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
 
   const cache = await cacheApi()
   // @ts-expect-error
@@ -145,8 +150,9 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   setHeader(event, 'X-Image-Cache', 'Miss')
 
-  imageBuffer = await convert(contentType, outputType, imageBuffer, width, height, fit)
-  const response = new Response(imageBuffer)
+  const image = await convert(contentType, outputType, imageBuffer, width, height, fit)
+  setHeader(event, 'Content-Type', image.contentType)
+  const response = new Response(image.fileBuffer)
   // @ts-expect-error
   event.waitUntil(await cache.put(cacheKey, response.clone()))
 
