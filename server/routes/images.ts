@@ -71,7 +71,7 @@ export default defineEventHandler(async (event: H3Event) => {
   setHeader(event, 'Cache-Control', `s-maxage=${CDN_CACHE_AGE}`)
 
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
-  const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache' ?? false
+  const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache'
 
   if (isWebpSupported && !bypassCache) {
     const cache = await cacheApi()
