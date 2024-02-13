@@ -74,9 +74,9 @@ export default defineNuxtConfig({
         const files = [
           '@jsquash/jpeg/codec/dec/mozjpeg_dec.wasm',
           '@jsquash/png/codec/squoosh_png_bg.wasm',
-          '@jsquash/webp/codec/dec/webp_dec.wasm',
-          '@jsquash/avif/codec/dec/avif_dec.wasm',
-          '@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm',
+          // '@jsquash/webp/codec/dec/webp_dec.wasm',
+          // '@jsquash/avif/codec/dec/avif_dec.wasm',
+          // '@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm',
           // '@jsquash/png/codec/squoosh_png_enc.wasm',
           '@jsquash/webp/codec/enc/webp_enc_simd.wasm',
           '@jsquash/avif/codec/enc/avif_enc.wasm',

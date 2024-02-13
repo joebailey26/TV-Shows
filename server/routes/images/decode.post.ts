@@ -1,6 +1,11 @@
 import type { H3Event } from 'h3'
 import { loadWasmModule } from '../../lib/loadWasmModule'
-import { MIME_TYPE_JPEG, MIME_TYPE_PNG, MIME_TYPE_WEBP, MIME_TYPE_AVIF } from './transform'
+import {
+  MIME_TYPE_JPEG,
+  MIME_TYPE_PNG
+  // MIME_TYPE_WEBP
+  // MIME_TYPE_AVIF
+} from './transform'
 import { imageDataToBase64 } from '~/server/lib/imageData'
 
 export function base64ToArrayBuffer (base64: string) {
@@ -43,18 +48,18 @@ export default defineEventHandler(async (event: H3Event): Promise<StringifiedIma
       imageData = await module.default(fileBuffer)
       break
     }
-    case MIME_TYPE_WEBP: {
-      const module = await import('@jsquash/webp/decode.js')
-      await loadWasmModule('@jsquash/webp/codec/dec/webp_dec.wasm', module)
-      imageData = await module.default(fileBuffer)
-      break
-    }
-    case MIME_TYPE_AVIF: {
-      const module = await import('@jsquash/avif/decode.js')
-      await loadWasmModule('@jsquash/avif/codec/dec/avif_dec.wasm', module)
-      imageData = await module.default(fileBuffer)
-      break
-    }
+    // case MIME_TYPE_WEBP: {
+    //   const module = await import('@jsquash/webp/decode.js')
+    //   await loadWasmModule('@jsquash/webp/codec/dec/webp_dec.wasm', module)
+    //   imageData = await module.default(fileBuffer)
+    //   break
+    // }
+    // case MIME_TYPE_AVIF: {
+    //   const module = await import('@jsquash/avif/decode.js')
+    //   await loadWasmModule('@jsquash/avif/codec/dec/avif_dec.wasm', module)
+    //   imageData = await module.default(fileBuffer)
+    //   break
+    // }
     default:
       throw new Error(`Unknown file type: ${fileType}`)
   }

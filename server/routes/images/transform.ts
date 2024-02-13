@@ -60,8 +60,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
-  // const isAvifSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_AVIF) ?? false
-  const isAvifSupported = false
+  const isAvifSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_AVIF) ?? false
 
   let imageBuffer
   const imageFetch = await fetch(new URL(imageUrl.toString()))
@@ -86,13 +85,8 @@ export default defineEventHandler(async (event: H3Event) => {
     outputType = MIME_TYPE_AVIF
   } else if (isWebpSupported) {
     outputType = MIME_TYPE_WEBP
-  } else if (contentType === MIME_TYPE_PNG) {
-    outputType = MIME_TYPE_PNG
-  } else if (contentType === MIME_TYPE_JPEG) {
-    outputType = MIME_TYPE_JPEG
-  }
-  if (!outputType) {
-    throw createError({ statusMessage: 'Could not work out image output type', statusCode: 500 })
+  } else {
+    return imageBuffer
   }
 
   setHeader(event, 'Content-Type', outputType ?? contentType)

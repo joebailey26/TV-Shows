@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { loadWasmModule } from '../../lib/loadWasmModule'
 import {
-  MIME_TYPE_JPEG,
+  // MIME_TYPE_JPEG,
   // MIME_TYPE_PNG,
   MIME_TYPE_WEBP,
   MIME_TYPE_AVIF
@@ -25,12 +25,12 @@ export default defineEventHandler(async (event: H3Event) => {
   let arrayBuffer: ArrayBuffer
 
   switch (fileType) {
-    case MIME_TYPE_JPEG: {
-      const module = await import('@jsquash/jpeg/encode.js')
-      await loadWasmModule('@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm', module)
-      arrayBuffer = await module.default(imageData)
-      break
-    }
+    // case MIME_TYPE_JPEG: {
+    //   const module = await import('@jsquash/jpeg/encode.js')
+    //   await loadWasmModule('@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm', module)
+    //   arrayBuffer = await module.default(imageData)
+    //   break
+    // }
     // case MIME_TYPE_PNG: {
     //   const module = await import('@jsquash/png/encode.js')
     //   await loadWasmModule('@jsquash/png/codec/squoosh_png_enc.wasm', module)
