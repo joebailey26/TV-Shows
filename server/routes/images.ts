@@ -113,7 +113,7 @@ export default defineEventHandler(async (event: H3Event) => {
   try {
     const image = await convert(contentType, imageBuffer, width, height, fit)
 
-    const response = new Response(image.fileBuffer)
+    const response = new Response(image)
     // @ts-expect-error
     event.waitUntil(await cache.put(cacheKey, response.clone()))
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
