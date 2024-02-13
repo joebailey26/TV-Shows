@@ -73,10 +73,11 @@ export default defineEventHandler(async (event: H3Event) => {
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
   const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache'
 
+  const cache = await cacheApi()
+  // @ts-expect-error
+  const cacheKey = new Request(new URL(event.node.req.url, `http://${event.node.req.headers.host}`), event.node.req)
+
   if (isWebpSupported && !bypassCache) {
-    const cache = await cacheApi()
-    // @ts-expect-error
-    const cacheKey = new Request(new URL(event.node.req.url, `http://${event.node.req.headers.host}`), event.node.req)
     // @ts-expect-error
     const cachedImage = await cache.match(cacheKey)
     if (cachedImage) {
@@ -84,8 +85,8 @@ export default defineEventHandler(async (event: H3Event) => {
       setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
       return cachedImage
     }
-    setHeader(event, 'X-Image-Cache', 'Miss')
   }
+  setHeader(event, 'X-Image-Cache', 'Miss')
 
   const query = getQuery(event)
   const imageUrl = query.u
@@ -119,9 +120,9 @@ export default defineEventHandler(async (event: H3Event) => {
     const image = await convert(contentType, imageBuffer, width, height, fit)
 
     const response = new Response(image)
+    setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
     // @ts-expect-error
     event.waitUntil(await cache.put(cacheKey, response.clone()))
-    setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
     return response
   } catch (e) {
     setHeader(event, 'Content-Type', contentType)
