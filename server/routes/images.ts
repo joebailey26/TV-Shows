@@ -77,16 +77,20 @@ async function encode (outputType: String, imageData: ImageData): Promise<ArrayB
   }
 }
 
-async function convert (contentType: String, outputType: String, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain') {
-  let imageData = await decode(contentType, fileBuffer)
+async function convert (contentType: String, outputType: String, fileBuffer: ArrayBuffer, width: number | null, height: number | null, fitMethod: 'stretch' | 'contain'): Promise<ArrayBuffer> {
+  try {
+    let imageData = await decode(contentType, fileBuffer)
 
-  if (width && height) {
-    const module = await import('@jsquash/resize')
-    await loadWasmModule('@jsquash/resize/lib/resize/squoosh_resize_bg.wasm', module)
-    imageData = await module.default(imageData, { width, height, fitMethod })
+    if (width && height) {
+      const module = await import('@jsquash/resize')
+      await loadWasmModule('@jsquash/resize/lib/resize/squoosh_resize_bg.wasm', module)
+      imageData = await module.default(imageData, { width, height, fitMethod })
+    }
+
+    return await encode(outputType, imageData)
+  } catch (e) {
+    return fileBuffer
   }
-
-  return await encode(outputType, imageData)
 }
 
 export default defineEventHandler(async (event: H3Event) => {
