@@ -123,7 +123,7 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
     const response = new Response(convertedImage)
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
     // @ts-expect-error
-    event.waitUntil(await cache.put(cacheKey, response))
+    event.waitUntil(await cache.put(cacheKey, response.clone()))
     return response
   } catch (e) {
     setHeader(event, 'Content-Type', contentType)
