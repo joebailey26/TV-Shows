@@ -14,8 +14,9 @@
   <transition name="fade">
     <div v-if="Array.isArray(shows) && shows.length" class="shows_container">
       <Show
-        v-for="show in shows"
+        v-for="show, index in shows"
         :key="show.id"
+        :index="index"
         :show="show"
         :delete-show-callback="deleteShowCallback"
         :add-show-callback="addShowCallback"
