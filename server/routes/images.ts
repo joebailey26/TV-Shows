@@ -1,8 +1,7 @@
 /*
-  We've removed some Wasm files due the 1mb limit on Cloudflare Workers
+  We've removed Encode to Avif due the 1mb limit on Cloudflare Workers
   The paid plan has a 10mb limit if we need it
   If we were paying, we'd just use Cloudflare Images anyway
-  Or maybe we could have a function per content type?
 */
 
 import type { H3Event } from 'h3'
@@ -56,16 +55,6 @@ async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<Ima
       await loadWasmModule('@jsquash/png/codec/squoosh_png_bg.wasm', module)
       return module.default(fileBuffer)
     }
-    // case MIME_TYPE_WEBP: {
-    //   const module = await import('@jsquash/webp/decode.js')
-    //   await loadWasmModule('@jsquash/webp/codec/dec/webp_dec.wasm', module)
-    //   return module.default(fileBuffer)
-    // }
-    // case MIME_TYPE_AVIF: {
-    //   const module = await import('@jsquash/avif/decode.js')
-    //   await loadWasmModule('@jsquash/avif/codec/dec/avif_dec.wasm', module)
-    //   return module.default(fileBuffer)
-    // }
     default:
       throw new Error(`Unknown source type: ${sourceType}`)
   }
@@ -73,16 +62,6 @@ async function decode (sourceType: String, fileBuffer: ArrayBuffer): Promise<Ima
 
 async function encode (outputType: String, imageData: ImageData): Promise<ArrayBuffer> {
   switch (outputType) {
-    // case MIME_TYPE_JPEG: {
-    //   const module = await import('@jsquash/jpeg/encode.js')
-    //   await loadWasmModule('@jsquash/jpeg/codec/enc/mozjpeg_enc.wasm', module)
-    //   return module.default(imageData)
-    // }
-    // case MIME_TYPE_PNG: {
-    //   const module = await import('@jsquash/png/encode.js')
-    //   await loadWasmModule('@jsquash/png/codec/squoosh_png_enc.wasm', module)
-    //   return module.default(imageData)
-    // }
     case MIME_TYPE_WEBP: {
       const module = await import('@jsquash/webp/encode.js')
       await loadWasmModule('@jsquash/webp/codec/enc/webp_enc_simd.wasm', module)
@@ -144,13 +123,8 @@ export default defineEventHandler(async (event: H3Event) => {
     outputType = MIME_TYPE_AVIF
   } else if (isWebpSupported) {
     outputType = MIME_TYPE_WEBP
-  } else if (contentType === MIME_TYPE_PNG) {
-    outputType = MIME_TYPE_PNG
-  } else if (contentType === MIME_TYPE_JPEG) {
-    outputType = MIME_TYPE_JPEG
-  }
-  if (!outputType) {
-    throw createError({ statusMessage: 'Could not work out image output type', statusCode: 500 })
+  } else {
+    return imageBuffer
   }
 
   setHeader(event, 'Content-Type', outputType ?? contentType)
