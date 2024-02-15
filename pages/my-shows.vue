@@ -25,9 +25,7 @@ export default defineComponent({
         headers,
         query: {
           showCategory: route.query.category,
-          // ToDo
-          //  Implement setting limit and offset for pagination
-          limit: 0
+          p: route.query.p
         }
       })
       shows.value = data.value?.tv_shows ?? []
@@ -36,7 +34,7 @@ export default defineComponent({
 
     await fetchShows()
 
-    watch(() => route.query.category, () => {
+    watch(() => [route.query.category, route.query.p], () => {
       fetchShows()
     })
 

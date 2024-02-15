@@ -3,6 +3,7 @@ import { eq, and, sql } from 'drizzle-orm'
 import { ics } from '../../lib/ics'
 import { episodateTvShows, episodes, tvShows, users, watchedEpisodes } from '~/db/schema'
 import { useDb } from '~/server/lib/db'
+import { syncShow } from '~/server/lib/syncShow'
 
 // Return an ICS file containing events for all episodes of all shows stored in D1.
 export default defineEventHandler(async (event: H3Event) => {
@@ -23,7 +24,8 @@ export default defineEventHandler(async (event: H3Event) => {
   const episodesFromDb = await DB.selectDistinct({
     name: episodes.name,
     air_date: episodes.air_date,
-    showName: sql<string>`${episodateTvShows.name} as showName`
+    showName: sql<string>`${episodateTvShows.name} as showName`,
+    showId: episodateTvShows.id
   })
     .from(episodes)
     .leftJoin(
@@ -73,6 +75,10 @@ export default defineEventHandler(async (event: H3Event) => {
   // Send the correct content type header so the browser knows what to do with it.
   // This also lets Google Calendar sync from this endpoint
   setHeader(event, 'Content-Type', 'text/calendar')
+
+  // ToDo
+  //  This should really be on a cron, but we do this instead each time this endpoint is hit
+  event.waitUntil(Promise.all(episodesFromDb.map(show => show.showId ? syncShow(show.showId, event) : null)))
 
   // Return the built calendar
   return cal.build()

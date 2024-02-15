@@ -1,6 +1,8 @@
 import type { H3Event } from 'h3'
-import { getShows } from '../lib/getShows'
+import { and, eq, inArray } from 'drizzle-orm'
 import { getAuthenticatedUserEmail } from '../lib/auth'
+import { useDb } from '../lib/db'
+import { episodateTvShows, tvShows, users } from '~/db/schema'
 
 export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)
@@ -15,19 +17,46 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   p = (typeof p === 'string') ? parseInt(p, 10) : 1 // Default to 1 if page is not a string
 
-  const fetchPromise = fetch(`https://www.episodate.com/api/search?q=${q}&page=${p}`, {
+  const response = await fetch(`https://www.episodate.com/api/search?q=${q}&page=${p}`, {
     method: 'POST'
   })
 
-  const getShowsPromise = getShows(event, userEmail, [], 0)
-
-  const [response, shows] = await Promise.all([fetchPromise, getShowsPromise])
-
   const data = await response.json() as EpisodateSearch
 
-  for (const show of data.tv_shows) {
-    show.tracked = !!shows.find(s => s.id === show.id)
+  const transformedTvShows = data.tv_shows.map(show => ({
+    ...show,
+    tracked: false
+  })) as EpisodateShowFromSearchTransformed[]
+
+  const searchedShowIds = data.tv_shows.map(show => show.id)
+
+  const DB = await useDb(event)
+
+  const trackedShows = await DB.select({
+    id: episodateTvShows.id
+  })
+    .from(episodateTvShows)
+    .leftJoin(
+      tvShows,
+      eq(tvShows.showId, episodateTvShows.id)
+    )
+    .leftJoin(
+      users,
+      eq(users.id, tvShows.userId)
+    )
+    .where(
+      and(
+        eq(users.email, userEmail),
+        inArray(episodateTvShows.id, searchedShowIds)
+      )
+    )
+
+  for (const show of transformedTvShows) {
+    show.tracked = !!trackedShows.find(s => s.id === show.id)
   }
 
-  return data as CustomSearch
+  return {
+    ...data,
+    tv_shows: transformedTvShows
+  }
 })
