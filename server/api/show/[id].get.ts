@@ -1,11 +1,11 @@
 import type { H3Event } from 'h3'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, asc, sql, gt } from 'drizzle-orm'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
-import { tvShows, users, episodateTvShows } from '../../../db/schema'
+import { tvShows, users, episodateTvShows, episodes } from '../../../db/schema'
 import { useDb } from '../../lib/db'
 import { getEpisodesForShow } from '../../lib/getEpisodesForShow'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowTransformed|null> => {
   const userEmail = await getAuthenticatedUserEmail(event)
 
   const showIdParam = getRouterParam(event, 'id')
@@ -18,9 +18,60 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const DB = await useDb(event)
 
-  // @ts-expect-error
-  const showResponse = await DB.selectDistinct({ ...episodateTvShows })
+  const countdown = DB.selectDistinct({
+    id: sql<number>`${episodes.id}`.as('countdownId'),
+    season: episodes.season,
+    episode: episodes.episode,
+    name: sql<string>`${episodes.name}`.as('countdownName'),
+    air_date: episodes.air_date,
+    episodateTvShowId: sql<number>`${episodes.episodateTvShowId}`.as('countdownEpisodateTvShowId'),
+    watched: sql<boolean>`0`.as('countdownWatched')
+  })
+    .from(episodes)
+    .where(
+      gt(sql`date(${episodes.air_date})`, sql`date('now')`)
+    )
+    .orderBy(
+      asc(sql`date(${episodes.air_date})`)
+    )
+    .as('countdown')
+
+  const showResponse = await DB.selectDistinct({
+    id: episodateTvShows.id,
+    name: episodateTvShows.name,
+    permalink: episodateTvShows.permalink,
+    url: episodateTvShows.url,
+    description: episodateTvShows.description,
+    description_source: episodateTvShows.description_source,
+    start_date: episodateTvShows.start_date,
+    end_date: episodateTvShows.end_date,
+    country: episodateTvShows.country,
+    status: episodateTvShows.status,
+    runtime: episodateTvShows.runtime,
+    network: episodateTvShows.network,
+    youtube_link: episodateTvShows.youtube_link,
+    image_path: episodateTvShows.image_path,
+    image_thumbnail_path: episodateTvShows.image_thumbnail_path,
+    rating: episodateTvShows.rating,
+    rating_count: episodateTvShows.rating_count,
+    genres: episodateTvShows.genres,
+    pictures: episodateTvShows.pictures,
+    updatedAt: episodateTvShows.updatedAt,
+    countdown: {
+      id: countdown.id,
+      season: countdown.season,
+      episode: countdown.episode,
+      name: countdown.name,
+      air_date: countdown.air_date,
+      episodateTvShowId: countdown.episodateTvShowId,
+      watched: countdown.watched
+    }
+  })
     .from(episodateTvShows)
+    .leftJoin(
+      countdown,
+      eq(episodateTvShows.id, countdown.episodateTvShowId)
+    )
     .leftJoin(
       tvShows,
       eq(tvShows.showId, episodateTvShows.id)
@@ -35,7 +86,7 @@ export default defineEventHandler(async (event: H3Event) => {
         eq(users.email, userEmail)
       )
     )
-    .limit(1) as EpisodateTvShows[]
+    .limit(1)
 
   if (!showResponse[0]) {
     return null
@@ -43,29 +94,11 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const episodesFromDb = await getEpisodesForShow(showId, userEmail, event)
 
-  function getNextEpisode (episodes: EpisodesTransformed[]) {
-    // Get today's date for comparison
-    const today = new Date()
-
-    // Filter episodes that are after today's date
-    const futureEpisodes = episodes.filter((episode) => {
-      const episodeDate = new Date(episode.air_date)
-      return episodeDate > today
-    })
-
-    // Sort these future episodes by air date
-    futureEpisodes.sort((a, b) => new Date(a.air_date).getTime() - new Date(b.air_date).getTime())
-
-    // Return the first episode in the sorted array, which is the next episode to air
-    return futureEpisodes.length > 0 ? futureEpisodes[0] : null
-  }
-
   return {
     ...showResponse[0],
     tracked: true,
     genres: showResponse[0]?.genres ? showResponse[0].genres.split(',') : [],
     pictures: showResponse[0]?.pictures ? showResponse[0].pictures.split(',') : [],
-    episodes: episodesFromDb,
-    countdown: getNextEpisode(episodesFromDb)
+    episodes: episodesFromDb
   }
 })
