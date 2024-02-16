@@ -30,29 +30,31 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   const searchedShowIds = data.tv_shows.map(show => show.id)
 
-  const DB = await useDb(event)
+  if (searchedShowIds) {
+    const DB = await useDb(event)
 
-  const trackedShows = await DB.select({
-    id: episodateTvShows.id
-  })
-    .from(episodateTvShows)
-    .leftJoin(
-      tvShows,
-      eq(tvShows.showId, episodateTvShows.id)
-    )
-    .leftJoin(
-      users,
-      eq(users.id, tvShows.userId)
-    )
-    .where(
-      and(
-        eq(users.email, userEmail),
-        inArray(episodateTvShows.id, searchedShowIds)
+    const trackedShows = await DB.select({
+      id: episodateTvShows.id
+    })
+      .from(episodateTvShows)
+      .leftJoin(
+        tvShows,
+        eq(tvShows.showId, episodateTvShows.id)
       )
-    )
+      .leftJoin(
+        users,
+        eq(users.id, tvShows.userId)
+      )
+      .where(
+        and(
+          eq(users.email, userEmail),
+          inArray(episodateTvShows.id, searchedShowIds)
+        )
+      )
 
-  for (const show of transformedTvShows) {
-    show.tracked = !!trackedShows.find(s => s.id === show.id)
+    for (const show of transformedTvShows) {
+      show.tracked = !!trackedShows.find(s => s.id === show.id)
+    }
   }
 
   return {
