@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { asc, eq, inArray, and, countDistinct, gt, sql, notInArray, gte } from 'drizzle-orm'
+import { asc, eq, inArray, and, countDistinct, gt, sql, notInArray, gte, isNull, isNotNull, or } from 'drizzle-orm'
 import { SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../../db/schema'
@@ -29,9 +29,13 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   function querySetup<T extends SQLiteSelect> (qb: T) {
     return qb.leftJoin(
-      tvShows,
-      eq(tvShows.showId, episodateTvShows.id)
+      countdown,
+      eq(episodateTvShows.id, countdown.showId)
     )
+      .leftJoin(
+        tvShows,
+        eq(tvShows.showId, episodateTvShows.id)
+      )
       .leftJoin(
         users,
         eq(users.id, tvShows.userId)
@@ -53,22 +57,57 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   }
 
   function categoryCancelled<T extends SQLiteSelect> (qb: T) {
-    return qb.where(inArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended']))
+    return qb.where(
+      inArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])
+    )
+      .having(({ watchedEpisodeCount, episodeCount }) =>
+        eq(watchedEpisodeCount, episodeCount)
+      )
   }
 
   function categoryWantToWatch<T extends SQLiteSelect> (qb: T) {
-    return qb.having(({ watchedEpisodeCount }) => eq(watchedEpisodeCount, 0))
+    return qb.having(({ watchedEpisodeCount }) =>
+      eq(watchedEpisodeCount, 0)
+    )
   }
 
   function categoryToCatchUpOn<T extends SQLiteSelect> (qb: T) {
-    return qb.having(({ watchedEpisodeCount, episodeCount }) => gt(sql`${episodeCount} - 1`, watchedEpisodeCount))
+    return qb.where(
+      isNull(countdown.showId)
+    )
+      .having(({ watchedEpisodeCount, episodeCount }) =>
+        and(
+          gt(sql`${episodeCount} - 1`, watchedEpisodeCount),
+          gt(watchedEpisodeCount, 0)
+        )
+      )
   }
 
   function categoryWaitingFor<T extends SQLiteSelect> (qb: T) {
-    return qb.having(({ watchedEpisodeCount, episodeCount }) => and(gte(watchedEpisodeCount, sql`${episodeCount} - 1`), notInArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])))
+    return qb.where(
+      notInArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])
+    )
+      .having(({ watchedEpisodeCount, episodeCount }) =>
+        or(
+          gte(watchedEpisodeCount, sql`${episodeCount} - 1`),
+          isNotNull(countdown.showId)
+        )
+      )
   }
 
   const DB = await useDb(event)
+
+  const countdown = DB.selectDistinct({
+    showId: sql<number>`${episodes.episodateTvShowId}`.as('countdownShowId')
+  })
+    .from(episodes)
+    .where(
+      gt(sql`date(${episodes.air_date})`, sql`date('now')`)
+    )
+    .orderBy(
+      asc(sql`date(${episodes.air_date})`)
+    )
+    .as('countdown')
 
   // If this pagination strategy starts to be slow
   // We should instead return limit + 1
