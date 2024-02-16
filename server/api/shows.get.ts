@@ -140,7 +140,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   return {
     total: batch[0].length.toString(),
-    page: pageSize / page + 1,
+    page,
     pages: Math.ceil(batch[0].length / pageSize),
     tv_shows: showsToReturn
   }
