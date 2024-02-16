@@ -43,12 +43,8 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
       .leftJoin(
         watchedEpisodes,
         and(
-          eq(
-            watchedEpisodes.episodeId, episodes.id
-          ),
-          eq(
-            watchedEpisodes.userId, tvShows.userId
-          )
+          eq(watchedEpisodes.episodeId, episodes.id),
+          eq(watchedEpisodes.userId, tvShows.userId)
         )
       )
       .orderBy(asc(episodateTvShows.name))
