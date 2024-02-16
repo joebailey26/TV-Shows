@@ -1,9 +1,9 @@
-import { eq, isNotNull } from 'drizzle-orm'
+import { eq, isNotNull, asc, sql } from 'drizzle-orm'
 import type { H3Event } from 'h3'
 import { users, episodes, watchedEpisodes } from '../../db/schema'
 import { useDb } from '../lib/db'
 
-export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event) {
+export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodesTransformed[]> {
   const DB = await useDb(event)
 
   const watched = DB.selectDistinct({
@@ -25,12 +25,13 @@ export async function getEpisodesForShow (showId: number, userEmail: string, eve
     name: episodes.name,
     air_date: episodes.air_date,
     episodateTvShowId: episodes.episodateTvShowId,
-    watched: isNotNull(watched.episodeId)
+    watched: sql<boolean>`${isNotNull(watched.episodeId)}`
   })
     .from(episodes)
     .where(eq(episodes.episodateTvShowId, showId))
     .leftJoin(
       watched,
       eq(episodes.id, watched.episodeId)
-    ) as Promise<EpisodesTransformed[]>
+    )
+    .orderBy(asc(sql`date(${episodes.air_date})`))
 }
