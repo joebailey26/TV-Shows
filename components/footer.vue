@@ -10,7 +10,7 @@
 <template>
   <div class="footer">
     <div class="inner-content">
-      <span>Made with ♥ by <a href="https://joebailey.xyz">Joe Bailey</a></span>
+      <span>Made with ♥ by <a href="https://joebailey.xyz" target="_blank">Joe Bailey</a> using <a href="https://episodate.com" target="_blank">EpisoDate.com</a></span>
     </div>
   </div>
 </template>
