@@ -9,11 +9,12 @@ h1 {
   padding-top: 2rem;
   img {
     display: block;
-    width: auto;
+    width: 100%;
     max-width: 350px;
     height: auto;
-    aspect-ratio: 3/4.2;
-    object-fit: cover
+    max-height: 490px;
+    object-fit: cover;
+    aspect-ratio: 3/4.2
   }
 }
 .info {
@@ -30,7 +31,7 @@ h1 {
 }
 @media (min-width: 768px) {
   .header {
-    grid-template-columns: auto 1fr
+    grid-template-columns: 350px 1fr
   }
   .image-wrapper {
     grid-row: span 2
@@ -45,7 +46,7 @@ h1 {
   <div class="inner-content">
     <div class="header">
       <div class="image-wrapper">
-        <img :src="`/images?u=${encodeURIComponent(image_path ?? image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=350&h=490`" width="350">
+        <img :src="`/images?u=${encodeURIComponent(image_path ?? image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=350&h=490`" width="350" height="490" loading="eager">
         <GalexiaDate
           v-if="countdown"
           class="countdown"
