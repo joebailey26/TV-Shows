@@ -2,8 +2,15 @@ import type { H3Event } from 'h3'
 import type { Response as CloudflareResponse } from '@cloudflare/workers-types'
 import { cacheApi } from 'cf-bindings-proxy'
 
-// @ts-expect-error
-async function loadWasmModule (wasmPath: string, module): Promise<void> {
+interface WasmImageModule {
+  init: undefined | Function
+}
+
+interface WasmResizeModule {
+  initResize: undefined | Function
+}
+
+async function loadWasmModule (wasmPath: string, module: WasmImageModule|WasmResizeModule): Promise<void> {
   let wasmModule
 
   // If in a development environment, load the module from remote
@@ -23,9 +30,9 @@ async function loadWasmModule (wasmPath: string, module): Promise<void> {
 
   // Initialise wasm
   // Hack for resize wasm which doesn't follow the same naming convention
-  if (typeof module.initResize === 'function') {
+  if ('initResize' in module && typeof module.initResize === 'function') {
     await module.initResize(wasmModule)
-  } else {
+  } else if ('init' in module && typeof module.init === 'function') {
     await module.init(wasmModule)
   }
 }
@@ -75,8 +82,7 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
   const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache'
 
   const cache = await cacheApi()
-  // @ts-expect-error
-  const cacheKey = new Request(new URL(event.node.req.url, `http://${event.node.req.headers.host}`), event.node.req)
+  const cacheKey = new Request(new URL(event?.node?.req?.url ?? '', `http://${event.node.req.headers.host}`))
 
   if (isWebpSupported && !bypassCache) {
     // @ts-expect-error
