@@ -56,13 +56,14 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   }
 
   function categoryCancelled<T extends SQLiteSelect> (qb: T) {
-    return qb.where(
-      // Show has status of cancelled
-      inArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])
-    )
+    return qb
       .having(({ watchedEpisodeCount, pastEpisodeCount }) =>
-        // You have watched all released episodes
-        eq(watchedEpisodeCount, pastEpisodeCount)
+        and(
+          // Show has status of cancelled
+          inArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended']),
+          // You have watched all released episodes
+          eq(watchedEpisodeCount, pastEpisodeCount)
+        )
       )
   }
 
@@ -85,14 +86,14 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   }
 
   function categoryWaitingFor<T extends SQLiteSelect> (qb: T) {
-    return qb.where(
-      // Show does not have status of cancelled
-      notInArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended'])
-    )
-      .having(({ watchedEpisodeCount, pastEpisodeCount }) =>
+    return qb.having(({ watchedEpisodeCount, pastEpisodeCount }) =>
+      and(
+        // Show does not have status of cancelled
+        notInArray(sql`lower(${episodateTvShows.status})`, ['canceled-ended', 'ended']),
         // You have watched all released episodes
         eq(pastEpisodeCount, watchedEpisodeCount)
       )
+    )
   }
 
   const DB = await useDb(event)
