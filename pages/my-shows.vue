@@ -20,22 +20,26 @@ export default defineComponent({
       route.query.category = route.query.category[0]
     }
 
-    const fetchShows = async () => {
-      const { data } = await useFetch('/api/shows', {
+    const { data } = await useFetch('/api/shows', {
+      headers,
+      query: {
+        showCategory: route.query.category,
+        p: route.query.p
+      }
+    })
+    shows.value = data.value?.tv_shows ?? []
+    pages.value = data.value?.pages ?? 0
+
+    watch(() => [route.query.category, route.query.p], async () => {
+      const data = await $fetch('/api/shows', {
         headers,
         query: {
           showCategory: route.query.category,
           p: route.query.p
         }
       })
-      shows.value = data.value?.tv_shows ?? []
-      pages.value = data.value?.pages ?? 0
-    }
-
-    await fetchShows()
-
-    watch(() => [route.query.category, route.query.p], () => {
-      fetchShows()
+      shows.value = data.tv_shows ?? []
+      pages.value = data.pages ?? 0
     })
 
     const deleteShowCallback = (id: number) => {
