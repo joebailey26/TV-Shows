@@ -8,7 +8,7 @@ button {
   text-align: left
 }
 .watched {
-  color: green
+  color: var(--greenColor)
 }
 </style>
 
