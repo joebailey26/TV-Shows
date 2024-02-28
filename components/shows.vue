@@ -1,12 +1,27 @@
 <style lang="scss" scoped>
 .shows_container {
   display: grid;
-  grid-gap: 1rem;
+  grid-gap: 2rem;
   grid-template-columns: repeat(auto-fit, 250px);
-  margin: 2rem 0
+  margin: 2rem 0;
+  @media (max-width: 1100px) {
+    justify-content: space-around
+  }
 }
 .pagination {
   grid-column: 1/-1
+}
+</style>
+<style lang="scss">
+.pagination {
+  button {
+    &[aria-current='true'] {
+      background-image: var(--radialGradient);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+  }
 }
 </style>
 
@@ -23,6 +38,7 @@
         :should-go-to-show="shouldGoToShow"
       />
       <GalexiaPagination
+        class="pagination"
         :page-count="pageCount"
         :current-page="currentPage"
         :go-to-page="goToPage"

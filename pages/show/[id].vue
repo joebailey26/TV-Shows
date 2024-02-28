@@ -23,10 +23,12 @@ h1 {
 }
 .image-wrapper {
   position: relative;
+  width: fit-content;
   .countdown {
     position: absolute;
     inset: 0;
-    margin-top: 0
+    margin-top: 0;
+    z-index: 3;
   }
 }
 @media (min-width: 768px) {
@@ -55,6 +57,10 @@ h1 {
           day-background-color="#000000"
           month-year-text-color="#ffffff"
           month-year-background-color="#333333"
+        />
+        <ShowButtons
+          :id="id"
+          :is-tracked="tracked"
         />
       </div>
       <div class="content">

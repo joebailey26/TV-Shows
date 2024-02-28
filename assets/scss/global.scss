@@ -1,5 +1,5 @@
 :root {
-  --bodyTextColor: #282828;
+  --bodyTextColor: white;
   --whiteColor: white;
   --greenColor: #A6CF98;
   --yellowColor: #F1EB90;
@@ -7,7 +7,8 @@
   --buttonBackgroundColor: #164863;
   --buttonHoverBackgroundColor: #427D9D;
   --buttonColor: white;
-  --buttonHoverColor: white
+  --buttonHoverColor: white;
+  --radialGradient: radial-gradient(circle, #FA8BFF 0%, #2BD2FF 60%, #2BFF88 70%)
 }
 * {
   box-sizing: border-box
@@ -23,7 +24,13 @@ body {
   padding: 0;
   color: var(--bodyTextColor);
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
-  background-color: #EEEEEE
+  background-color: #1c1c1c
+}
+button {
+  color: var(--bodyTextColor);
+  &:disabled {
+    color: #b4b4b4
+  }
 }
 :any-link {
   color: inherit

@@ -13,6 +13,7 @@
   content: ''
 }
 .status__canceled-ended:before,
+.status__canceled:before,
 .status__ended:before {
   background-color: var(--redColor)
 }

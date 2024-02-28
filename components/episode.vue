@@ -4,7 +4,8 @@ button {
   background: none;
   border: none;
   border-radius: 0;
-  cursor: pointer
+  cursor: pointer;
+  text-align: left
 }
 .watched {
   color: green
