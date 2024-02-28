@@ -31,6 +31,8 @@ export default defineComponent({
     pages.value = data.value?.pages ?? 0
 
     watch(() => [route.query.category, route.query.p], async () => {
+      const nuxtApp = useNuxtApp()
+      nuxtApp.callHook('page:loading:start')
       const data = await $fetch('/api/shows', {
         headers,
         query: {
@@ -40,6 +42,7 @@ export default defineComponent({
       })
       shows.value = data.tv_shows ?? []
       pages.value = data.pages ?? 0
+      nuxtApp.callHook('page:loading:end')
     })
 
     const deleteShowCallback = (id: number) => {
