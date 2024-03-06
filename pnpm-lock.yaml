@@ -64,9 +64,6 @@ devDependencies:
   cf-bindings-proxy:
     specifier: ^0.7.1
     version: 0.7.1(@cloudflare/workers-types@4.20240222.0)(wrangler@3.28.1)
-  chokidar:
-    specifier: ^3.6.0
-    version: 3.6.0
   drizzle-kit:
     specifier: ^0.20.14
     version: 0.20.14
