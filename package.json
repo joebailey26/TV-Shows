@@ -36,7 +36,6 @@
     "@vue/runtime-dom": "^3.4.19",
     "@vue/shared": "^3.4.19",
     "cf-bindings-proxy": "^0.7.1",
-    "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.20.14",
     "drizzle-orm": "^0.29.3",

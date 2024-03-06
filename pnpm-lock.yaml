@@ -64,9 +64,6 @@ devDependencies:
   cf-bindings-proxy:
     specifier: ^0.7.1
     version: 0.7.1(@cloudflare/workers-types@4.20240208.0)(wrangler@3.28.1)
-  chokidar:
-    specifier: ^3.6.0
-    version: 3.6.0
   cross-env:
     specifier: ^7.0.3
     version: 7.0.3
