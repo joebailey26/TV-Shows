@@ -30,6 +30,11 @@ export default defineNuxtConfig({
     preset: 'cloudflare_pages',
     experimental: {
       wasm: true
+    },
+    rollupConfig: {
+      output: {
+        sourcemap: false
+      }
     }
   },
   modules: [
