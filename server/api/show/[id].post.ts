@@ -7,8 +7,6 @@ import { getUserByEmail } from '../../lib/getUserByEmail'
 import { syncShow } from '../../lib/syncShow'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const DB = await useDb(event)
-
   const userEmail = await getAuthenticatedUserEmail(event)
 
   const showIdParam = getRouterParam(event, 'id')
@@ -34,6 +32,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   await syncShow(showId, event, true)
 
+  const DB = await useDb(event)
   await DB.insert(tvShows).values({ showId, userId: user.id })
 
   setResponseStatus(event, 201)
