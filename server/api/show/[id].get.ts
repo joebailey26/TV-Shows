@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { eq, and, asc, sql, gt } from 'drizzle-orm'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
-import { tvShows, users, episodateTvShows, episodes } from '../../../db/schema'
+import { tvShows, users, episodateTvShows, episodes } from '../../db/schema'
 import { useDb } from '../../lib/db'
 import { getEpisodesForShow } from '../../lib/getEpisodesForShow'
 

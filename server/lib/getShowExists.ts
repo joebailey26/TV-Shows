@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { eq, and } from 'drizzle-orm'
-import { tvShows, users } from '../../db/schema'
+import { tvShows, users } from '../db/schema'
 import { useDb } from '../lib/db'
 
 export async function getShowExists (showId: number, userEmail: string, event: H3Event): Promise<boolean> {

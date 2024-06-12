@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import { and, eq, inArray } from 'drizzle-orm'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 import { useDb } from '../lib/db'
-import { episodateTvShows, tvShows, users } from '~/db/schema'
+import { episodateTvShows, tvShows, users } from '../db/schema'
 
 export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> => {
   const userEmail = await getAuthenticatedUserEmail(event)

@@ -2,6 +2,9 @@ import { dirname, resolve, join } from 'node:path'
 import { copyFile, mkdir } from 'fs/promises'
 
 export default defineNuxtConfig({
+  future: {
+    compatibilityVersion: 4,
+  },
   app: {
     head: {
       htmlAttrs: {

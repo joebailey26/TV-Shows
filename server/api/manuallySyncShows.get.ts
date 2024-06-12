@@ -1,7 +1,7 @@
 // This is very likely to break when we start getting more shows added due to hitting rate limits
 
 import type { H3Event } from 'h3'
-import { tvShows } from '../../db/schema'
+import { tvShows } from '../db/schema'
 import { useDb } from '../lib/db'
 import { syncShow } from '../lib/syncShow'
 

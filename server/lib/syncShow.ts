@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { episodateTvShows, episodes } from '../../db/schema'
+import { episodateTvShows, episodes } from '../db/schema'
 import { useDb } from './db'
 
 export async function syncShow (show: EpisodateShowFromSearchTransformed|number, event: H3Event, force: boolean = false): Promise<void> {

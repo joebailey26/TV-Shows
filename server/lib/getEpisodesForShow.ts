@@ -1,6 +1,6 @@
 import { eq, isNotNull, asc, sql } from 'drizzle-orm'
 import type { H3Event } from 'h3'
-import { users, episodes, watchedEpisodes } from '../../db/schema'
+import { users, episodes, watchedEpisodes } from '../db/schema'
 import { useDb } from '../lib/db'
 
 export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodesTransformed[]> {

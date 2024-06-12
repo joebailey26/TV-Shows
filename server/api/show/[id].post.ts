@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { getShowExists } from '../../lib/getShowExists'
-import { tvShows } from '../../../db/schema'
+import { tvShows } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'

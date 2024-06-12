@@ -1,9 +1,9 @@
 import type { H3Event } from 'h3'
 import { eq, and, sql } from 'drizzle-orm'
 import { ics } from '../../lib/ics'
-import { episodateTvShows, episodes, tvShows, users, watchedEpisodes } from '~/db/schema'
-import { useDb } from '~/server/lib/db'
-import { syncShow } from '~/server/lib/syncShow'
+import { episodateTvShows, episodes, tvShows, users, watchedEpisodes } from '../../db/schema'
+import { useDb } from '../../lib/db'
+import { syncShow } from '../../lib/syncShow'
 
 // Return an ICS file containing events for all episodes of all shows stored in D1.
 export default defineEventHandler(async (event: H3Event) => {
