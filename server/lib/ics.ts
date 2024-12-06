@@ -6,7 +6,7 @@ export function ics (uidDomain, prodId) {
   if (typeof uidDomain === 'undefined') { uidDomain = 'default'; }
   if (typeof prodId === 'undefined') { prodId = 'Calendar'; }
 
-  var SEPARATOR = '\n';
+  var SEPARATOR = '\r\n';
   var calendarEvents = [];
   var calendarStart = [
       'BEGIN:VCALENDAR',
@@ -215,13 +215,13 @@ export function ics (uidDomain, prodId) {
        * Build and return the ical contents
        */
       'build': function() {
-      if (calendarEvents.length < 1) {
-          return calendarEvents;
-      }
+        if (calendarEvents.length < 1) {
+            return calendarEvents;
+        }
 
-      var calendar = calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd;
+        var calendar = calendarStart + SEPARATOR + calendarEvents.join(SEPARATOR) + calendarEnd;
 
-      return calendar;
+        return calendar;
       }
   };
 }
