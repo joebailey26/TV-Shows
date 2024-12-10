@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { eq, and, sql } from 'drizzle-orm'
+import { subYears } from 'date-fns'
 import { ics } from '../../lib/ics'
 import { episodateTvShows, episodes, tvShows, users, watchedEpisodes } from '../../db/schema'
 import { useDb } from '../../lib/db'
@@ -19,6 +20,9 @@ export default defineEventHandler(async (event: H3Event) => {
   const cal = ics()
 
   const DB = await useDb(event)
+
+  // Compute the cutoff date for episodes (one year ago from now)
+  const oneYearAgo = subYears(new Date(), 1)
 
   // Get all shows
   const episodesFromDb = await DB.selectDistinct({
@@ -43,6 +47,7 @@ export default defineEventHandler(async (event: H3Event) => {
     .where(
       and(
         eq(users.email, userEmail),
+        sql`episodes.air_date >= ${oneYearAgo}`,
         sql`NOT EXISTS (
           SELECT 1 FROM ${watchedEpisodes} AS we
           JOIN ${users} AS u ON u.id = we.userId
