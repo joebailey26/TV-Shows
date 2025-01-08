@@ -2,8 +2,9 @@ import { dirname, resolve, join } from 'node:path'
 import { copyFile, mkdir } from 'fs/promises'
 
 export default defineNuxtConfig({
+  compatibilityDate: '2025-01-08',
   future: {
-    compatibilityVersion: 4,
+    compatibilityVersion: 4
   },
   app: {
     head: {
@@ -30,9 +31,13 @@ export default defineNuxtConfig({
     '~/assets/scss/global.scss'
   ],
   nitro: {
-    preset: 'cloudflare_pages',
+    preset: 'cloudflare_module',
     experimental: {
-      wasm: true
+      wasm: true,
+      tasks: true
+    },
+    scheduledTasks: {
+      '0 12 * * *': ['sync:shows']
     },
     rollupConfig: {
       output: {
@@ -60,6 +65,11 @@ export default defineNuxtConfig({
     mailgun: {
       endpoint: process.env.NUXT_MAILGUN_ENDPOINT,
       sendingKey: process.env.NUXT_MAILGUN_SENDING_KEY
+    },
+    sync_shows: {
+      calendarId: process.env.CALENDAR_ID,
+      googleCredentials: process.env.GOOGLE_CREDENTIALS,
+      calendarUrl: process.env.CALENDAR_URL
     },
     public: {
       authJs: {
