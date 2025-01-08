@@ -15,3 +15,7 @@ There is a live calendar link available so you can sync with services like Googl
 ## Develop
 
 ``` pnpm run dev ```
+
+## ToDo
+
+- Use the Nitro Cloudflare Plugin rather than the hacky cf-bindings one

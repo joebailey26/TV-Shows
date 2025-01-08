@@ -1,10 +1,19 @@
 account_id = "8259f9bfa45a74a587d6a90822de442d"
 workers_dev = true
-compatibility_date = "2023-11-15"
+compatibility_date = "2025-01-08"
+main = "./.output/server/index.mjs"
+name = 'tv-shows'
+compatibility_flags = ['nodejs_compat']
 
 [[d1_databases]]
   binding = "DB"
   database_name = "tv_shows"
   database_id = "b7ecb718-2a90-4cab-a329-8ffaf1478085"
-  migration_table = "migrations"
+  migrations_table = "migrations"
   migrations_dir = "drizzle"
+
+[triggers]
+  crons = [ "0 12 * * *" ]
+
+[site]
+  bucket = ".output/public"
