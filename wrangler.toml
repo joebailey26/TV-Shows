@@ -5,6 +5,9 @@ main = "./.output/server/index.mjs"
 name = 'tv-shows'
 compatibility_flags = ['nodejs_compat']
 
+[placement]
+  mode = "smart"
+
 [[d1_databases]]
   binding = "DB"
   database_name = "tv_shows"
