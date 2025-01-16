@@ -4,6 +4,7 @@ compatibility_date = "2025-01-08"
 main = "./.output/server/index.mjs"
 name = 'tv-shows'
 compatibility_flags = ['nodejs_compat']
+assets = { directory = "./.output/public/", binding = "ASSETS" }
 
 [placement]
   mode = "smart"
@@ -18,5 +19,7 @@ compatibility_flags = ['nodejs_compat']
 [triggers]
   crons = [ "0 12 * * *" ]
 
-[site]
-  bucket = ".output/public"
+[vars]
+  CALENDAR_URL = "https://tv.joebailey.xyz/api/calendar/billybidley26@gmail.com"
+  NUXT_MAILGUN_ENDPOINT = "https://api.eu.mailgun.net/v3/joebailey.xyz"
+  NUXT_NEXTAUTH_URL = "https://tv.joebailey.xyz"

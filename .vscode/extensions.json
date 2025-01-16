@@ -9,6 +9,7 @@
         "gencer.html-slim-scss-css-class-completion",
         "mrmlnc.vscode-scss",
         "vue.vscode-typescript-vue-plugin",
-        "Vue.volar"
+        "Vue.volar",
+        "rentalhost.npm-outdated-plus"
     ]
 }

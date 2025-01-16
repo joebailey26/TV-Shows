@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxi build",
+    "build": "cross-env NODE_OPTIONS='--max-old-space-size=8192' nuxi build",
     "serve": "wrangler pages dev dist",
     "dev": "run-p nuxt:dev cf-bindings",
     "nuxt:dev": "nuxi dev",
@@ -65,6 +65,7 @@
     }
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
     "googleapis": "^144.0.0",
     "ical": "^0.8.0"
