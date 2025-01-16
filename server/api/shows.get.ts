@@ -68,9 +68,13 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   }
 
   function categoryWantToWatch<T extends SQLiteSelect> (qb: T) {
-    return qb.having(({ watchedEpisodeCount }) =>
-      // You have not watched any episodes
-      eq(watchedEpisodeCount, 0)
+    return qb.having(({ watchedEpisodeCount, pastEpisodeCount }) =>
+      and(
+        // You have not watched any episodes
+        eq(watchedEpisodeCount, 0),
+        // At least 1 aired episode
+        gt(pastEpisodeCount, 1)
+      )
     )
   }
 
