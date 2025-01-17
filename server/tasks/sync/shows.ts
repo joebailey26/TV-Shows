@@ -80,10 +80,8 @@ export default defineTask({
     description: 'Sync my calendar'
   },
   async run () {
-    const runtimeConfig = useRuntimeConfig()
-
     // Load service account credentials
-    const credentials = JSON.parse(runtimeConfig.GOOGLE_CREDENTIALS)
+    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS)
 
     // Authenticate
     const auth = new google.auth.GoogleAuth({
@@ -96,8 +94,8 @@ export default defineTask({
 
     console.log('Starting concurrent fetch of events...')
     const [existingEvents, events] = await Promise.all([
-      fetchExistingEvents(calendar, runtimeConfig.CALENDAR_ID),
-      fetchAndParseIcs(runtimeConfig.CALENDAR_URL)
+      fetchExistingEvents(calendar, process.env.CALENDAR_ID),
+      fetchAndParseIcs(process.env.CALENDAR_URL)
     ])
 
     const existingEventMap = new Map(

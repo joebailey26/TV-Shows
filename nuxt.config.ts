@@ -52,28 +52,28 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     authJs: {
-      secret: process.env.NUXT_NEXTAUTH_SECRET // You can generate one with `openssl rand -base64 32`
+      secret: '' // You can generate one with `openssl rand -base64 32`
     },
     google: {
-      clientId: process.env.NUXT_GOOGLE_CLIENT_ID,
-      clientSecret: process.env.NUXT_GOOGLE_CLIENT_SECRET
+      clientId: '',
+      clientSecret: ''
     },
     github: {
-      clientId: process.env.NUXT_GITHUB_CLIENT_ID,
-      clientSecret: process.env.NUXT_GITHUB_CLIENT_SECRET
+      clientId: '',
+      clientSecret: ''
     },
     mailgun: {
-      endpoint: process.env.NUXT_MAILGUN_ENDPOINT,
-      sendingKey: process.env.NUXT_MAILGUN_SENDING_KEY
+      endpoint: '',
+      sendingKey: ''
     },
     sync_shows: {
-      calendarId: process.env.CALENDAR_ID,
-      googleCredentials: process.env.GOOGLE_CREDENTIALS,
-      calendarUrl: process.env.CALENDAR_URL
+      calendarId: '',
+      googleCredentials: '',
+      calendarUrl: ''
     },
     public: {
       authJs: {
-        baseUrl: process.env.NUXT_NEXTAUTH_URL, // The URL of your deployed app (used for origin Check in production)
+        baseUrl: '', // The URL of your deployed app (used for origin Check in production)
         guestRedirectTo: '/', // where to redirect if the user is not authenticated
         authenticatedRedirectTo: '/my-shows', // where to redirect if the user is authenticated
         verifyClientOnEveryRequest: false // whether to hit the /auth/session endpoint on every client request

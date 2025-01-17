@@ -3,22 +3,46 @@ import GithubProvider from '@auth/core/providers/github'
 import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-// eslint-disable-next-line
-import { getServerSession } from '#auth'
 import type { H3Event } from 'h3'
+import { skipCSRFCheck, Auth } from '@auth/core'
 import customCss from './auth.css.js'
 import { useDb } from './db'
 
-export async function getAuthenticatedUserEmail (event: H3Event) {
-  const authOptions = await useAuthOptions(event)
+async function getServerSessionResponse (event: H3Event) {
+  const options = await useAuthOptions(event)
+  const url = new URL('/api/auth/session', getRequestURL(event))
 
+  return Auth(
+    new Request(url, { headers: getRequestHeaders(event) }),
+    options
+  )
+}
+
+export async function getServerSession (event: H3Event) {
+  const response = await getServerSessionResponse(event)
+  const { status = 200 } = response
+  const data = await response.json()
+
+  if (!data || !Object.keys(data).length) {
+    return null
+  }
+
+  if (status === 200) {
+    return data
+  }
+
+  throw new Error(data.message)
+}
+
+export async function getAuthenticatedUserEmail (event: H3Event) {
   let session
 
   try {
-    session = await getServerSession(event, authOptions)
+    session = await getServerSession(event)
   } catch (e) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
+
   if (!session?.user?.email) {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
@@ -26,10 +50,12 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
   return session.user.email
 }
 
-export async function useAuthOptions (event: H3Event) {
-  const runtimeConfig = useRuntimeConfig()
+export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
+  const DB = await useDb(event)
+  const runtimeConfig = useRuntimeConfig(event)
 
-  const authOptions: AuthConfig = {
+  return {
+    adapter: DrizzleAdapter(DB),
     secret: runtimeConfig.authJs.secret,
     providers: [
       {
@@ -73,14 +99,9 @@ export async function useAuthOptions (event: H3Event) {
     trustHost: true,
     theme: {
       customCss
-    }
+    },
+    skipCSRFCheck
   }
-
-  const DB = await useDb(event)
-  // @ts-expect-error
-  authOptions.adapter = DrizzleAdapter(DB)
-
-  return authOptions
 }
 
 /**
