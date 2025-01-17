@@ -48,7 +48,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/eslint-module',
     '@nuxtjs/stylelint-module',
-    '@hebilicious/authjs-nuxt'
+    '@hebilicious/authjs-nuxt',
+    'nitro-cloudflare-dev'
   ],
   runtimeConfig: {
     authJs: {
@@ -65,11 +66,6 @@ export default defineNuxtConfig({
     mailgun: {
       endpoint: '',
       sendingKey: ''
-    },
-    sync_shows: {
-      calendarId: '',
-      googleCredentials: '',
-      calendarUrl: ''
     },
     public: {
       authJs: {

@@ -52,11 +52,10 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
 
 export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
   const DB = await useDb(event)
-  const runtimeConfig = useRuntimeConfig(event)
 
   return {
     adapter: DrizzleAdapter(DB),
-    secret: runtimeConfig.authJs.secret,
+    secret: globalThis.__env__.NUXT_AUTH_JS_SECRET,
     providers: [
       {
         id: 'mailgun',
@@ -74,10 +73,10 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
           formData.append('text', text({ url, host }))
           formData.append('html', html({ url, host, theme }))
 
-          const response = await fetch(`${runtimeConfig.mailgun.endpoint}/messages`, {
+          const response = await fetch(`${globalThis.__env__.NUXT_MAILGUN_ENDPOINT}/messages`, {
             body: formData,
             headers: {
-              Authorization: `Basic ${Buffer.from(`api:${runtimeConfig.mailgun.sendingKey}`).toString('base64')}`
+              Authorization: `Basic ${Buffer.from(`api:${globalThis.__env__.NUXT_MAILGUN_SENDING_KEY}`).toString('base64')}`
             },
             method: 'POST'
           })
@@ -88,12 +87,12 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
         }
       } as unknown as EmailConfig,
       GoogleProvider({
-        clientId: runtimeConfig.google.clientId,
-        clientSecret: runtimeConfig.google.clientSecret
+        clientId: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
+        clientSecret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET
       }),
       GithubProvider({
-        clientId: runtimeConfig.github.clientId,
-        clientSecret: runtimeConfig.github.clientSecret
+        clientId: globalThis.__env__.NUXT_GITHUB_CLIENT_ID,
+        clientSecret: globalThis.__env__.NUXT_GITHUB_CLIENT_SECRET
       })
     ],
     trustHost: true,

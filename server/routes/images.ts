@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Response as CloudflareResponse } from '@cloudflare/workers-types'
-import { cacheApi } from 'cf-bindings-proxy'
+import type { Cache, CacheStorage, Response as CloudflareResponse } from '@cloudflare/workers-types'
 
 interface WasmImageModule {
   init: undefined | Function
@@ -81,11 +80,10 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
   const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache'
 
-  const cache = await cacheApi()
+  const cache = caches as unknown as Cache
   const cacheKey = new Request(new URL(event?.node?.req?.url ?? '', `http://${event.node.req.headers.host}`))
 
   if (isWebpSupported && !bypassCache) {
-    // @ts-expect-error
     const cachedImage = await cache.match(cacheKey)
     if (cachedImage) {
       setHeader(event, 'X-Image-Cache', 'Hit')
@@ -135,7 +133,6 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
     const convertedImage = await convert(contentType, imageBuffer, width, height, fit)
     const response = new Response(convertedImage)
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
-    // @ts-expect-error
     event.waitUntil(await cache.put(cacheKey, response.clone()))
     return response
   } catch (e) {

@@ -22,7 +22,7 @@ assets = { directory = "./.output/public/", binding = "ASSETS" }
 [vars]
   CALENDAR_URL = "https://tv.joebailey.xyz/api/calendar/billybidley26@gmail.com"
   NUXT_MAILGUN_ENDPOINT = "https://api.eu.mailgun.net/v3/joebailey.xyz"
-  NUXT_NEXTAUTH_URL = "https://tv.joebailey.xyz"
+  NUXT_PUBLIC_AUTH_JS_BASE_URL = "https://tv.joebailey.xyz"
 
 [observability.logs]
   enabled = true

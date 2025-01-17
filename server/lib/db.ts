@@ -1,6 +1,4 @@
-import type { D1Database } from '@cloudflare/workers-types'
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
-import { binding } from 'cf-bindings-proxy'
 import { H3Event } from 'h3'
 import { Logger } from 'drizzle-orm/logger'
 
@@ -16,8 +14,6 @@ class MyLogger implements Logger {
   }
 }
 
-export async function useDb (event: H3Event) {
-  const D1DB: D1Database = await binding<D1Database>('DB', { fallback: event.context.cloudflare ? event.context.cloudflare.env : null })
-  const DB: DrizzleD1Database = drizzle(D1DB, { logger: new MyLogger() })
-  return DB
+export function useDb (event: H3Event): DrizzleD1Database {
+  return drizzle(globalThis.__env__.DB, { logger: new MyLogger() })
 }

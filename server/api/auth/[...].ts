@@ -1,11 +1,10 @@
 import type { H3Event } from 'h3'
 import { Auth } from '@auth/core'
 import { getRequestHeaders, getRequestURL, readRawBody } from 'h3'
+import type { ResponseInternal } from '@auth/core/types'
 import { useAuthOptions } from '../../lib/auth'
 
-export default defineEventHandler(async (event: H3Event) => {
-  const runtimeConfig = useRuntimeConfig(event)
-
+export default defineEventHandler(async (event: H3Event): Promise<ResponseInternal> => {
   const url = new URL(getRequestURL(event))
   const method = event.method
   const body = method === 'POST' ? await readRawBody(event) : undefined
@@ -15,7 +14,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if (request.method === 'POST') {
     const requestOrigin = request.headers.get('Origin')
 
-    const serverOrigin = runtimeConfig.public.authJs.baseUrl
+    const serverOrigin = globalThis.__env__.NUXT_PUBLIC_AUTH_JS_BASE_URL
 
     if (serverOrigin !== requestOrigin) {
       // eslint-disable-next-line no-console
@@ -27,5 +26,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const options = await useAuthOptions(event)
 
-  return Auth(request, options)
+  const response = await Auth(request, options)
+
+  return response
 })
