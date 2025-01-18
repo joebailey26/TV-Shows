@@ -1,5 +1,4 @@
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
-import { H3Event } from 'h3'
 import { Logger } from 'drizzle-orm/logger'
 
 class MyLogger implements Logger {
@@ -14,6 +13,6 @@ class MyLogger implements Logger {
   }
 }
 
-export function useDb (event: H3Event): DrizzleD1Database {
+export function useDb (): DrizzleD1Database {
   return drizzle(globalThis.__env__.DB, { logger: new MyLogger() })
 }

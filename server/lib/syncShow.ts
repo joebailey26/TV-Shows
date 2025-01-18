@@ -3,7 +3,7 @@ import { episodateTvShows, episodes } from '../db/schema'
 import { useDb } from './db'
 
 export async function syncShow (show: EpisodateShowFromSearchTransformed|number, event: H3Event, force: boolean = false): Promise<void> {
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   if (!force) {
     if (typeof show === 'number') {

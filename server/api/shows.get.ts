@@ -100,7 +100,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     )
   }
 
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   // If this pagination strategy starts to be slow
   // We should instead return limit + 1

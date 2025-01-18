@@ -9,7 +9,7 @@ import { getUserByEmail } from '../../lib/getUserByEmail'
 
 export default defineEventHandler(async (event: H3Event) => {
   const maxVariablesPerQuery = 49 // D1 max is 100. We divide by 2 as the insert statement uses 2 params in the query
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   const userEmail = await getAuthenticatedUserEmail(event)
 

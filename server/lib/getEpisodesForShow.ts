@@ -4,7 +4,7 @@ import { users, episodes, watchedEpisodes } from '../db/schema'
 import { useDb } from '../lib/db'
 
 export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodesTransformed[]> {
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   const watched = DB.selectDistinct({
     episodeId: watchedEpisodes.episodeId

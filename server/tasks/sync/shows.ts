@@ -1,39 +1,13 @@
-/* eslint-disable camelcase, no-console */
-
-import { google } from 'googleapis'
-import type { calendar_v3 } from 'googleapis'
-import ical from 'ical'
-import { parse, format } from 'date-fns'
-
-interface IcsEvent {
-  type: string
-  params: []
-  uid: string
-  class: string
-  description: string
-  dtstamp: Date
-  start: string
-  end: string
-  location: string
-  summary: {
-    params: {
-      LANGUAGE: string
-    }
-    val: string
-  }
-  transparency: string
-}
-
-function formatDate (input: string) {
-  const parsedDate = parse(input, 'yyyyMMdd', new Date())
-  return format(parsedDate, 'yyyy-MM-dd')
-}
+/* eslint-disable no-console */
+import { format } from 'date-fns'
+import { callGoogleCalendarApi, getAuthToken } from '../../lib/googleCalendar'
+import { getShowsForUser } from '~~/server/lib/getShowsForUser'
 
 function delay (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function executeInBatches (promises: Promise<any>[], batchSize: number, delayMs: number) {
+async function executeInBatches (promises: Array<() => Promise<any>>, batchSize: number, delayMs: number) {
   for (let i = 0; i < promises.length; i += batchSize) {
     const batch = promises.slice(i, i + batchSize).map(fn => fn())
     await Promise.all(batch) // Execute batch
@@ -43,59 +17,40 @@ async function executeInBatches (promises: Promise<any>[], batchSize: number, de
   }
 }
 
-async function fetchExistingEvents (calendar: calendar_v3.Calendar, calendarId: string) {
+async function fetchExistingEvents (token: string) {
   let pageToken = null
   const events = []
 
   console.time('Fetch existing events')
   do {
-    const response = await calendar.events.list({
-      calendarId,
-      pageToken,
-      maxResults: 100
-    })
-
-    events.push(...(response.data.items || []))
-    pageToken = response.data.nextPageToken
+    let requestUrl = '/events?maxResults=100'
+    if (pageToken) {
+      requestUrl = `${requestUrl}&pageToken=${pageToken}`
+    }
+    const response = await callGoogleCalendarApi(token, requestUrl, 'GET')
+    events.push(...(response.items || []))
+    pageToken = response.nextPageToken
   } while (pageToken)
   console.timeEnd('Fetch existing events')
 
   return events
 }
 
-/**
- * @todo Fetch from the database rather than doing a whole HTTP request
- */
-async function fetchAndParseIcs (url: string) {
-  console.time('Fetch and parse .ics')
-  const eventCalendar = await fetch(url).then(res => res.text())
-  const events = ical.parseICS(eventCalendar) as IcsEvent[]
-  console.timeEnd('Fetch and parse .ics')
-  return events
-}
-
+// ToDo
+//  Abstract this out to allow any account to sync their shows with Google, not just based off these environment variables
 export default defineTask({
   meta: {
     name: 'sync:shows',
     description: 'Sync my calendar'
   },
   async run () {
-    // Load service account credentials
-    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS)
+    const googleCalendarToken = await getAuthToken()
 
-    // Authenticate
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar']
-    })
-
-    // Set up calendar
-    const calendar = google.calendar({ version: 'v3', auth })
-
-    console.log('Starting concurrent fetch of events...')
-    const [existingEvents, events] = await Promise.all([
-      fetchExistingEvents(calendar, process.env.CALENDAR_ID),
-      fetchAndParseIcs(process.env.CALENDAR_URL)
+    const [existingEvents, episodes] = await Promise.all([
+      fetchExistingEvents(googleCalendarToken),
+      // ToDo
+      //  Don't hardcode this
+      getShowsForUser('billybidley26@gmail.com')
     ])
 
     const existingEventMap = new Map(
@@ -106,33 +61,39 @@ export default defineTask({
     const insertPromises = []
     const deletePromises = []
 
+    console.time('Prepare episodes array')
+    const preparedEpisodes = episodes
+      .filter(episode => episode.air_date)
+      .map((episode) => {
+        // Build the date for the episode
+        const date = new Date(episode.air_date)
+        // Set the date to plus one to allow for time to be added to streaming platforms etc.
+        date.setDate(date.getDate() + 1)
+
+        return {
+          title: `${episode.showName} | ${episode.name}`,
+          date: format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 'yyyy-MM-dd')
+        }
+      })
+    console.timeEnd('Prepare episodes array')
+
     console.time('Prepare insert and delete operations')
-    for (const [_, ev] of Object.entries(events)) {
-      if (ev.type !== 'VEVENT') {
-        continue
-      }
-
-      const formattedStart = formatDate(ev.start)
-      const formattedEnd = formatDate(ev.end)
-
+    for (const episode of preparedEpisodes) {
       // Check if the event already exists
       const existingEvent = Array.from(existingEventMap.values()).find(
         e =>
-          e.summary === ev.summary.val &&
-          e.start.date === formattedStart &&
-          e.end.date === formattedEnd
+          e.summary === episode.title &&
+          e.start.date === episode.date &&
+          e.end.date === episode.date
       )
 
       if (!existingEvent) {
         // Event does not exist, add it
         insertPromises.push(() =>
-          calendar.events.insert({
-            calendarId: process.env.CALENDAR_ID,
-            requestBody: {
-              summary: ev.summary.val,
-              start: { date: formattedStart },
-              end: { date: formattedEnd }
-            }
+          callGoogleCalendarApi(googleCalendarToken, '/events', 'POST', {
+            summary: episode.title,
+            start: { date: episode.date },
+            end: { date: episode.date }
           })
         )
       }
@@ -140,21 +101,16 @@ export default defineTask({
 
     // Determine events to delete (existing but not in `.ics`)
     for (const event of existingEvents) {
-      const isStillInICS = Object.entries(events).some(
-        ([_, ev]) =>
-          ev.type === 'VEVENT' &&
-          event.summary === ev.summary.val &&
-          event.start.date === formatDate(ev.start) &&
-          event.end.date === formatDate(ev.end)
+      const isStillInICS = preparedEpisodes.some(
+        episode =>
+          event.summary === episode.title &&
+          event.start.date === episode.date &&
+          event.end.date === episode.date
       )
 
       if (!isStillInICS) {
         deletePromises.push(() =>
-          // eslint-disable-next-line drizzle/enforce-delete-with-where
-          calendar.events.delete({
-            calendarId: process.env.CALENDAR_ID,
-            eventId: event.id
-          })
+          callGoogleCalendarApi(googleCalendarToken, `/events/${event.id}`, 'DELETE')
         )
       }
     }

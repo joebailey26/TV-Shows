@@ -31,7 +31,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   const searchedShowIds = data.tv_shows.map(show => show.id)
 
   if (searchedShowIds.length > 0) {
-    const DB = await useDb(event)
+    const DB = await useDb()
 
     const trackedShows = await DB.select({
       id: episodateTvShows.id

@@ -7,7 +7,7 @@ import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   const userEmail = await getAuthenticatedUserEmail(event)
 

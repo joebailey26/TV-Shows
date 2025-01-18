@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS='--max-old-space-size=8192' nuxi build",
+    "build": "nuxi build",
     "serve": "wrangler pages dev dist",
     "dev": "nuxi dev",
     "migrations:generate": "drizzle-kit generate:sqlite --schema=db/schema.ts",
@@ -33,12 +33,15 @@
     "@vue/runtime-core": "^3.5.13",
     "@vue/runtime-dom": "^3.5.13",
     "@vue/shared": "^3.5.13",
+    "date-fns": "^4.1.0",
     "drizzle-kit": "^0.22.8",
     "drizzle-orm": "^0.31.4",
     "eslint": "^8.57.1",
     "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
     "eslint-plugin-drizzle": "^0.2.3",
     "h3": "^1.13.1",
+    "js-base64": "^3.7.7",
+    "nitro-cloudflare-dev": "^0.2.1",
     "nitropack": "^2.10.4",
     "nuxt": "^3.15.2",
     "nuxt-component-date": "github:Galexia-Agency/nuxt-component-date",
@@ -49,12 +52,7 @@
     "typescript": "^5.7.3",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
-    "wrangler": "^3.103.2",
-    "nitro-cloudflare-dev": "^0.2.1",
-    "cross-env": "^7.0.3",
-    "date-fns": "^4.1.0",
-    "googleapis": "^144.0.0",
-    "ical": "^0.8.0"
+    "wrangler": "^3.103.2"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"

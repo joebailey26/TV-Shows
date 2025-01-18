@@ -4,7 +4,7 @@ import { tvShows, users } from '../db/schema'
 import { useDb } from '../lib/db'
 
 export async function getShowExists (showId: number, userEmail: string, event: H3Event): Promise<boolean> {
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   const showResponse = await DB.selectDistinct({ id: tvShows.id })
     .from(tvShows)

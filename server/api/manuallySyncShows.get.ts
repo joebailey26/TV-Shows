@@ -6,7 +6,7 @@ import { useDb } from '../lib/db'
 import { syncShow } from '../lib/syncShow'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   const results = await DB.select().from(tvShows)
 

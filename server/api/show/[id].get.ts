@@ -16,7 +16,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
 
   const showId = parseInt(showIdParam)
 
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   const countdown = DB.selectDistinct({
     id: sql<number>`${episodes.id}`.as('countdownId'),

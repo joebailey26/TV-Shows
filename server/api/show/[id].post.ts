@@ -32,7 +32,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   await syncShow(showId, event, true)
 
-  const DB = await useDb(event)
+  const DB = await useDb()
   await DB.insert(tvShows).values({ showId, userId: user.id })
 
   setResponseStatus(event, 201)

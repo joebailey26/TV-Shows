@@ -20,7 +20,6 @@ assets = { directory = "./.output/public/", binding = "ASSETS" }
   crons = [ "0 12 * * *" ]
 
 [vars]
-  CALENDAR_URL = "https://tv.joebailey.xyz/api/calendar/billybidley26@gmail.com"
   NUXT_MAILGUN_ENDPOINT = "https://api.eu.mailgun.net/v3/joebailey.xyz"
   NUXT_PUBLIC_AUTH_JS_BASE_URL = "https://tv.joebailey.xyz"
 

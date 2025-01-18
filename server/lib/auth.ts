@@ -51,7 +51,7 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
 }
 
 export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
-  const DB = await useDb(event)
+  const DB = await useDb()
 
   return {
     adapter: DrizzleAdapter(DB),
