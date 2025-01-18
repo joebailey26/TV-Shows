@@ -80,7 +80,7 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
   const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache'
 
-  const cache = caches as unknown as Cache
+  const cache = caches.default
   const cacheKey = new Request(new URL(event?.node?.req?.url ?? '', `http://${event.node.req.headers.host}`))
 
   if (isWebpSupported && !bypassCache) {
