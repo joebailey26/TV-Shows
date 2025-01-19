@@ -6,16 +6,12 @@ The app queries the [Episodate API](https://www.episodate.com/api) when you perf
 
 The app is built with Nuxt 3, so server functions can be deployed to [Cloudflare Pages](https://pages.cloudflare.com/). Nitro takes care of packaging everything up into Workers.
 
-On initial load, the app queries D1 for all TV Shows associated with your user. Only the show ID is stored in D1. We use some middleware that searches [Workers KV](https://www.cloudflare.com/en-gb/develop-platform/workers-kv/) for the key of the Show. Stored along with that key is a response from the Episodate API containing the show's information. The KV store has a TTL of 8 hours, which ensures we periodically fetch the latest info, without spamming the API and hitting rate limits. If the show is not in KV, then we send a request to the Episodate API and store it.
+On initial load, the app queries D1 for all TV Shows associated with your user. We use D1 to cache a response from the Episodate API containing the show's information. We have a cron job set up to fetch the latest info, without spamming the API and hitting rate limits. If the show is not in D1, then we send a request to the Episodate API and store it.
 
 The TV show is green for currently airing. Red for canceled/finished. And has no color for shows that haven't announced new episodes yet.
 
-There is a live calendar link available so you can sync with services like Google Calendar.
+There is a live calendar link available so you can sync with services like Google Calendar. Google Calendar isn't very reliable when syncing from a URL, so custom functionality is currently being built.
 
 ## Develop
 
 ``` pnpm run dev ```
-
-## ToDo
-
-- Use the Nitro Cloudflare Plugin rather than the hacky cf-bindings one
