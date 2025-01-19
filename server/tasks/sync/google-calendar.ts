@@ -2,20 +2,7 @@
 import { format } from 'date-fns'
 import { callGoogleCalendarApi, getAuthToken } from '../../lib/googleCalendar'
 import { getShowsForUser } from '~~/server/lib/getShowsForUser'
-
-function delay (ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-async function executeInBatches (promises: Array<() => Promise<any>>, batchSize: number, delayMs: number) {
-  for (let i = 0; i < promises.length; i += batchSize) {
-    const batch = promises.slice(i, i + batchSize).map(fn => fn())
-    await Promise.all(batch) // Execute batch
-    if (i + batchSize < promises.length) {
-      await delay(delayMs) // Delay before next batch
-    }
-  }
-}
+import { executeInBatches } from '~~/server/lib/helpers'
 
 async function fetchExistingEvents (token: string) {
   let pageToken = null
@@ -40,7 +27,7 @@ async function fetchExistingEvents (token: string) {
 //  Abstract this out to allow any account to sync their shows with Google, not just based off these environment variables
 export default defineTask({
   meta: {
-    name: 'sync:shows',
+    name: 'sync:google-calendar',
     description: 'Sync my calendar'
   },
   async run () {
@@ -127,6 +114,7 @@ export default defineTask({
     console.timeEnd('Insert events')
 
     console.log('Synchronization complete.')
+
     return { result: 'Success' }
   }
 })

@@ -43,10 +43,6 @@ export default defineEventHandler(async (event: H3Event) => {
   // This also lets Google Calendar sync from this endpoint
   setHeader(event, 'Content-Type', 'text/calendar')
 
-  // ToDo
-  //  This should really be on a cron, but we do this instead each time this endpoint is hit
-  event.waitUntil(Promise.all(episodesFromDb.map(show => show.showId ? syncShow(show.showId, event) : null)))
-
   // Return the built calendar
   return cal.build()
 })

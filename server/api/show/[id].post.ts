@@ -30,7 +30,7 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await syncShow(showId, event, true)
+  await syncShow(showId, true)
 
   const DB = await useDb()
   await DB.insert(tvShows).values({ showId, userId: user.id })

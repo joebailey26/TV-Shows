@@ -5,7 +5,6 @@ import { getAuthenticatedUserEmail } from '../lib/auth'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
 import { useDb } from '../lib/db'
-import { syncShow } from '../lib/syncShow'
 
 type ShowCategory = 'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'|''
 
@@ -161,10 +160,6 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
       tracked: true
     } as EpisodateShowFromSearchTransformed
   })
-
-  // ToDo
-  //  This should really be on a cron, but we do this instead each time this endpoint is hit
-  event.waitUntil(Promise.all(showsToReturn.map(show => syncShow(show, event))))
 
   return {
     total: batch[0].length.toString(),

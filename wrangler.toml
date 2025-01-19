@@ -17,7 +17,10 @@ assets = { directory = "./.output/public/", binding = "ASSETS" }
   migrations_dir = "drizzle"
 
 [triggers]
-  crons = [ "0 12 * * *" ]
+  crons = [
+    "0 11 * * *",
+    "0 12 * * *"
+  ]
 
 [vars]
   NUXT_MAILGUN_ENDPOINT = "https://api.eu.mailgun.net/v3/joebailey.xyz"
