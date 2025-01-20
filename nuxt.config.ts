@@ -37,7 +37,7 @@ export default defineNuxtConfig({
       tasks: true
     },
     scheduledTasks: {
-      '0 11 * * *': ['sync:episodate'],
+      '*/10 * * * *': ['sync:episodate'],
       '0 12 * * *': ['sync:google-calendar']
     },
     rollupConfig: {

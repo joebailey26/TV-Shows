@@ -18,7 +18,7 @@ assets = { directory = "./.output/public/", binding = "ASSETS" }
 
 [triggers]
   crons = [
-    "0 11 * * *",
+    "*/10 * * * *",
     "0 12 * * *"
   ]
 

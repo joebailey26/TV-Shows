@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
 import { ics } from '../../lib/ics'
-import { syncShow } from '../../lib/syncShow'
 import { getShowsForUser } from '~~/server/lib/getShowsForUser'
 
 // Return an ICS file containing events for all episodes of all shows stored in D1.

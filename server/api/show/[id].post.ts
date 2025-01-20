@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
+import { eq } from 'drizzle-orm'
 import { getShowExists } from '../../lib/getShowExists'
-import { tvShows } from '../../db/schema'
+import { episodateTvShows, tvShows } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'
@@ -30,9 +31,14 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await syncShow(showId, true)
-
   const DB = await useDb()
+
+  // Only sync the show if it does not already exist
+  const episodateShows = await DB.select({ id: episodateTvShows.id }).from(episodateTvShows).where(eq(episodateTvShows.id, showId)).limit(1)
+  if (episodateShows.length === 0) {
+    await syncShow(showId)
+  }
+
   await DB.insert(tvShows).values({ showId, userId: user.id })
 
   setResponseStatus(event, 201)

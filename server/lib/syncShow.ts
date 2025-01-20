@@ -1,24 +1,9 @@
+import { format } from 'date-fns'
 import { episodateTvShows, episodes } from '../db/schema'
 import { useDb } from './db'
 
-export async function syncShow (show: EpisodateShowFromSearchTransformed|number, force: boolean = false): Promise<void> {
+export async function syncShow (showId: number): Promise<void> {
   const DB = await useDb()
-
-  if (!force) {
-    if (typeof show === 'number') {
-      // If show is a number, force is a required param
-      return
-    }
-    const currentTime = new Date().getTime() // Get the current time
-    const storedTime = new Date(show.updatedAt).getTime() // Convert stored timestamp to Date object
-    const differenceInHours = (currentTime - storedTime) / 1000 / 3600 // Calculate difference in hours
-    // Only update if 8 hours has elapsed since last update
-    if (differenceInHours < 8) {
-      return
-    }
-  }
-
-  const showId = typeof show === 'number' ? show : show.id
 
   const episodateData = await fetch(`https://www.episodate.com/api/show-details?q=${showId}`)
   const r = await episodateData.json() as EpisodateShowDetails
@@ -27,6 +12,8 @@ export async function syncShow (show: EpisodateShowFromSearchTransformed|number,
   if (!tvShow.id) {
     // eslint-disable-next-line
     console.error(`We didn't receive data from the Episodate API for show ${showId}`)
+
+    return
   }
 
   const contentToUpsert = {
@@ -47,7 +34,8 @@ export async function syncShow (show: EpisodateShowFromSearchTransformed|number,
     rating: tvShow.rating,
     rating_count: tvShow.rating_count,
     genres: tvShow.genres.join(','),
-    pictures: tvShow.pictures.join(',')
+    pictures: tvShow.pictures.join(','),
+    updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   }
 
   const batchStatements = []
@@ -82,6 +70,5 @@ export async function syncShow (show: EpisodateShowFromSearchTransformed|number,
     )
   }
 
-  // @ts-expect-error
   await DB.batch(batchStatements)
 }
