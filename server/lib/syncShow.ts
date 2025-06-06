@@ -1,9 +1,23 @@
 import { format } from 'date-fns'
-import { episodateTvShows, episodes } from '../db/schema'
+import { eq } from 'drizzle-orm'
+import { episodateTvShows, episodes, tvShows, users } from '../db/schema'
 import { useDb } from './db'
+import { sendEmail } from './sendEmail'
 
 export async function syncShow (showId: number): Promise<void> {
   const DB = await useDb()
+
+  const existing = await DB.select({
+    start_date: episodateTvShows.start_date,
+    status: episodateTvShows.status,
+    name: episodateTvShows.name
+  })
+    .from(episodateTvShows)
+    .where(eq(episodateTvShows.id, showId))
+    .limit(1)
+
+  const prevStartDate = existing[0]?.start_date || null
+  const prevStatus = existing[0]?.status || null
 
   const episodateData = await fetch(`https://www.episodate.com/api/show-details?q=${showId}`)
   const r = await episodateData.json() as EpisodateShowDetails
@@ -71,4 +85,26 @@ export async function syncShow (showId: number): Promise<void> {
   }
 
   await DB.batch(batchStatements)
+
+  const releaseDateAdded = !prevStartDate && tvShow.start_date
+  const cancelled = prevStatus && !['canceled-ended', 'ended'].includes(prevStatus.toLowerCase()) && ['canceled-ended', 'ended'].includes((tvShow.status || '').toLowerCase())
+
+  if (releaseDateAdded || cancelled) {
+    const watchers = await DB.select({ email: users.email })
+      .from(tvShows)
+      .leftJoin(users, eq(tvShows.userId, users.id))
+      .where(eq(tvShows.showId, showId))
+
+    const subject = cancelled
+      ? `${tvShow.name} has been cancelled`
+      : `${tvShow.name} has a release date`
+
+    const message = cancelled
+      ? `The show ${tvShow.name} has been marked as cancelled.`
+      : `The show ${tvShow.name} will premiere on ${tvShow.start_date}.`
+
+    await Promise.all(
+      watchers.map(w => sendEmail(w.email, subject, message, `<p>${message}</p>`))
+    )
+  }
 }
