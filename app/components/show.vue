@@ -44,7 +44,7 @@
 </style>
 
 <template>
-  <nuxt-link :class="['show', {'shouldGoToShow': shouldGoToShow}]" :href="shouldGoToShow ? `/show/${show.id}` : ''">
+  <nuxt-link :class="['show', {'shouldGoToShow': computedShouldGoToShow}]" :href="computedShouldGoToShow ? `/show/${show.id}` : ''">
     <img class="show__image" :src="`/images?u=${encodeURIComponent(show.image_thumbnail_path?.replace('thumbnail', 'full') ?? 'https://placehold.co/250x600')}&w=250&h=375`" width="250" :loading="index < 10 ? 'eager' : 'lazy'">
     <div class="show__description">
       <h3>{{ show.name }}</h3>
@@ -83,6 +83,11 @@ export default defineComponent({
     index: {
       type: Number,
       default: 0
+    }
+  },
+  computed: {
+    computedShouldGoToShow (): boolean {
+      return this.shouldGoToShow || this.show.tracked
     }
   }
 })
