@@ -50,8 +50,35 @@ export default defineNuxtConfig({
     '@nuxtjs/eslint-module',
     '@nuxtjs/stylelint-module',
     '@hebilicious/authjs-nuxt',
-    'nitro-cloudflare-dev'
+    'nitro-cloudflare-dev',
+    '@vite-pwa/nuxt'
   ],
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'TV Shows',
+      short_name: 'TV Shows',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      start_url: '/',
+      icons: [
+        {
+          src: '/android-chrome-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/android-chrome-256x256.png',
+          sizes: '256x256',
+          type: 'image/png'
+        }
+      ]
+    },
+    workbox: {
+      navigateFallback: '/offline.html'
+    }
+  },
   runtimeConfig: {
     authJs: {
       secret: '' // You can generate one with `openssl rand -base64 32`

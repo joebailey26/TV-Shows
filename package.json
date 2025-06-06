@@ -55,7 +55,8 @@
     "typescript": "^5.7.3",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
-    "wrangler": "^3.103.2"
+    "wrangler": "^3.103.2",
+    "@vite-pwa/nuxt": "^0.8.4"
   },
   "browserslist": [
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
