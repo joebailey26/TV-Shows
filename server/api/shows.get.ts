@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } from 'drizzle-orm'
-import { SQLiteSelect } from 'drizzle-orm/sqlite-core'
+import type { SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
@@ -28,12 +28,12 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   // If offset starts to be slow
   // We could use SELECT WHERE NOT IN ( SELECT episodateTvShows.id FROM episodateTvShows ORDER BY episodateTvShows.name ASC LIMIT :offset )
   // This effectively skips the first X rows
-  function withPagination<T extends SQLiteSelect> (qb: T, page: number, pageSize: number = ps) {
+  function withPagination<T extends SQLiteSelect>(qb: T, page: number, pageSize: number = ps) {
     return qb.limit(pageSize).offset((page - 1) * pageSize)
   }
 
-  function querySetup<T extends SQLiteSelect> (qb: T, sort: SortType, order: SortOrder) {
-    qb = qb.leftJoin(
+  function querySetup(qb: SQLiteSelect, sort: SortType, order: SortOrder): SQLiteSelect {
+    let q = qb.leftJoin(
       tvShows,
       eq(tvShows.showId, episodateTvShows.id)
     )
@@ -59,20 +59,19 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
       .where(eq(users.email, userEmail))
 
     if (sort === 'episodesToWatch') {
-      qb = qb.orderBy(
+      q = q.orderBy(
         order === 'asc'
           ? asc(sql`count(distinct ${episodes.id}) - count(distinct ${watchedEpisodes.id})`)
           : desc(sql`count(distinct ${episodes.id}) - count(distinct ${watchedEpisodes.id})`),
         order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name)
       )
     } else {
-      qb = qb.orderBy(order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name))
+      q = q.orderBy(order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name))
     }
-
-    return qb
+    return q
   }
 
-  function categoryCancelled<T extends SQLiteSelect> (qb: T) {
+  function categoryCancelled(qb: SQLiteSelect) {
     return qb
       .having(({ watchedEpisodeCount, pastEpisodeCount }) =>
         and(
@@ -84,7 +83,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
       )
   }
 
-  function categoryWantToWatch<T extends SQLiteSelect> (qb: T) {
+  function categoryWantToWatch(qb: SQLiteSelect) {
     return qb.having(({ watchedEpisodeCount, pastEpisodeCount }) =>
       and(
         // You have not watched any episodes
@@ -95,7 +94,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     )
   }
 
-  function categoryToCatchUpOn<T extends SQLiteSelect> (qb: T) {
+  function categoryToCatchUpOn(qb: SQLiteSelect) {
     return qb.having(({ watchedEpisodeCount, pastEpisodeCount }) =>
       and(
         // There have been episodes released that you have not watched
@@ -106,7 +105,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     )
   }
 
-  function categoryWaitingFor<T extends SQLiteSelect> (qb: T) {
+  function categoryWaitingFor(qb: SQLiteSelect) {
     return qb.having(({ watchedEpisodeCount, pastEpisodeCount }) =>
       and(
         // Show does not have status of cancelled

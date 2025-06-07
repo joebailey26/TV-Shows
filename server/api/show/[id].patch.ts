@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { eq, and, inArray, sql } from 'drizzle-orm'
-import { BatchItem } from 'drizzle-orm/batch'
+import type { BatchItem } from 'drizzle-orm/batch'
 import { getShowExists } from '../../lib/getShowExists'
 import { episodes, watchedEpisodes, users } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
