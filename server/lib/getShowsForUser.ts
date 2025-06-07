@@ -15,6 +15,7 @@ export const getShowsForUser = async (userEmail: string): Promise<Show[]> => {
 
   return await DB.selectDistinct({
     name: episodes.name,
+    // eslint-disable-next-line camelcase
     air_date: episodes.air_date,
     showName: sql<string>`${episodateTvShows.name} as showName`,
     showId: episodateTvShows.id

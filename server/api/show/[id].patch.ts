@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { eq, and, inArray, sql } from 'drizzle-orm'
-import { BatchItem } from 'drizzle-orm/batch'
+import type { BatchItem } from 'drizzle-orm/batch'
 import { getShowExists } from '../../lib/getShowExists'
 import { episodes, watchedEpisodes, users } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
@@ -154,8 +154,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   if (dbRequestBatch.length > 0) {
-    // @ts-expect-error
-    await DB.batch(dbRequestBatch)
+    await DB.batch(dbRequestBatch as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
   }
 
   return watchedEpisodesToPush.map(episode => episode.id)

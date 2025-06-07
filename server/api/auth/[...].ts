@@ -1,14 +1,13 @@
 import type { H3Event } from 'h3'
 import { Auth } from '@auth/core'
 import { getRequestHeaders, getRequestURL, readRawBody } from 'h3'
-import type { ResponseInternal } from '@auth/core/types'
 import { useAuthOptions } from '../../lib/auth'
 
-export default defineEventHandler(async (event: H3Event): Promise<ResponseInternal> => {
+export default defineEventHandler(async (event: H3Event): Promise<Response> => {
   const url = new URL(getRequestURL(event))
   const method = event.method
   const body = method === 'POST' ? await readRawBody(event) : undefined
-  const request = new Request(url, { headers: getRequestHeaders(event), method, body })
+  const request = new Request(url, { headers: new Headers(getRequestHeaders(event) as Record<string, string>), method, body })
 
   // CSRF Check
   if (request.method === 'POST') {
@@ -16,8 +15,8 @@ export default defineEventHandler(async (event: H3Event): Promise<ResponseIntern
 
     // Prefer explicit config and fall back to Cloudflare's preview URL
     const serverOrigin =
-      globalThis.__env__.NUXT_PUBLIC_AUTH_JS_BASE_URL ??
-      globalThis.__env__.CF_PAGES_URL
+      __env__.NUXT_PUBLIC_AUTH_JS_BASE_URL ??
+      __env__.CF_PAGES_URL
 
     if (serverOrigin !== requestOrigin) {
       // eslint-disable-next-line no-console
@@ -31,5 +30,5 @@ export default defineEventHandler(async (event: H3Event): Promise<ResponseIntern
 
   const response = await Auth(request, options)
 
-  return response
+  return response as Response
 })

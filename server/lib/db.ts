@@ -1,5 +1,6 @@
-import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
-import { Logger } from 'drizzle-orm/logger'
+import type { DrizzleD1Database } from 'drizzle-orm/d1'
+import { drizzle } from 'drizzle-orm/d1'
+import type { Logger } from 'drizzle-orm/logger'
 
 class MyLogger implements Logger {
   logQuery (query: string, params: unknown[]): void {
@@ -14,5 +15,5 @@ class MyLogger implements Logger {
 }
 
 export function useDb (): DrizzleD1Database {
-  return drizzle(globalThis.__env__.DB, { logger: new MyLogger() })
+  return drizzle(__env__.DB, { logger: new MyLogger() })
 }

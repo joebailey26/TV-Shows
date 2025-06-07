@@ -15,7 +15,7 @@ if (existsSync(file)) {
 let secret = ''
 try {
   secret = execSync('openssl rand -base64 32').toString().trim()
-} catch (err) {
+} catch {
   console.warn('OpenSSL not found, using Node crypto as fallback.')
   secret = randomBytes(32).toString('base64')
 }

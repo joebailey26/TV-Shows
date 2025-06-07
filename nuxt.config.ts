@@ -1,5 +1,6 @@
 import { dirname, resolve, join } from 'node:path'
 import { copyFile, mkdir } from 'fs/promises'
+import eslint from '@nuxt/eslint-plugin'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-08',
@@ -47,11 +48,87 @@ export default defineNuxtConfig({
     }
   },
   modules: [
-    '@nuxtjs/eslint-module',
+    eslint,
     '@nuxtjs/stylelint-module',
     '@hebilicious/authjs-nuxt',
-    'nitro-cloudflare-dev'
+    'nitro-cloudflare-dev',
+    '@vite-pwa/nuxt'
   ],
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'TV Shows',
+      short_name: 'TV Shows',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      start_url: '/',
+      icons: [
+        {
+          src: '/android-chrome-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/android-chrome-256x256.png',
+          sizes: '256x256',
+          type: 'image/png'
+        }
+      ]
+    },
+    workbox: {
+      navigateFallback: null,
+      runtimeCaching: [
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'POST',
+          options: {
+            backgroundSync: {
+              name: 'post-api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'PATCH',
+          options: {
+            backgroundSync: {
+              name: 'patch-api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'DELETE',
+          options: {
+            backgroundSync: {
+              name: 'delete-api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkFirst',
+          method: 'GET',
+          options: {
+            cacheName: 'api-cache'
+          }
+        }
+      ]
+    }
+  },
   runtimeConfig: {
     authJs: {
       secret: '' // You can generate one with `openssl rand -base64 32`
