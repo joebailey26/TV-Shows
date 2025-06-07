@@ -26,6 +26,9 @@ nav {
   justify-content: space-between;
   width: 100%
 }
+.nav-search {
+  margin-left: auto;
+}
 .mobile-toggle {
   display: none;
   color: inherit;
@@ -44,6 +47,7 @@ nav {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
+    order: 2;
     &.open {
       display: flex
     }
@@ -53,6 +57,11 @@ nav {
     flex-direction: column;
     align-items: stretch;
     width: 100%
+  }
+  .nav-search {
+    order: 1;
+    width: 100%;
+    margin-left: 0;
   }
 }
 .nav-link {
@@ -89,7 +98,6 @@ nav {
           </nuxt-link>
         </div>
         <div class="right">
-          <Search />
           <a class="download-calendar button" :href="`/api/calendar/${userEmail}`" :download="`tv_joebailey_xyz_calendar_${userEmail}`">
             Download calendar
           </a>
@@ -97,6 +105,9 @@ nav {
             Sign Out
           </a>
         </div>
+      </div>
+      <div class="nav-search">
+        <Search />
       </div>
     </div>
   </nav>
