@@ -3,7 +3,7 @@ import { Logger } from 'drizzle-orm/logger'
 
 class MyLogger implements Logger {
   logQuery (query: string, params: unknown[]): void {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && process.env.DB_LOGGING) {
       /* eslint-disable no-console */
       console.log({ query, params })
       console.log('\n')

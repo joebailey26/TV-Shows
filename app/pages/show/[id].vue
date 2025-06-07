@@ -27,8 +27,8 @@ h1 {
   .countdown {
     position: absolute;
     inset: 0;
-    margin-top: 0;
     z-index: 3;
+    margin-top: 0
   }
 }
 @media (min-width: 768px) {
@@ -61,6 +61,7 @@ h1 {
         <ShowButtons
           :id="id"
           :is-tracked="tracked"
+          :delete-show-callback="deleteShowCallback"
         />
       </div>
       <div class="content">
@@ -103,6 +104,7 @@ export default defineComponent({
     GalexiaDate
   },
   async setup () {
+    const router = useRouter()
     const headers = useRequestHeaders(['cookie']) as HeadersInit
     definePageMeta({ middleware: 'auth' })
     const route = useRoute()
@@ -163,10 +165,15 @@ export default defineComponent({
       }
     }
 
+    const deleteShowCallback = () => {
+      router.push('/my-shows')
+    }
+
     return {
       ...toRefs(show.value),
       updateShow,
-      seasons
+      seasons,
+      deleteShowCallback
     }
   }
 })
