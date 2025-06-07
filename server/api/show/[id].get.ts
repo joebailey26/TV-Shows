@@ -87,7 +87,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
       )
     )
     .limit(1)
-    .prepare('getShow')
+    .prepare()
 
   const showResponse = await showStmt.all()
 

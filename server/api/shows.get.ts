@@ -124,14 +124,14 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   // From this we can work out that there are more records to return
   const countQuery = DB.select({
     watchedEpisodeCount: countDistinct(watchedEpisodes.id),
-    pastEpisodeCount: countDistinct(episodes.id)
-  })
-    .from(episodateTvShows)
-    .$dynamic()
-
-  const query = DB.select({
-    id: episodateTvShows.id,
-    name: episodateTvShows.name,
+  const countStmt = countQuery.prepare()
+  const queryStmt = query.prepare()
+  const [countResult, showsResult] = await Promise.all([
+    countStmt.all(),
+    queryStmt.all()
+  const showsToReturn = showsResult.map((show) => {
+    total: countResult.length.toString(),
+    pages: Math.ceil(countResult.length / pageSize),
     permalink: episodateTvShows.permalink,
     start_date: episodateTvShows.start_date,
     end_date: episodateTvShows.end_date,

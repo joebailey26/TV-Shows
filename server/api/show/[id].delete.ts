@@ -39,7 +39,7 @@ export default defineEventHandler(async (event: H3Event) => {
         eq(tvShows.userId, user.id)
       )
     )
-    .prepare('deleteTvShow')
+    .prepare()
 
   await deleteStmt.execute()
 

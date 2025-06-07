@@ -44,7 +44,7 @@ export const getShowsForUser = async (userEmail: string): Promise<Show[]> => {
         )`
       )
     )
-    .prepare('getShowsForUser')
+    .prepare()
 
   return await stmt.all()
 }

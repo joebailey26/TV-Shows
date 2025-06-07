@@ -27,7 +27,7 @@ export default defineTask({
         )
       )
       .limit(10)
-      .prepare('staleShows')
+      .prepare()
 
     const results = await stmt.all()
 

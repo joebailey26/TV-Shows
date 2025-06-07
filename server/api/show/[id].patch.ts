@@ -54,7 +54,7 @@ export default defineEventHandler(async (event: H3Event) => {
       )
     )
     .limit(1)
-    .prepare('findEpisode')
+    .prepare()
 
   const watchedEpisode = await watchedEpisodeStmt.all()
 
@@ -90,7 +90,7 @@ export default defineEventHandler(async (event: H3Event) => {
       watched,
       eq(episodes.id, watched.episodeId)
     )
-    .prepare('episodesForPatch')
+    .prepare()
 
   const episodesFromDb = await episodesStmt.all()
 

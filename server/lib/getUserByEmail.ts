@@ -11,7 +11,7 @@ export async function getUserByEmail (email: string, event: H3Event) {
       eq(users.email, email)
     )
     .limit(1)
-    .prepare('getUserByEmail')
+    .prepare()
 
   const foundUsers = await stmt.all()
 

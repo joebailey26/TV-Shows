@@ -34,13 +34,13 @@ export default defineEventHandler(async (event: H3Event) => {
   const DB = await useDb()
 
   // Only sync the show if it does not already exist
-  const episodateShowStmt = DB.select({ id: episodateTvShows.id }).from(episodateTvShows).where(eq(episodateTvShows.id, showId)).limit(1).prepare('episodateCheck')
+  const episodateShowStmt = DB.select({ id: episodateTvShows.id }).from(episodateTvShows).where(eq(episodateTvShows.id, showId)).limit(1).prepare()
   const episodateShows = await episodateShowStmt.all()
   if (episodateShows.length === 0) {
     await syncShow(showId)
   }
 
-  const insertStmt = DB.insert(tvShows).values({ showId, userId: user.id }).prepare('insertTvShow')
+  const insertStmt = DB.insert(tvShows).values({ showId, userId: user.id }).prepare()
   await insertStmt.execute()
 
   setResponseStatus(event, 201)

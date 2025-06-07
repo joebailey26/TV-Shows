@@ -34,7 +34,7 @@ export async function getEpisodesForShow (showId: number, userEmail: string, eve
       eq(episodes.id, watched.episodeId)
     )
     .orderBy(asc(sql`date(${episodes.air_date})`))
-    .prepare('getEpisodesForShow')
+    .prepare()
 
   return stmt.all()
 }

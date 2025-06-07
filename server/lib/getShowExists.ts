@@ -19,7 +19,7 @@ export async function getShowExists (showId: number, userEmail: string, event: H
       )
     )
     .limit(1)
-    .prepare('getShowExists')
+    .prepare()
 
   const showResponse = await stmt.all()
 

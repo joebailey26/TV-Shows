@@ -51,7 +51,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
           inArray(episodateTvShows.id, searchedShowIds)
         )
       )
-      .prepare('searchTrackedShows')
+      .prepare()
 
     const trackedShows = await stmt.all()
 
