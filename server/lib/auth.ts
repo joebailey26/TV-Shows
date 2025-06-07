@@ -57,7 +57,7 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
 
   return {
     adapter: DrizzleAdapter(DB) as unknown as AuthConfig['adapter'],
-    secret: globalThis.__env__.NUXT_AUTH_JS_SECRET,
+    secret: __env__.NUXT_AUTH_JS_SECRET,
     providers: [
       {
         id: 'mailgun',
@@ -75,10 +75,10 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
           formData.append('text', text({ url, host }))
           formData.append('html', html({ url, host, theme }))
 
-          const response = await fetch(`${globalThis.__env__.NUXT_MAILGUN_ENDPOINT}/messages`, {
+          const response = await fetch(`${__env__.NUXT_MAILGUN_ENDPOINT}/messages`, {
             body: formData,
             headers: {
-              Authorization: `Basic ${Buffer.from(`api:${globalThis.__env__.NUXT_MAILGUN_SENDING_KEY}`).toString('base64')}`
+              Authorization: `Basic ${Buffer.from(`api:${__env__.NUXT_MAILGUN_SENDING_KEY}`).toString('base64')}`
             },
             method: 'POST'
           })
@@ -89,13 +89,13 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
         }
       } as unknown as EmailConfig,
       GoogleProvider({
-        clientId: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
-        clientSecret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET,
+        clientId: __env__.NUXT_GOOGLE_CLIENT_ID,
+        clientSecret: __env__.NUXT_GOOGLE_CLIENT_SECRET,
         allowDangerousEmailAccountLinking: true
       }),
       GithubProvider({
-        clientId: globalThis.__env__.NUXT_GITHUB_CLIENT_ID,
-        clientSecret: globalThis.__env__.NUXT_GITHUB_CLIENT_SECRET,
+        clientId: __env__.NUXT_GITHUB_CLIENT_ID,
+        clientSecret: __env__.NUXT_GITHUB_CLIENT_SECRET,
         allowDangerousEmailAccountLinking: true
       })
     ],

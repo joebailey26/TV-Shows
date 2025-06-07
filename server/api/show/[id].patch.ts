@@ -154,7 +154,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   if (dbRequestBatch.length > 0) {
-    await DB.batch(dbRequestBatch)
+    await DB.batch(dbRequestBatch as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
   }
 
   return watchedEpisodesToPush.map(episode => episode.id)

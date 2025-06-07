@@ -13,7 +13,6 @@
     "migrations:apply:local": "wrangler d1 migrations apply tv_shows --local",
     "migrations:list:remote": "wrangler d1 migrations list tv_shows --remote",
     "migrations:apply:remote": "wrangler d1 migrations apply tv_shows --remote",
-    "preinstall": "echo '@galexia-agency:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}' > .npmrc",
     "postinstall": "nuxi prepare && node ./scripts/postinstall.js",
     "lint:scripts": "eslint .",
     "fix:scripts": "eslint . --fix",

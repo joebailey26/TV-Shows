@@ -1,5 +1,9 @@
 export {}
 
 declare global {
-  const __env__: Record<string, string>
+  // eslint-disable-next-line no-var
+  var __env__: Record<string, string>
+  interface GlobalThis {
+    __env__: Record<string, string>
+  }
 }
