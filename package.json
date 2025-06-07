@@ -1,7 +1,7 @@
 {
   "name": "tv-shows",
   "private": true,
-  "packageManager": "pnpm@8.10.5",
+  "packageManager": "pnpm@10.11.1",
   "type": "module",
   "scripts": {
     "build": "nuxi build",
@@ -56,6 +56,7 @@
     "typescript": "^5.8.3",
     "vue": "^3.5.16",
     "vue-router": "^4.5.1",
+    "vue-tsc": "^2.2.10",
     "wrangler": "^4.19.1"
   },
   "browserslist": [
