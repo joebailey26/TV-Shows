@@ -76,7 +76,55 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/offline.html'
+      runtimeCaching: [
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'POST',
+          options: {
+            backgroundSync: {
+              name: 'api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'PATCH',
+          options: {
+            backgroundSync: {
+              name: 'api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'DELETE',
+          options: {
+            backgroundSync: {
+              name: 'api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkFirst',
+          method: 'GET',
+          options: {
+            cacheName: 'api-cache'
+          }
+        }
+      ]
     }
   },
   runtimeConfig: {
