@@ -17,7 +17,7 @@ async function fetchExistingEvents (token: string, calendarId: string) {
     if (pageToken) {
       requestUrl = `${requestUrl}&pageToken=${pageToken}`
     }
-    const response = await callGoogleCalendarApi(token, requestUrl, 'GET', null, calendarId)
+    const response: any = await callGoogleCalendarApi(token, requestUrl, 'GET', null, calendarId)
     events.push(...(response.items || []))
     pageToken = response.nextPageToken
   } while (pageToken)
@@ -38,6 +38,7 @@ export default defineTask({
     const googleAccounts = await DB.select({
       userId: accounts.userId,
       email: users.email,
+      calendarId: accounts.calendarId,
       access_token: accounts.access_token,
       refresh_token: accounts.refresh_token,
       expires_at: accounts.expires_at
@@ -46,12 +47,12 @@ export default defineTask({
       .innerJoin(users, eq(accounts.userId, users.id))
       .where(eq(accounts.provider, 'google'))
 
-    for (const account of googleAccounts) {
+    await Promise.all(googleAccounts.map(async (account) => {
       let token = account.access_token
 
       if (!token || (account.expires_at && account.expires_at * 1000 < Date.now())) {
         if (!account.refresh_token) {
-          continue
+          return
         }
         const params = new URLSearchParams({
           client_id: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
@@ -65,7 +66,7 @@ export default defineTask({
           body: params.toString()
         })
         if (!resp.ok) {
-          continue
+          return
         }
         const data = await resp.json()
         token = data.access_token
@@ -74,13 +75,29 @@ export default defineTask({
           .set({ access_token: token, expires_at: expires })
           .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
       }
-
-      if (!token) {
-        throw new Error('Can\'t login to Google')
+      let calendarId = account.calendarId
+      if (!calendarId) {
+        const calResp = await fetch('https://www.googleapis.com/calendar/v3/calendars', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ summary: 'TV Shows' })
+        })
+        if (!calResp.ok) {
+          return
+        }
+        const calData = await calResp.json()
+        calendarId = calData.id
+        await DB.update(accounts)
+          .set({ calendarId })
+          .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
       }
 
-      const [existingEvents, episodes] = await Promise.all([
-        fetchExistingEvents(token, 'primary'),
+        fetchExistingEvents(token, calendarId as string),
+          }, calendarId as string)
+      }
+
+          callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE', null, calendarId as string)
+    }));
         getShowsForUser(account.email)
       ])
 
