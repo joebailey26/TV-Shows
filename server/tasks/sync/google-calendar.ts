@@ -7,7 +7,7 @@ import { useDb } from '~~/server/lib/db'
 import { accounts, users } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
 
-async function fetchExistingEvents (token: string, calendarId: string) {
+async function fetchExistingEvents(token: string, calendarId: string) {
   let pageToken = null
   const events = []
 
@@ -15,9 +15,10 @@ async function fetchExistingEvents (token: string, calendarId: string) {
   do {
     let requestUrl = '/events?maxResults=100'
     if (pageToken) {
-      requestUrl = `${requestUrl}&pageToken=${pageToken}`
+      requestUrl += `&pageToken=${pageToken}`
     }
     const response: any = await callGoogleCalendarApi(token, requestUrl, 'GET', null, calendarId)
+    console.log(`Fetched ${response.items?.length || 0} events from page`)
     events.push(...(response.items || []))
     pageToken = response.nextPageToken
   } while (pageToken)
@@ -29,7 +30,7 @@ async function fetchExistingEvents (token: string, calendarId: string) {
 export default defineTask({
   meta: {
     name: 'sync:google-calendar',
-    description: 'Sync my calendar'
+    description: 'Sync all user calendars'
   },
   async run () {
     const DB = await useDb()
@@ -45,136 +46,169 @@ export default defineTask({
       .innerJoin(users, eq(accounts.userId, users.id))
       .where(eq(accounts.provider, 'google'))
 
-    await Promise.all(googleAccounts.map(async (account) => {
+    console.log(`Found ${googleAccounts.length} Google account(s)`)
+
+    await Promise.all(googleAccounts.map(async (account, i) => {
+      console.log(`\n--- Processing account #${i + 1}: ${account.email} ---`)
       let token = account.access_token
 
       if (!token || (account.expires_at && account.expires_at * 1000 < Date.now())) {
         if (!account.refresh_token) {
+          console.warn('Missing refresh token. Skipping user.')
           return
         }
+
+        console.log('Refreshing access token...')
         const params = new URLSearchParams({
           client_id: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
           client_secret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET,
           refresh_token: account.refresh_token,
           grant_type: 'refresh_token'
         })
+
         const resp = await fetch('https://oauth2.googleapis.com/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: params.toString()
         })
+
         if (!resp.ok) {
+          console.error('Failed to refresh token:', await resp.text())
           return
         }
+
         const data = await resp.json()
         token = data.access_token
         const expires = Math.floor(Date.now() / 1000) + data.expires_in
+
+        console.log('Token refreshed successfully.')
+
         await DB.update(accounts)
           .set({ access_token: token, expires_at: expires })
           .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
       }
+
+      if (!token) {
+        console.error('Could not log in to Google')
+        return
+      }
+
       let calendarId = account.calendarId
       if (!calendarId) {
+        console.log('Creating new calendar...')
         const calResp = await fetch('https://www.googleapis.com/calendar/v3/calendars', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
           body: JSON.stringify({ summary: 'TV Shows' })
         })
+
         if (!calResp.ok) {
+          console.error('Failed to create calendar:', calResp.status)
+          console.error(await calResp.text())
           return
         }
+
         const calData = await calResp.json()
         calendarId = calData.id
+        console.log('Calendar created with ID:', calendarId)
+
         await DB.update(accounts)
           .set({ calendarId })
           .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
       }
 
-        fetchExistingEvents(token, calendarId as string),
-          }, calendarId as string)
+      if (!calendarId) {
+        console.error('Could not find or create calendar')
+        return
       }
 
-          callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE', null, calendarId as string)
-    }));
+      console.log('Using calendarId:', calendarId)
+
+      const [existingEvents, episodes] = await Promise.all([
+        fetchExistingEvents(token, calendarId),
         getShowsForUser(account.email)
       ])
+
+      console.log(`Fetched ${existingEvents.length} existing events`)
+      console.log(`Fetched ${episodes.length} episodes for user`)
 
       const existingEventMap = new Map(
         existingEvents.map((event: any) => [event.id, event])
       )
 
-      // Prepare operations
       const insertPromises = []
       const deletePromises = []
 
-    console.time('Prepare episodes array')
-    const preparedEpisodes = episodes
-      .filter(episode => episode.air_date)
-      .map((episode) => {
-        // Build the date for the episode
-        const date = new Date(episode.air_date)
-        // Set the date to plus one to allow for time to be added to streaming platforms etc.
-        date.setDate(date.getDate() + 1)
+      console.time('Prepare episodes array')
+      const preparedEpisodes = episodes
+        .filter(episode => episode.air_date)
+        .map((episode) => {
+          const date = new Date(episode.air_date)
+          date.setDate(date.getDate() + 1)
 
-        return {
-          title: `${episode.showName} | ${episode.name}`,
-          date: format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 'yyyy-MM-dd')
-        }
-      })
-    console.timeEnd('Prepare episodes array')
+          return {
+            title: `${episode.showName} | ${episode.name}`,
+            date: format(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 'yyyy-MM-dd')
+          }
+        })
+      console.timeEnd('Prepare episodes array')
+
+      console.log(`Prepared ${preparedEpisodes.length} episodes`)
 
       console.time('Prepare insert and delete operations')
       for (const episode of preparedEpisodes) {
-      // Check if the event already exists
-      const existingEvent = Array.from(existingEventMap.values()).find(
-        e =>
-          e.summary === episode.title &&
-          e.start.date === episode.date &&
-          e.end.date === episode.date
-      )
-
-      if (!existingEvent) {
-        // Event does not exist, add it
-        insertPromises.push(() =>
-          callGoogleCalendarApi(token, '/events', 'POST', {
-            summary: episode.title,
-            start: { date: episode.date },
-            end: { date: episode.date }
-          })
+        const existingEvent = Array.from(existingEventMap.values()).find(
+          e =>
+            e.summary === episode.title &&
+            e.start.date === episode.date &&
+            e.end.date === episode.date
         )
-      }
+
+        if (!existingEvent) {
+          insertPromises.push(() =>
+            callGoogleCalendarApi(token, '/events', 'POST', {
+              summary: episode.title,
+              start: { date: episode.date },
+              end: { date: episode.date }
+            }, calendarId)
+          )
+        }
       }
 
-    // Determine events to delete (existing but not in `.ics`)
-    for (const event of existingEvents) {
-      const isStillInICS = preparedEpisodes.some(
-        episode =>
-          event.summary === episode.title &&
-          event.start.date === episode.date &&
-          event.end.date === episode.date
-      )
-
-      if (!isStillInICS) {
-        deletePromises.push(() =>
-          callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE')
+      for (const event of existingEvents) {
+        const isStillInICS = preparedEpisodes.some(
+          episode =>
+            event.summary === episode.title &&
+            event.start.date === episode.date &&
+            event.end.date === episode.date
         )
-      }
+
+        if (!isStillInICS) {
+          deletePromises.push(() =>
+            callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE', null, calendarId)
+          )
+        }
       }
       console.timeEnd('Prepare insert and delete operations')
 
-      // Execute deletions in batches
+      console.log(`Will insert ${insertPromises.length} events`)
+      console.log(`Will delete ${deletePromises.length} events`)
+
       console.time('Delete events')
       await executeInBatches(deletePromises, 10, 2000)
       console.timeEnd('Delete events')
 
-      // Execute insertions in batches
       console.time('Insert events')
       await executeInBatches(insertPromises, 10, 2000)
       console.timeEnd('Insert events')
 
-    }
-    console.log('Synchronization complete.')
+      console.log(`Finished processing ${account.email}`)
+    }))
 
+    console.log('\nSynchronization complete.')
     return { result: 'Success' }
   }
 })
