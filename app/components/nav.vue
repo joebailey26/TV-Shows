@@ -73,7 +73,9 @@ nav {
   text-decoration: none
 }
 .nav-link.active {
-  color: var(--yellowColor)
+  color: transparent;
+  background-image: var(--radialGradient);
+  background-clip: text
 }
 .button {
   min-height: 0
@@ -88,19 +90,19 @@ nav {
       </button>
       <div :class="['menu', { open: isMenuOpen }]">
         <div class="left">
-          <nuxt-link to="/my-shows" class="nav-link" exact-active-class="active">
+          <nuxt-link to="/my-shows" class="nav-link" :class="{ active: !$route.query.category }">
             All Shows
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=toCatchUpOn" class="nav-link" exact-active-class="active">
+          <nuxt-link to="/my-shows?category=toCatchUpOn" class="nav-link" :class="{ active: $route.query.category === 'toCatchUpOn' }">
             To Catch Up On
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=wantToWatch" class="nav-link" exact-active-class="active">
+          <nuxt-link to="/my-shows?category=wantToWatch" class="nav-link" :class="{ active: $route.query.category === 'wantToWatch' }">
             Want To Watch
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=waitingFor" class="nav-link" exact-active-class="active">
+          <nuxt-link to="/my-shows?category=waitingFor" class="nav-link" :class="{ active: $route.query.category === 'waitingFor' }">
             Waiting For
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=cancelled" class="nav-link" exact-active-class="active">
+          <nuxt-link to="/my-shows?category=cancelled" class="nav-link" :class="{ active: $route.query.category === 'cancelled' }">
             Cancelled
           </nuxt-link>
         </div>
@@ -139,6 +141,7 @@ export default defineComponent({
     }
 
     watch(() => route.path, () => { state.isMenuOpen = false })
+    watch(() => route.query, () => { state.isMenuOpen = false })
 
     return state
   }
