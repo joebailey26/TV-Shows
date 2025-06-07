@@ -13,7 +13,7 @@
     "migrations:apply:local": "wrangler d1 migrations apply tv_shows --local",
     "migrations:list:remote": "wrangler d1 migrations list tv_shows --remote",
     "migrations:apply:remote": "wrangler d1 migrations apply tv_shows --remote",
-    "postinstall": "nuxi prepare && openssl rand -base64 32 | tr -d '\n' | sed 's/^/NUXT_AUTH_JS_SECRET=/' > .dev.vars",
+    "postinstall": "nuxi prepare && node ./scripts/postinstall.js",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
