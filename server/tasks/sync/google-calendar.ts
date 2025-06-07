@@ -1,10 +1,13 @@
 /* eslint-disable no-console */
 import { format } from 'date-fns'
-import { callGoogleCalendarApi, getAuthToken } from '../../lib/googleCalendar'
+import { callGoogleCalendarApi } from '../../lib/googleCalendar'
 import { getShowsForUser } from '~~/server/lib/getShowsForUser'
 import { executeInBatches } from '~~/server/lib/helpers'
+import { useDb } from '~~/server/lib/db'
+import { accounts, users } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
-async function fetchExistingEvents (token: string) {
+async function fetchExistingEvents (token: string, calendarId: string) {
   let pageToken = null
   const events = []
 
@@ -14,7 +17,7 @@ async function fetchExistingEvents (token: string) {
     if (pageToken) {
       requestUrl = `${requestUrl}&pageToken=${pageToken}`
     }
-    const response = await callGoogleCalendarApi(token, requestUrl, 'GET')
+    const response = await callGoogleCalendarApi(token, requestUrl, 'GET', null, calendarId)
     events.push(...(response.items || []))
     pageToken = response.nextPageToken
   } while (pageToken)
@@ -31,22 +34,59 @@ export default defineTask({
     description: 'Sync my calendar'
   },
   async run () {
-    const googleCalendarToken = await getAuthToken()
+    const DB = await useDb()
+    const googleAccounts = await DB.select({
+      userId: accounts.userId,
+      email: users.email,
+      access_token: accounts.access_token,
+      refresh_token: accounts.refresh_token,
+      expires_at: accounts.expires_at
+    })
+      .from(accounts)
+      .innerJoin(users, eq(accounts.userId, users.id))
+      .where(eq(accounts.provider, 'google'))
 
-    const [existingEvents, episodes] = await Promise.all([
-      fetchExistingEvents(googleCalendarToken),
-      // ToDo
-      //  Don't hardcode this
-      getShowsForUser('billybidley26@gmail.com')
-    ])
+    for (const account of googleAccounts) {
+      let token = account.access_token
 
-    const existingEventMap = new Map(
-      existingEvents.map(event => [event.id, event])
-    )
+      if (!token || (account.expires_at && account.expires_at * 1000 < Date.now())) {
+        if (!account.refresh_token) {
+          continue
+        }
+        const params = new URLSearchParams({
+          client_id: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
+          client_secret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET,
+          refresh_token: account.refresh_token,
+          grant_type: 'refresh_token'
+        })
+        const resp = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        })
+        if (!resp.ok) {
+          continue
+        }
+        const data = await resp.json()
+        token = data.access_token
+        const expires = Math.floor(Date.now() / 1000) + data.expires_in
+        await DB.update(accounts)
+          .set({ access_token: token, expires_at: expires })
+          .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
+      }
 
-    // Prepare operations
-    const insertPromises = []
-    const deletePromises = []
+      const [existingEvents, episodes] = await Promise.all([
+        fetchExistingEvents(token, 'primary'),
+        getShowsForUser(account.email)
+      ])
+
+      const existingEventMap = new Map(
+        existingEvents.map((event: any) => [event.id, event])
+      )
+
+      // Prepare operations
+      const insertPromises = []
+      const deletePromises = []
 
     console.time('Prepare episodes array')
     const preparedEpisodes = episodes
@@ -64,8 +104,8 @@ export default defineTask({
       })
     console.timeEnd('Prepare episodes array')
 
-    console.time('Prepare insert and delete operations')
-    for (const episode of preparedEpisodes) {
+      console.time('Prepare insert and delete operations')
+      for (const episode of preparedEpisodes) {
       // Check if the event already exists
       const existingEvent = Array.from(existingEventMap.values()).find(
         e =>
@@ -77,14 +117,14 @@ export default defineTask({
       if (!existingEvent) {
         // Event does not exist, add it
         insertPromises.push(() =>
-          callGoogleCalendarApi(googleCalendarToken, '/events', 'POST', {
+          callGoogleCalendarApi(token, '/events', 'POST', {
             summary: episode.title,
             start: { date: episode.date },
             end: { date: episode.date }
           })
         )
       }
-    }
+      }
 
     // Determine events to delete (existing but not in `.ics`)
     for (const event of existingEvents) {
@@ -97,22 +137,23 @@ export default defineTask({
 
       if (!isStillInICS) {
         deletePromises.push(() =>
-          callGoogleCalendarApi(googleCalendarToken, `/events/${event.id}`, 'DELETE')
+          callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE')
         )
       }
+      }
+      console.timeEnd('Prepare insert and delete operations')
+
+      // Execute deletions in batches
+      console.time('Delete events')
+      await executeInBatches(deletePromises, 10, 2000)
+      console.timeEnd('Delete events')
+
+      // Execute insertions in batches
+      console.time('Insert events')
+      await executeInBatches(insertPromises, 10, 2000)
+      console.timeEnd('Insert events')
+
     }
-    console.timeEnd('Prepare insert and delete operations')
-
-    // Execute deletions in batches
-    console.time('Delete events')
-    await executeInBatches(deletePromises, 10, 2000)
-    console.timeEnd('Delete events')
-
-    // Execute insertions in batches
-    console.time('Insert events')
-    await executeInBatches(insertPromises, 10, 2000)
-    console.timeEnd('Insert events')
-
     console.log('Synchronization complete.')
 
     return { result: 'Success' }
