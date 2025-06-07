@@ -16,6 +16,9 @@ There is a live calendar link available so you can sync with services like Googl
 
 Pull requests automatically deploy to a temporary Cloudflare Worker so reviewers can test changes before merge. The URL is posted as a comment on the PR.
 
+Cloudflare automatically sets `CF_PAGES_URL` during preview deployments.
+Ensure this variable or `NUXT_PUBLIC_AUTH_JS_BASE_URL` is available to your worker so Auth JS can validate request origins.
+
 
 ## Develop
 
