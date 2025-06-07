@@ -85,7 +85,7 @@ export default defineNuxtConfig({
           method: 'POST',
           options: {
             backgroundSync: {
-              name: 'api-queue',
+              name: 'post-api-queue',
               options: {
                 maxRetentionTime: 60 * 24
               }
@@ -98,7 +98,7 @@ export default defineNuxtConfig({
           method: 'PATCH',
           options: {
             backgroundSync: {
-              name: 'api-queue',
+              name: 'patch-api-queue',
               options: {
                 maxRetentionTime: 60 * 24
               }
@@ -111,7 +111,7 @@ export default defineNuxtConfig({
           method: 'DELETE',
           options: {
             backgroundSync: {
-              name: 'api-queue',
+              name: 'delete-api-queue',
               options: {
                 maxRetentionTime: 60 * 24
               }
