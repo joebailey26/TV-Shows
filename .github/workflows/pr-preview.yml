@@ -25,14 +25,17 @@ jobs:
           command: "deploy --name tv-shows-pr-${{ github.event.number }}"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment preview URL
-        if: steps.deploy.outputs.deployment-url
+        if: ${{ steps.deploy.outputs.deployment-url }}
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const url = process.env.DEPLOY_URL
             github.rest.issues.createComment({
               ...context.repo,
               issue_number: context.issue.number,
-              body: `Preview deployment available at ${ steps.deploy.outputs['deployment-url'] }`
+              body: `Preview deployment available at ${url}`
             })
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
 
