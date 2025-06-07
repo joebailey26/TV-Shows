@@ -1,3 +1,35 @@
+<style lang="scss" scoped>
+  .sort-controls {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    justify-content: end;
+    margin-top: 1rem;
+    margin-bottom: 1rem
+  }
+  .sort-select {
+    height: 2rem;
+    padding: 0 .5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: .5rem
+  }
+  .sort-order-btn {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: 1rem;
+    background-color: var(--buttonBackgroundColor);
+    border: none;
+    border-radius: .5rem;
+    cursor: pointer;
+    transition: background-color .1s ease-in-out;
+    &:hover {
+      background-color: var(--buttonHoverBackgroundColor)
+    }
+  }
+</style>
+
 <template>
   <main class="inner-content">
     <div class="sort-controls">
@@ -26,6 +58,8 @@ export default defineComponent({
     const pages = ref(0)
 
     const route = useRoute()
+    const router = useRouter()
+
     if (Array.isArray(route.query.category)) {
       route.query.category = route.query.category[0]
     }
@@ -70,8 +104,6 @@ export default defineComponent({
       if (index !== -1) { shows.value.splice(index, 1) }
     }
 
-    const router = useRouter()
-
     const changeSort = (event: Event) => {
       const value = (event.target as HTMLSelectElement).value
       router.push({ path: route.path, query: { ...route.query, sort: value, p: 1 } })
@@ -93,35 +125,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.sort-controls {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  margin-bottom: 1rem;
-}
-
-.sort-select {
-  height: 2rem;
-  padding: 0 .5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: .5rem;
-}
-
-.sort-order-btn {
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  font-size: 1rem;
-  background-color: var(--buttonBackgroundColor);
-  border: none;
-  border-radius: .5rem;
-  cursor: pointer;
-  transition: background-color .1s ease-in-out;
-  &:hover {
-    background-color: var(--buttonHoverBackgroundColor);
-  }
-}
-</style>
