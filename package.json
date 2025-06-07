@@ -13,7 +13,7 @@
     "migrations:apply:local": "wrangler d1 migrations apply tv_shows --local",
     "migrations:list:remote": "wrangler d1 migrations list tv_shows --remote",
     "migrations:apply:remote": "wrangler d1 migrations apply tv_shows --remote",
-    "postinstall": "nuxi prepare",
+    "postinstall": "nuxi prepare && node ./scripts/postinstall.js",
     "lint:scripts": "eslint --ext .js,.vue .",
     "fix:scripts": "eslint --ext .js,.vue . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
