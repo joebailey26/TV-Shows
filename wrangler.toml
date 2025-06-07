@@ -22,9 +22,13 @@ assets = { directory = "./.output/public/", binding = "ASSETS" }
     "0 12 * * *"
   ]
 
+[[routes]]
+  pattern = "tv.joebailey.xyz/*"
+  zone_id = "8ef065a9318fac4a900a53c7338208f8"
+
 [vars]
   NUXT_MAILGUN_ENDPOINT = "https://api.eu.mailgun.net/v3/joebailey.xyz"
-  NUXT_PUBLIC_AUTH_JS_BASE_URL = "https://tv.joebailey.xyz"
+  DB_LOGGING=false
 
 [observability.logs]
   enabled = true
