@@ -94,7 +94,7 @@ export async function syncShow (showId: number): Promise<void> {
     )
   }
 
-await DB.batch(batchStatements as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
+  await DB.batch(batchStatements as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
 
   const releaseDateAdded = !prevStartDate && tvShow.start_date
   const cancelled = prevStatus && !['canceled-ended', 'ended'].includes(prevStatus.toLowerCase()) && ['canceled-ended', 'ended'].includes((tvShow.status || '').toLowerCase())
@@ -114,7 +114,7 @@ await DB.batch(batchStatements as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]
       : `The show ${tvShow.name} will premiere on ${tvShow.start_date}.`
 
     await Promise.all(
-      watchers.map(w => sendEmail(w.email, subject, message, `<p>${message}</p>`))
+      watchers.map(w => (w.email ? sendEmail(w.email, subject, message, `<p>${message}</p>`) : null))
     )
   }
 }
