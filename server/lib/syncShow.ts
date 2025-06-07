@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { episodateTvShows, episodes } from '../db/schema'
 import { useDb } from './db'
+import type { BatchItem } from 'drizzle-orm/batch'
 
 export async function syncShow (showId: number): Promise<void> {
   const DB = await useDb()
@@ -38,7 +39,7 @@ export async function syncShow (showId: number): Promise<void> {
     updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   }
 
-  const batchStatements = []
+  const batchStatements: BatchItem<'sqlite'>[] = []
 
   batchStatements.push(
     DB.insert(episodateTvShows).values({
@@ -70,5 +71,5 @@ export async function syncShow (showId: number): Promise<void> {
     )
   }
 
-  await DB.batch(batchStatements)
+  await DB.batch(batchStatements as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
 }
