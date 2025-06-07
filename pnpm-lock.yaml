@@ -8,6 +8,9 @@ patchedDependencies:
   '@auth/core@0.18.6':
     hash: e9e5c7351088a10712f5137704df989652af8da0593a16b7f982a9441d1515b4
     path: patches/@auth__core@0.18.6.patch
+  nitro-cloudflare-dev@0.2.2:
+    hash: ad531df3bb71c3d0533d92a86533f708cd670078c4c90533cf979de7282d0f56
+    path: patches/nitro-cloudflare-dev@0.2.2.patch
 
 importers:
 
@@ -87,7 +90,7 @@ importers:
         version: 3.7.7
       nitro-cloudflare-dev:
         specifier: ^0.2.2
-        version: 0.2.2
+        version: 0.2.2(patch_hash=ad531df3bb71c3d0533d92a86533f708cd670078c4c90533cf979de7282d0f56)
       nitropack:
         specifier: ^2.11.12
         version: 2.11.12(drizzle-orm@0.38.4(@cloudflare/workers-types@4.20250607.0))
@@ -10675,7 +10678,7 @@ snapshots:
       p-wait-for: 5.0.2
       qs: 6.14.0
 
-  nitro-cloudflare-dev@0.2.2:
+  nitro-cloudflare-dev@0.2.2(patch_hash=ad531df3bb71c3d0533d92a86533f708cd670078c4c90533cf979de7282d0f56):
     dependencies:
       consola: 3.4.2
       mlly: 1.7.4
