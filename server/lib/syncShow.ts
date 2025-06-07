@@ -9,6 +9,7 @@ export async function syncShow (showId: number): Promise<void> {
   const DB = await useDb()
 
   const existing = await DB.select({
+    // eslint-disable-next-line camelcase
     start_date: episodateTvShows.start_date,
     status: episodateTvShows.status,
     name: episodateTvShows.name

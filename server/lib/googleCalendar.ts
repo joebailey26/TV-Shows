@@ -88,8 +88,8 @@ export const getAuthToken = async (): Promise<string> => {
   return JSON.parse(text).access_token
 }
 
-export const callGoogleCalendarApi = async (token: string, endpoint: string, method: string, payload: object|null = null): Promise<any> => {
-  const requestUrl = `https://www.googleapis.com/calendar/v3/calendars/${__env__.CALENDAR_ID}${endpoint}`
+export const callGoogleCalendarApi = async (token: string, endpoint: string, method: string, payload: object|null = null, calendarId: string): Promise<any> => {
+  const requestUrl = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}${endpoint}`
 
   const response = await fetch(requestUrl, {
     method,

@@ -91,7 +91,15 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
       GoogleProvider({
         clientId: __env__.NUXT_GOOGLE_CLIENT_ID,
         clientSecret: __env__.NUXT_GOOGLE_CLIENT_SECRET,
-        allowDangerousEmailAccountLinking: true
+        allowDangerousEmailAccountLinking: true,
+        authorization: {
+          params: {
+            scope: 'openid email profile https://www.googleapis.com/auth/calendar',
+            // eslint-disable-next-line camelcase
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
       }),
       GithubProvider({
         clientId: __env__.NUXT_GITHUB_CLIENT_ID,
