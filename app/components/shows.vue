@@ -4,7 +4,7 @@
   grid-gap: 2rem;
   grid-template-columns: repeat(auto-fit, 250px);
   margin: 2rem 0;
-  @media (max-width: 1100px) {
+  @media (width <= 1100px) {
     justify-content: space-around
   }
 }
@@ -16,10 +16,10 @@
 .pagination {
   button {
     &[aria-current='true'] {
+      color: transparent;
+      -webkit-text-fill-color: transparent;
       background-image: var(--radialGradient);
       background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
     }
   }
 }

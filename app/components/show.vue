@@ -1,9 +1,9 @@
 <style lang="scss" scoped>
 .show {
   position: relative;
+  border: 1px solid transparent;
   box-shadow: 0 2px 5px 0 rgb(0 0 0 / 6%), 0 2px 10px 0 rgb(0 0 0 / 12%);
   cursor: initial;
-  border: 1px solid transparent;
   transition: ease-in .25s border-color;
   &.shouldGoToShow {
     cursor: pointer
@@ -15,23 +15,23 @@
 
 }
 .show__image {
+  display: block;
   width: 100%;
   height: 375px;
   object-fit: cover;
-  display: block;
 }
 .show__description {
-  width: 100%;
-  left: 0;
-  bottom: 0;
   position: absolute;
-  padding: 1.5rem .5rem;
-  height: fit-content;
+  bottom: 0;
+  left: 0;
   display: grid;
   grid-gap: 1rem;
+  width: 100%;
+  height: fit-content;
+  padding: 1.5rem .5rem;
   text-align: center;
   text-decoration: none;
-  background-image: linear-gradient(0deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0) 100%);
+  background-image: linear-gradient(0deg, rgb(0 0 0 / 90%) 0%, rgb(0 0 0 / 50%) 70%, rgb(0 0 0 / 0%) 100%);
   backdrop-filter: blur(2px);
   h3,
   p {

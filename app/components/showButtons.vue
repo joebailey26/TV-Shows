@@ -3,12 +3,12 @@
   position: absolute;
   z-index: 2;
   inset: 0;
-  background-image: linear-gradient(180deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,0.5) 70%, rgba(0,0,0,0) 100%);
-  backdrop-filter: blur(1px);
-  height: fit-content;
   display: flex;
   justify-content: flex-end;
+  height: fit-content;
   padding: 1rem .5rem;
+  background-image: linear-gradient(180deg, rgb(0 0 0 / 90%) 0%, rgb(0 0 0 / 50%) 70%, rgb(0 0 0 / 0%) 100%);
+  backdrop-filter: blur(1px);
 }
 .button {
   width: 1rem;

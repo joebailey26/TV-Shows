@@ -27,11 +27,11 @@ h1 {
   .countdown {
     position: absolute;
     inset: 0;
-    margin-top: 0;
     z-index: 3;
+    margin-top: 0;
   }
 }
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .header {
     grid-template-columns: 350px 1fr
   }
