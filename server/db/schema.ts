@@ -49,6 +49,7 @@ export const episodes = sqliteTable('episodes', {
   name: text('name').notNull(),
   // eslint-disable-next-line camelcase
   air_date: text('air_date').notNull(),
+  calendarId: text('calendarId'),
   episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
 }, (table) => {
   return {
