@@ -30,3 +30,5 @@ logs
 .stylelintcache
 
 db/migrations
+
+.npmrc
