@@ -33,13 +33,23 @@ export default defineTask({
     description: 'Sync all user calendars'
   },
   async run () {
+    const clientId = __env__.NUXT_GOOGLE_CLIENT_ID
+    const clientSecret = __env__.NUXT_GOOGLE_CLIENT_SECRET
+
+    if (!clientId || !clientSecret) {
+      throw new Error('Missing Google OAuth client ID or client secret')
+    }
+
     const DB = await useDb()
     const googleAccounts = await DB.select({
       userId: accounts.userId,
       email: users.email,
       calendarId: accounts.calendarId,
+      // eslint-disable-next-line camelcase
       access_token: accounts.access_token,
+      // eslint-disable-next-line camelcase
       refresh_token: accounts.refresh_token,
+      // eslint-disable-next-line camelcase
       expires_at: accounts.expires_at
     })
       .from(accounts)
@@ -60,9 +70,13 @@ export default defineTask({
 
         console.log('Refreshing access token...')
         const params = new URLSearchParams({
-          client_id: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
-          client_secret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET,
+          // eslint-disable-next-line camelcase
+          client_id: clientId,
+          // eslint-disable-next-line camelcase
+          client_secret: clientSecret,
+          // eslint-disable-next-line camelcase
           refresh_token: account.refresh_token,
+          // eslint-disable-next-line camelcase
           grant_type: 'refresh_token'
         })
 
@@ -84,6 +98,7 @@ export default defineTask({
         console.log('Token refreshed successfully.')
 
         await DB.update(accounts)
+          // eslint-disable-next-line camelcase
           .set({ access_token: token, expires_at: expires })
           .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
       }
