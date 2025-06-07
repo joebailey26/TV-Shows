@@ -14,8 +14,8 @@
     "migrations:list:remote": "wrangler d1 migrations list tv_shows --remote",
     "migrations:apply:remote": "wrangler d1 migrations apply tv_shows --remote",
     "postinstall": "nuxi prepare",
-    "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "fix:scripts": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
+    "lint:scripts": "eslint --ext .js,.vue .",
+    "fix:scripts": "eslint --ext .js,.vue . --fix",
     "lint:styles": "stylelint \"**/*.{vue,scss}\"",
     "fix:styles": "stylelint \"**/*.{vue,scss}\" --fix",
     "typecheck": "nuxi typecheck"
@@ -40,7 +40,7 @@
     "date-fns": "^4.1.0",
     "drizzle-kit": "^0.30.6",
     "drizzle-orm": "^0.38.4",
-    "eslint": "^8.57.1",
+    "eslint": "^9.0.0",
     "eslint-config-galexia": "github:Galexia-Agency/eslint-config",
     "eslint-plugin-drizzle": "^0.2.3",
     "h3": "^1.15.3",
@@ -65,7 +65,8 @@
   "pnpm": {
     "patchedDependencies": {
       "@auth/core@0.18.6": "patches/@auth__core@0.18.6.patch",
-      "nitro-cloudflare-dev@0.2.2": "patches/nitro-cloudflare-dev@0.2.2.patch"
+      "nitro-cloudflare-dev@0.2.2": "patches/nitro-cloudflare-dev@0.2.2.patch",
+      "eslint-config-galexia@2.0.0": "patches/eslint-config-galexia@2.0.0.patch"
     }
   }
 }

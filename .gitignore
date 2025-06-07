@@ -30,4 +30,4 @@ logs
 
 db/migrations
 
-*.pem
+*.pem.eslintrc.old
