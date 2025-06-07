@@ -27,7 +27,8 @@ nav {
   width: 100%
 }
 .nav-search {
-  margin-left: auto;
+  width: fit-content;
+  margin-left: auto
 }
 .mobile-toggle {
   display: none;
@@ -39,15 +40,19 @@ nav {
 }
 
 @media (max-width: 768px) {
+  nav {
+    min-height: 0
+  }
   .mobile-toggle {
-    display: block
+    display: block;
+    margin-top: -2px
   }
   .menu {
     display: none;
     flex-direction: column;
     align-items: stretch;
-    width: 100%;
     order: 2;
+    width: 100%;
     &.open {
       display: flex
     }
@@ -60,8 +65,7 @@ nav {
   }
   .nav-search {
     order: 1;
-    width: 100%;
-    margin-left: 0;
+    margin-left: 0
   }
 }
 .nav-link {

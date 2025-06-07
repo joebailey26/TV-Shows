@@ -1,6 +1,7 @@
 <style lang="scss" scoped>
 .search__form {
-  position: relative
+  position: relative;
+  width: fit-content
 }
 .search__input {
   height: 2rem;
