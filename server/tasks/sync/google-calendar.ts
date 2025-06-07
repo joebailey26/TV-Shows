@@ -75,6 +75,10 @@ export default defineTask({
           .where(and(eq(accounts.userId, account.userId), eq(accounts.provider, 'google')))
       }
 
+      if (!token) {
+        throw new Error('Can\'t login to Google')
+      }
+
       const [existingEvents, episodes] = await Promise.all([
         fetchExistingEvents(token, 'primary'),
         getShowsForUser(account.email)
