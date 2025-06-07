@@ -20,5 +20,5 @@ try {
   secret = randomBytes(32).toString('base64')
 }
 
-writeFileSync(file, `NUXT_AUTH_JS_SECRET=${secret}\n`, { flag: 'wx' })
+writeFileSync(file, `NUXT_AUTH_JS_SECRET=${secret}\nDB_LOGGING = false\nNUXT_PUBLIC_AUTH_JS_BASE_URL = "http://localhost:3000"`, { flag: 'wx' })
 console.log('Secret written to .dev.vars')
