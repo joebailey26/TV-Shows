@@ -24,6 +24,7 @@ export async function getEpisodesForShow (showId: number, userEmail: string, eve
     season: episodes.season,
     episode: episodes.episode,
     name: episodes.name,
+    // eslint-disable-next-line camelcase
     air_date: episodes.air_date,
     episodateTvShowId: episodes.episodateTvShowId,
     watched: sql<boolean>`${isNotNull(watched.episodeId)}`
