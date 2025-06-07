@@ -88,11 +88,13 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
       } as unknown as EmailConfig,
       GoogleProvider({
         clientId: globalThis.__env__.NUXT_GOOGLE_CLIENT_ID,
-        clientSecret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET
+        clientSecret: globalThis.__env__.NUXT_GOOGLE_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true
       }),
       GithubProvider({
         clientId: globalThis.__env__.NUXT_GITHUB_CLIENT_ID,
-        clientSecret: globalThis.__env__.NUXT_GITHUB_CLIENT_SECRET
+        clientSecret: globalThis.__env__.NUXT_GITHUB_CLIENT_SECRET,
+        allowDangerousEmailAccountLinking: true
       })
     ],
     trustHost: true,
