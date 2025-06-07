@@ -48,6 +48,7 @@
 </template>
 
 <script lang="ts">
+import useConfirm from '~/composables/useConfirm'
 export default defineComponent({
   props: {
     id: {
