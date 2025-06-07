@@ -15,5 +15,5 @@ class MyLogger implements Logger {
 }
 
 export function useDb (): DrizzleD1Database {
-  return drizzle(globalThis.__env__.DB, { logger: new MyLogger() })
+  return drizzle(__env__.DB, { logger: new MyLogger() })
 }

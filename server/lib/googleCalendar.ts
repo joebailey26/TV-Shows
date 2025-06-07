@@ -2,7 +2,7 @@ import crypto from 'node:crypto'
 import { Base64 } from 'js-base64'
 
 export const getAuthToken = async (): Promise<string> => {
-  const serviceAccount = JSON.parse(globalThis.__env__.GOOGLE_CREDENTIALS as string)
+  const serviceAccount = JSON.parse(__env__.GOOGLE_CREDENTIALS as string)
 
   const pem: string = serviceAccount.private_key.replaceAll('\n', '')
 
@@ -89,7 +89,7 @@ export const getAuthToken = async (): Promise<string> => {
 }
 
 export const callGoogleCalendarApi = async (token: string, endpoint: string, method: string, payload: object|null = null): Promise<any> => {
-  const requestUrl = `https://www.googleapis.com/calendar/v3/calendars/${globalThis.__env__.CALENDAR_ID}${endpoint}`
+  const requestUrl = `https://www.googleapis.com/calendar/v3/calendars/${__env__.CALENDAR_ID}${endpoint}`
 
   const response = await fetch(requestUrl, {
     method,
