@@ -49,7 +49,6 @@ export const episodes = sqliteTable('episodes', {
   name: text('name').notNull(),
   // eslint-disable-next-line camelcase
   air_date: text('air_date').notNull(),
-  calendarId: text('calendarId'),
   episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
 }, (table) => {
   return {
@@ -92,7 +91,8 @@ export const accounts = sqliteTable('account', {
   // eslint-disable-next-line camelcase
   id_token: text('id_token'),
   // eslint-disable-next-line camelcase
-  session_state: text('session_state')
+  session_state: text('session_state'),
+  calendarId: text('calendarId'),
 },
 account => ({
   compoundKey: primaryKey({ columns: [account.provider, account.providerAccountId] })

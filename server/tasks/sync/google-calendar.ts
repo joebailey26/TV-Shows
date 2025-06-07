@@ -26,8 +26,6 @@ async function fetchExistingEvents (token: string, calendarId: string) {
   return events
 }
 
-// ToDo
-//  Abstract this out to allow any account to sync their shows with Google, not just based off these environment variables
 export default defineTask({
   meta: {
     name: 'sync:google-calendar',
