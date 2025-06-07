@@ -1,0 +1,16 @@
+diff --git a/dist/runtime/plugin.dev.mjs b/dist/runtime/plugin.dev.mjs
+index 9e44a03daf9c415bc806af8d99e6dbec15ee9f01..8be8123412cf856a145b9341cdec137f13c8e7bc 100644
+--- a/dist/runtime/plugin.dev.mjs
++++ b/dist/runtime/plugin.dev.mjs
+@@ -4,9 +4,11 @@
+   return _createStubProxy();
+ }).then((proxy) => {
+   globalThis.__env__ = proxy.env;
++  globalThis.caches = proxy.caches;
+   return proxy;
+ });
+ globalThis.__env__ = _proxy.then((proxy) => proxy.env);
++globalThis.caches = _proxy.then((proxy) => proxy.caches);
+ export default (function(nitroApp) {
+   nitroApp.hooks.hook("request", async (event) => {
+     const proxy = await _proxy;
