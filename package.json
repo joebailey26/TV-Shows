@@ -1,6 +1,7 @@
 {
   "name": "tv-shows",
   "private": true,
+  "packageManager": "pnpm@8.10.5",
   "type": "module",
   "scripts": {
     "build": "nuxi build",
