@@ -58,10 +58,14 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     manifest: {
       name: 'TV Shows',
+      // eslint-disable-next-line camelcase
       short_name: 'TV Shows',
+      // eslint-disable-next-line camelcase
       theme_color: '#ffffff',
+      // eslint-disable-next-line camelcase
       background_color: '#ffffff',
       display: 'standalone',
+      // eslint-disable-next-line camelcase
       start_url: '/',
       icons: [
         {
@@ -77,7 +81,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: null,
+      navigateFallback: '/',
       runtimeCaching: [
         {
           urlPattern: /\/api\/.*$/,
