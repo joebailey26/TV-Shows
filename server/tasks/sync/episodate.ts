@@ -18,7 +18,7 @@ export default defineTask({
   async run () {
     const DB = await useDb()
 
-    const results = await DB.select({ id: episodateTvShows.id })
+    const stmt = DB.select({ id: episodateTvShows.id })
       .from(episodateTvShows)
       .where(
         lte(
@@ -27,6 +27,9 @@ export default defineTask({
         )
       )
       .limit(10)
+      .prepare('staleShows')
+
+    const results = await stmt.all()
 
     const syncPromises = results.map(show => () => syncShow(show.id))
 

@@ -13,7 +13,7 @@ interface Show {
 export const getShowsForUser = async (userEmail: string): Promise<Show[]> => {
   const DB = await useDb()
 
-  return await DB.selectDistinct({
+  const stmt = DB.selectDistinct({
     name: episodes.name,
     air_date: episodes.air_date,
     showName: sql<string>`${episodateTvShows.name} as showName`,
@@ -44,4 +44,7 @@ export const getShowsForUser = async (userEmail: string): Promise<Show[]> => {
         )`
       )
     )
+    .prepare('getShowsForUser')
+
+  return await stmt.all()
 }

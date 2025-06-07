@@ -36,7 +36,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     )
     .as('countdown')
 
-  const showResponse = await DB.selectDistinct({
+  const showStmt = DB.selectDistinct({
     id: episodateTvShows.id,
     name: episodateTvShows.name,
     permalink: episodateTvShows.permalink,
@@ -87,6 +87,9 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
       )
     )
     .limit(1)
+    .prepare('getShow')
+
+  const showResponse = await showStmt.all()
 
   if (!showResponse[0]) {
     return null

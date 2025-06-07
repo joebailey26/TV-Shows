@@ -45,7 +45,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   // Find the episode in the database that has been passed in the payload
-  const watchedEpisode = await DB.selectDistinct()
+  const watchedEpisodeStmt = DB.selectDistinct()
     .from(episodes)
     .where(
       and(
@@ -54,6 +54,9 @@ export default defineEventHandler(async (event: H3Event) => {
       )
     )
     .limit(1)
+    .prepare('findEpisode')
+
+  const watchedEpisode = await watchedEpisodeStmt.all()
 
   if (!watchedEpisode[0]) {
     throw createError({ statusMessage: 'Invalid Episode', statusCode: 400 })
@@ -73,7 +76,7 @@ export default defineEventHandler(async (event: H3Event) => {
     )
     .as('watched')
 
-  const episodesFromDb = await DB.select({
+  const episodesStmt = DB.select({
     id: episodes.id,
     episode: episodes.episode,
     season: episodes.season,
@@ -87,6 +90,9 @@ export default defineEventHandler(async (event: H3Event) => {
       watched,
       eq(episodes.id, watched.episodeId)
     )
+    .prepare('episodesForPatch')
+
+  const episodesFromDb = await episodesStmt.all()
 
   // Create an array of episodes that have been watched previously
   const watchedEpisodesInDb = episodesFromDb.filter(item => item.watchedEpisodeId)

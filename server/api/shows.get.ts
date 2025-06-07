@@ -149,9 +149,12 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     categoryWaitingFor(countQuery)
   }
 
+  const countStmt = countQuery.prepare('showsCount')
+  const queryStmt = query.prepare('showsQuery')
+
   const batch = await DB.batch([
-    countQuery,
-    query
+    countStmt,
+    queryStmt
   ])
 
   const showsToReturn = batch[1].map((show) => {

@@ -32,13 +32,16 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'Could not find user', statusCode: 400 })
   }
 
-  await DB.delete(tvShows)
+  const deleteStmt = DB.delete(tvShows)
     .where(
       and(
         eq(tvShows.showId, showId),
         eq(tvShows.userId, user.id)
       )
     )
+    .prepare('deleteTvShow')
+
+  await deleteStmt.execute()
 
   setResponseStatus(event, 201)
   return 'Removed successfully'

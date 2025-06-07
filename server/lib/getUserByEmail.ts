@@ -6,11 +6,14 @@ import { useDb } from '../lib/db'
 export async function getUserByEmail (email: string, event: H3Event) {
   const DB = await useDb()
 
-  const foundUsers = await DB.select().from(users)
+  const stmt = DB.select().from(users)
     .where(
       eq(users.email, email)
     )
     .limit(1)
+    .prepare('getUserByEmail')
+
+  const foundUsers = await stmt.all()
 
   return foundUsers.length ? foundUsers[0] : null
 }

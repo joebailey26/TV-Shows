@@ -33,7 +33,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   if (searchedShowIds.length > 0) {
     const DB = await useDb()
 
-    const trackedShows = await DB.select({
+    const stmt = DB.select({
       id: episodateTvShows.id
     })
       .from(episodateTvShows)
@@ -51,6 +51,9 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
           inArray(episodateTvShows.id, searchedShowIds)
         )
       )
+      .prepare('searchTrackedShows')
+
+    const trackedShows = await stmt.all()
 
     for (const show of transformedTvShows) {
       show.tracked = !!trackedShows.find(s => s.id === show.id)

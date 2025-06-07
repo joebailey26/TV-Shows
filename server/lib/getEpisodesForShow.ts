@@ -18,7 +18,7 @@ export async function getEpisodesForShow (showId: number, userEmail: string, eve
     )
     .as('watched')
 
-  return DB.select({
+  const stmt = DB.select({
     id: episodes.id,
     season: episodes.season,
     episode: episodes.episode,
@@ -34,4 +34,7 @@ export async function getEpisodesForShow (showId: number, userEmail: string, eve
       eq(episodes.id, watched.episodeId)
     )
     .orderBy(asc(sql`date(${episodes.air_date})`))
+    .prepare('getEpisodesForShow')
+
+  return stmt.all()
 }

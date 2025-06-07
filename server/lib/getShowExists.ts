@@ -6,7 +6,7 @@ import { useDb } from '../lib/db'
 export async function getShowExists (showId: number, userEmail: string, event: H3Event): Promise<boolean> {
   const DB = await useDb()
 
-  const showResponse = await DB.selectDistinct({ id: tvShows.id })
+  const stmt = DB.selectDistinct({ id: tvShows.id })
     .from(tvShows)
     .leftJoin(
       users,
@@ -19,6 +19,9 @@ export async function getShowExists (showId: number, userEmail: string, event: H
       )
     )
     .limit(1)
+    .prepare('getShowExists')
+
+  const showResponse = await stmt.all()
 
   return !!showResponse[0]?.id
 }
