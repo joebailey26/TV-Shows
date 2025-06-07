@@ -1,9 +1,0 @@
-diff --git a/package.json b/package.json
-index 7f382f0..5ef706b 100644
---- a/package.json
-+++ b/package.json
-@@
--    "eslint": "^8.49.0"
-+    "eslint": "^9.0.0"
- }
-
