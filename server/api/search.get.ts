@@ -59,6 +59,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   return {
     ...data,
+    // eslint-disable-next-line camelcase
     tv_shows: transformedTvShows
   }
 })

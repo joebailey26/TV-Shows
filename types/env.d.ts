@@ -1,5 +1,5 @@
 export {}
 
 declare global {
-  var __env__: Record<string, string>
+  const __env__: Record<string, string>
 }

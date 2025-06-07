@@ -3,6 +3,7 @@ import type { H3Event } from 'h3'
 import { users, episodes, watchedEpisodes } from '../db/schema'
 import { useDb } from '../lib/db'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getEpisodesForShow (showId: number, userEmail: string, event: H3Event): Promise<EpisodesTransformed[]> {
   const DB = await useDb()
 

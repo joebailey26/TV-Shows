@@ -18,17 +18,24 @@ export const episodateTvShows = sqliteTable('episodateTvShows', {
   permalink: text('permalink'),
   url: text('url'),
   description: text('description'),
+  // eslint-disable-next-line camelcase
   description_source: text('description_source'),
+  // eslint-disable-next-line camelcase
   start_date: text('start_date'),
+  // eslint-disable-next-line camelcase
   end_date: text('end_date'),
   country: text('country'),
   status: text('status'),
   runtime: integer('runtime'),
   network: text('network'),
+  // eslint-disable-next-line camelcase
   youtube_link: text('youtube_link'),
+  // eslint-disable-next-line camelcase
   image_path: text('image_path'),
+  // eslint-disable-next-line camelcase
   image_thumbnail_path: text('image_thumbnail_path'),
   rating: text('rating'),
+  // eslint-disable-next-line camelcase
   rating_count: text('rating_count'),
   genres: text('genres'),
   pictures: text('pictures'),
@@ -40,6 +47,7 @@ export const episodes = sqliteTable('episodes', {
   season: integer('season').notNull(),
   episode: integer('episode').notNull(),
   name: text('name').notNull(),
+  // eslint-disable-next-line camelcase
   air_date: text('air_date').notNull(),
   episodateTvShowId: integer('episodateTvShowId').notNull().references(() => episodateTvShows.id)
 }, (table) => {
@@ -71,12 +79,18 @@ export const accounts = sqliteTable('account', {
   type: text('type').$type<AdapterAccount['type']>().notNull(),
   provider: text('provider').notNull(),
   providerAccountId: text('providerAccountId').notNull(),
+  // eslint-disable-next-line camelcase
   refresh_token: text('refresh_token'),
+  // eslint-disable-next-line camelcase
   access_token: text('access_token'),
+  // eslint-disable-next-line camelcase
   expires_at: integer('expires_at'),
+  // eslint-disable-next-line camelcase
   token_type: text('token_type'),
   scope: text('scope'),
+  // eslint-disable-next-line camelcase
   id_token: text('id_token'),
+  // eslint-disable-next-line camelcase
   session_state: text('session_state')
 },
 account => ({

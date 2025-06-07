@@ -40,7 +40,7 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
 
   try {
     session = await getServerSession(event)
-  } catch (e) {
+  } catch {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
 
@@ -51,6 +51,7 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
   return session.user.email
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
   const DB = await useDb()
 

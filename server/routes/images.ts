@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Cache, CacheStorage, Response as CloudflareResponse } from '@cloudflare/workers-types'
+import type { Cache, Response as CloudflareResponse } from '@cloudflare/workers-types'
 
 interface WasmImageModule {
   init: undefined | Function
@@ -135,7 +135,7 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
     event.waitUntil(cache.put(cacheKey as any, response.clone() as any))
     return response
-  } catch (e) {
+  } catch {
     setHeader(event, 'Content-Type', contentType)
     return new Response(imageBuffer)
   }

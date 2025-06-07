@@ -154,7 +154,6 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   if (dbRequestBatch.length > 0) {
-    // @ts-expect-error
     await DB.batch(dbRequestBatch)
   }
 

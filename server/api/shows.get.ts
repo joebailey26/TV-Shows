@@ -132,11 +132,14 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     id: episodateTvShows.id,
     name: episodateTvShows.name,
     permalink: episodateTvShows.permalink,
+    // eslint-disable-next-line camelcase
     start_date: episodateTvShows.start_date,
+    // eslint-disable-next-line camelcase
     end_date: episodateTvShows.end_date,
     country: episodateTvShows.country,
     network: episodateTvShows.network,
     status: episodateTvShows.status,
+    // eslint-disable-next-line camelcase
     image_thumbnail_path: episodateTvShows.image_thumbnail_path,
     updatedAt: episodateTvShows.updatedAt,
     watchedEpisodeCount: countDistinct(watchedEpisodes.id),
@@ -183,6 +186,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     total: batch[0].length.toString(),
     page,
     pages: Math.ceil(batch[0].length / pageSize),
+    // eslint-disable-next-line camelcase
     tv_shows: showsToReturn
   }
 })

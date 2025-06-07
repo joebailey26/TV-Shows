@@ -1,19 +1,24 @@
-import pkg from "eslint/use-at-your-own-risk";
-const { FlatCompat } = pkg;
+import galexiaConfig from '@galexia-agency/eslint-config-galexia'
+import drizzle from 'eslint-plugin-drizzle'
+import parser from '@typescript-eslint/parser'
 
-const compat = new FlatCompat();
-
-export default compat.config({
-  env: { node: true },
-  extends: [
-    "galexia",
-    "@nuxtjs/eslint-config-typescript",
-    "plugin:drizzle/all",
-  ],
-  parserOptions: { parser: "@typescript-eslint/parser" },
-  rules: {
-    "vue/no-v-html": 0,
-    "vue/multi-word-component-names": 0,
-  },
-  plugins: ["drizzle"],
-});
+export default [
+  ...galexiaConfig,
+  {
+    ignores: ['eslint.config.js'],
+    files: ['**/*.{js,ts}'],
+    plugins: {
+      drizzle
+    },
+    languageOptions: {
+      parser,
+      parserOptions: {
+        sourceType: 'module'
+      }
+    },
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+      '@typescript-eslint/no-explicit-any': 'off'
+    }
+  }
+]
