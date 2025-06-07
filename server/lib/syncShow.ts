@@ -47,7 +47,7 @@ export async function syncShow (showId: number): Promise<void> {
     }).onConflictDoUpdate({
       target: episodateTvShows.id,
       set: contentToUpsert
-    })
+    }).prepare()
   )
 
   for (const episode of tvShow.episodes) {
@@ -67,6 +67,7 @@ export async function syncShow (showId: number): Promise<void> {
             air_date: episode.air_date
           }
         })
+        .prepare()
     )
   }
 

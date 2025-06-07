@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
-import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } from 'drizzle-orm'
-import { SQLiteSelect } from 'drizzle-orm/sqlite-core'
+  function withPagination<T extends SQLiteSelect> (qb: T, page: number, pageSize: number = pageSize) {
 import { getAuthenticatedUserEmail } from '../lib/auth'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'

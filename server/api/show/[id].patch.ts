@@ -130,6 +130,7 @@ export default defineEventHandler(async (event: H3Event) => {
           .where(
             inArray(watchedEpisodes.id, chunk)
           )
+          .prepare()
       )
     }
   }
@@ -155,6 +156,7 @@ export default defineEventHandler(async (event: H3Event) => {
               }
             })
           )
+          .prepare()
       )
     }
   }
