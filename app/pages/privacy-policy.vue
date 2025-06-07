@@ -25,7 +25,7 @@
 
     <h3>Calendar Data</h3>
     <ul>
-      <li>If you connect a Google Calendar we store your calendar ID, access token and refresh token so we can add or remove events on your behalf.</li>
+      <li>If you sign in with a Google account, we create a new calendar on Google Calendar and store your calendar ID, access token and refresh token so we can add or remove events on your behalf.</li>
       <li>We can also generate an ICS feed for your shows. Anyone with the link (which contains your email address) can access your feed.</li>
     </ul>
 
@@ -68,17 +68,9 @@
     </ul>
 
     <h2>Contact</h2>
-    <p>If you have questions about this policy or about your personal data, please email <strong>privacy@joebailey.xyz</strong>.</p>
+    <p>If you have questions about this policy or about your personal data, please email <strong>joe@joebailey.xyz</strong>.</p>
 
     <h2>Changes to This Policy</h2>
     <p>We may update this Privacy Policy from time to time. The latest version will always be available in the project repository.</p>
   </main>
 </template>
-
-<script lang="ts">
-export default defineComponent({
-  setup () {
-    definePageMeta({ middleware: 'guest-only' })
-  }
-})
-</script>
