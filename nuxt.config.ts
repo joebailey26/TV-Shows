@@ -77,6 +77,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
+      navigateFallback: null,
       runtimeCaching: [
         {
           urlPattern: /\/api\/.*$/,
