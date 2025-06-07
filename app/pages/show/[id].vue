@@ -108,10 +108,12 @@ export default defineComponent({
     const headers = useRequestHeaders(['cookie']) as HeadersInit
     definePageMeta({ middleware: 'auth' })
     const route = useRoute()
-    if (Array.isArray(route.params.id)) {
-      route.params.id = route.params.id[0]
-    }
-    const showId = parseInt(route.params.id)
+    const idParam = (
+      Array.isArray(route.params.id)
+        ? route.params.id[0]
+        : route.params.id
+    ) as string
+    const showId = parseInt(idParam)
     const show = ref(null) as Ref<EpisodateShowTransformed|null>
 
     const response = await useFetch(`/api/show/${showId}`, {
@@ -137,7 +139,7 @@ export default defineComponent({
 
         return Object.keys(seasons).map(season => ({
           season: parseInt(season, 10),
-          episodes: seasons[parseInt(season, 10)]
+          episodes: seasons[parseInt(season, 10)]!
         }))
       }
       return []

@@ -1,14 +1,13 @@
 import type { H3Event } from 'h3'
 import { Auth } from '@auth/core'
 import { getRequestHeaders, getRequestURL, readRawBody } from 'h3'
-import type { ResponseInternal } from '@auth/core/types'
 import { useAuthOptions } from '../../lib/auth'
 
-export default defineEventHandler(async (event: H3Event): Promise<ResponseInternal> => {
+export default defineEventHandler(async (event: H3Event): Promise<Response> => {
   const url = new URL(getRequestURL(event))
   const method = event.method
   const body = method === 'POST' ? await readRawBody(event) : undefined
-  const request = new Request(url, { headers: getRequestHeaders(event), method, body })
+  const request = new Request(url, { headers: new Headers(getRequestHeaders(event) as Record<string, string>), method, body })
 
   // CSRF Check
   if (request.method === 'POST') {
@@ -31,5 +30,5 @@ export default defineEventHandler(async (event: H3Event): Promise<ResponseIntern
 
   const response = await Auth(request, options)
 
-  return response
+  return response as Response
 })

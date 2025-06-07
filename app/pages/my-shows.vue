@@ -64,23 +64,23 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
 
-    if (Array.isArray(route.query.category)) {
-      route.query.category = route.query.category[0]
-    }
-    if (Array.isArray(route.query.sort)) {
-      route.query.sort = route.query.sort[0]
-    }
-    if (Array.isArray(route.query.order)) {
-      route.query.order = route.query.order[0]
-    }
+    const category = Array.isArray(route.query.category)
+      ? route.query.category[0]
+      : route.query.category
+    const sort = Array.isArray(route.query.sort)
+      ? route.query.sort[0]
+      : route.query.sort
+    const order = Array.isArray(route.query.order)
+      ? route.query.order[0]
+      : route.query.order
 
     const { data } = await useFetch('/api/shows', {
       headers,
       query: {
-        showCategory: route.query.category,
+        showCategory: category,
         p: route.query.p,
-        sort: route.query.sort,
-        order: route.query.order
+        sort,
+        order
       }
     })
     shows.value = data.value?.tv_shows ?? []
@@ -92,10 +92,16 @@ export default defineComponent({
       const data = await $fetch('/api/shows', {
         headers,
         query: {
-          showCategory: route.query.category,
+          showCategory: Array.isArray(route.query.category)
+            ? route.query.category[0]
+            : route.query.category,
           p: route.query.p,
-          sort: route.query.sort,
-          order: route.query.order
+          sort: Array.isArray(route.query.sort)
+            ? route.query.sort[0]
+            : route.query.sort,
+          order: Array.isArray(route.query.order)
+            ? route.query.order[0]
+            : route.query.order
         }
       })
       shows.value = data.tv_shows ?? []

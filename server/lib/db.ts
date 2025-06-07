@@ -1,5 +1,5 @@
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1'
-import { Logger } from 'drizzle-orm/logger'
+import type { Logger } from 'drizzle-orm/logger'
 
 class MyLogger implements Logger {
   logQuery (query: string, params: unknown[]): void {
