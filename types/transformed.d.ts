@@ -3,6 +3,7 @@ export { EpisodesTransformed, EpisodateShowTransformed }
 declare global {
   interface EpisodateShowFromSearchTransformed extends EpisodateShowFromSearch {
     tracked: boolean
+    episodesToWatch: number
   }
   interface CustomSearch extends EpisodateSearch {
     tv_shows: EpisodateShowFromSearchTransformed[]
