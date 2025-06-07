@@ -14,7 +14,6 @@ export default defineEventHandler(async (event: H3Event) => {
   const episodesFromDb = await getShowsForUser(userEmail)
 
   // Initialise a new calendar
-  // @ts-expect-error
   const cal = ics()
 
   // Loop through all shows and all episodes for show and create a calendar event for that episode

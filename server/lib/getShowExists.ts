@@ -3,6 +3,7 @@ import { eq, and } from 'drizzle-orm'
 import { tvShows, users } from '../db/schema'
 import { useDb } from '../lib/db'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getShowExists (showId: number, userEmail: string, event: H3Event): Promise<boolean> {
   const DB = await useDb()
 

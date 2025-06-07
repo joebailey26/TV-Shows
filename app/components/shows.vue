@@ -2,7 +2,7 @@
 .shows_container {
   display: grid;
   grid-gap: 2rem;
-  grid-template-columns: repeat(auto-fit, 250px);
+  grid-template-columns: repeat(auto-fit, 248px);
   margin: 2rem 0;
   @media (max-width: 1100px) {
     justify-content: space-around
@@ -16,10 +16,10 @@
 .pagination {
   button {
     &[aria-current='true'] {
+      color: transparent;
       background-image: var(--radialGradient);
       background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
+      -webkit-text-fill-color: transparent
     }
   }
 }
@@ -85,7 +85,7 @@ export default defineComponent({
     }
   },
   methods: {
-    goToPage (page: Number) {
+    goToPage (page: number) {
       this.$router.push({ path: this.$route.path, query: { ...this.$route.query, p: page.toString() } })
     }
   }

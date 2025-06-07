@@ -46,7 +46,7 @@
     <div class="inner-content">
       <div class="header__content">
         <h1>Manage your TV Shows</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec rutrum neque et mi convallis tincidunt sit amet finibus velit. Donec tempus eros semper, venenatis erat ac, feugiat mauris. Cras lobortis orci nec quam iaculis vulputate. Mauris lectus nulla, blandit ut imperdiet at, euismod in purus.</p>
+        <p>Keep track of your favorite TV shows in one place. Browse upcoming episodes, manage personal watchlists, and discover new series tailored to your tastes.</p>
         <button type="button" class="sign-in button" @click="signIn()">
           Sign Up / Sign In
         </button>

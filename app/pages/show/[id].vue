@@ -27,8 +27,8 @@ h1 {
   .countdown {
     position: absolute;
     inset: 0;
-    margin-top: 0;
     z-index: 3;
+    margin-top: 0
   }
 }
 @media (min-width: 768px) {
@@ -61,6 +61,7 @@ h1 {
         <ShowButtons
           :id="id"
           :is-tracked="tracked"
+          :delete-show-callback="deleteShowCallback"
         />
       </div>
       <div class="content">
@@ -103,13 +104,16 @@ export default defineComponent({
     GalexiaDate
   },
   async setup () {
+    const router = useRouter()
     const headers = useRequestHeaders(['cookie']) as HeadersInit
     definePageMeta({ middleware: 'auth' })
     const route = useRoute()
-    if (Array.isArray(route.params.id)) {
-      route.params.id = route.params.id[0]
-    }
-    const showId = parseInt(route.params.id)
+    const idParam = (
+      Array.isArray(route.params.id)
+        ? route.params.id[0]
+        : route.params.id
+    ) as string
+    const showId = parseInt(idParam)
     const show = ref(null) as Ref<EpisodateShowTransformed|null>
 
     const response = await useFetch(`/api/show/${showId}`, {
@@ -135,13 +139,13 @@ export default defineComponent({
 
         return Object.keys(seasons).map(season => ({
           season: parseInt(season, 10),
-          episodes: seasons[parseInt(season, 10)]
+          episodes: seasons[parseInt(season, 10)]!
         }))
       }
       return []
     })
 
-    async function updateShow (episode: Number) {
+    async function updateShow (episode: number) {
       const response = await useFetch(`/api/show/${showId}`, {
         method: 'PATCH',
         headers,
@@ -163,10 +167,15 @@ export default defineComponent({
       }
     }
 
+    const deleteShowCallback = () => {
+      router.push('/my-shows')
+    }
+
     return {
       ...toRefs(show.value),
       updateShow,
-      seasons
+      seasons,
+      deleteShowCallback
     }
   }
 })

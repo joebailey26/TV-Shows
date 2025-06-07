@@ -1,12 +1,12 @@
 import type { H3Event } from 'h3'
-import type { Cache, CacheStorage, Response as CloudflareResponse } from '@cloudflare/workers-types'
+import type { Cache, Response as CloudflareResponse } from '@cloudflare/workers-types'
 
 interface WasmImageModule {
-  init: undefined | Function
+  init?: (module: WebAssembly.Module) => unknown
 }
 
 interface WasmResizeModule {
-  initResize: undefined | Function
+  initResize?: (module: WebAssembly.Module) => unknown
 }
 
 async function loadWasmModule (wasmPath: string, module: WasmImageModule|WasmResizeModule): Promise<void> {
@@ -80,11 +80,11 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
   const isWebpSupported = getRequestHeader(event, 'accept')?.includes(MIME_TYPE_WEBP) ?? false
   const bypassCache = getRequestHeader(event, 'Cache-Control') === 'no-cache'
 
-  const cache = caches.default
+  const cache = (caches as unknown as { default: Cache }).default
   const cacheKey = new Request(new URL(event?.node?.req?.url ?? '', `http://${event.node.req.headers.host}`))
 
   if (isWebpSupported && !bypassCache) {
-    const cachedImage = await cache.match(cacheKey)
+    const cachedImage = await cache.match(cacheKey as any)
     if (cachedImage) {
       setHeader(event, 'X-Image-Cache', 'Hit')
       setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
@@ -133,9 +133,9 @@ export default defineEventHandler(async (event: H3Event): Promise<Response|Cloud
     const convertedImage = await convert(contentType, imageBuffer, width, height, fit)
     const response = new Response(convertedImage)
     setHeader(event, 'Content-Type', MIME_TYPE_WEBP)
-    event.waitUntil(await cache.put(cacheKey, response.clone()))
+    event.waitUntil(cache.put(cacheKey as any, response.clone() as any))
     return response
-  } catch (e) {
+  } catch {
     setHeader(event, 'Content-Type', contentType)
     return new Response(imageBuffer)
   }

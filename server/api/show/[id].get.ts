@@ -23,6 +23,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     season: episodes.season,
     episode: episodes.episode,
     name: sql<string>`${episodes.name}`.as('countdownName'),
+    // eslint-disable-next-line camelcase
     air_date: episodes.air_date,
     episodateTvShowId: sql<number>`${episodes.episodateTvShowId}`.as('countdownEpisodateTvShowId'),
     watched: sql<boolean>`0`.as('countdownWatched')
@@ -42,17 +43,24 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     permalink: episodateTvShows.permalink,
     url: episodateTvShows.url,
     description: episodateTvShows.description,
+    // eslint-disable-next-line camelcase
     description_source: episodateTvShows.description_source,
+    // eslint-disable-next-line camelcase
     start_date: episodateTvShows.start_date,
+    // eslint-disable-next-line camelcase
     end_date: episodateTvShows.end_date,
     country: episodateTvShows.country,
     status: episodateTvShows.status,
     runtime: episodateTvShows.runtime,
     network: episodateTvShows.network,
+    // eslint-disable-next-line camelcase
     youtube_link: episodateTvShows.youtube_link,
+    // eslint-disable-next-line camelcase
     image_path: episodateTvShows.image_path,
+    // eslint-disable-next-line camelcase
     image_thumbnail_path: episodateTvShows.image_thumbnail_path,
     rating: episodateTvShows.rating,
+    // eslint-disable-next-line camelcase
     rating_count: episodateTvShows.rating_count,
     genres: episodateTvShows.genres,
     pictures: episodateTvShows.pictures,
@@ -62,6 +70,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
       season: countdown.season,
       episode: countdown.episode,
       name: countdown.name,
+      // eslint-disable-next-line camelcase
       air_date: countdown.air_date,
       episodateTvShowId: countdown.episodateTvShowId,
       watched: countdown.watched
