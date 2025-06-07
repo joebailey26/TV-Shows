@@ -74,18 +74,6 @@ export default defineComponent({
       ? route.query.order[0]
       : route.query.order
 
-    const { data } = await useFetch('/api/shows', {
-      headers,
-      query: {
-        showCategory: category,
-        p: route.query.p,
-        sort,
-        order
-      }
-    })
-    shows.value = data.value?.tv_shows ?? []
-    pages.value = data.value?.pages ?? 0
-
     watch(() => [route.query.category, route.query.p, route.query.sort, route.query.order], async () => {
       const nuxtApp = useNuxtApp()
       nuxtApp.callHook('page:loading:start')
@@ -123,6 +111,18 @@ export default defineComponent({
       const newOrder = route.query.order === 'desc' ? 'asc' : 'desc'
       router.push({ path: route.path, query: { ...route.query, order: newOrder, p: 1 } })
     }
+
+    const { data } = await useFetch('/api/shows', {
+      headers,
+      query: {
+        showCategory: category,
+        p: route.query.p,
+        sort,
+        order
+      }
+    })
+    shows.value = data.value?.tv_shows ?? []
+    pages.value = data.value?.pages ?? 0
 
     return {
       shows,

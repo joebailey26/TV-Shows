@@ -145,7 +145,7 @@ export default defineComponent({
       return []
     })
 
-    async function updateShow (episode: Number) {
+    async function updateShow (episode: number) {
       const response = await useFetch(`/api/show/${showId}`, {
         method: 'PATCH',
         headers,

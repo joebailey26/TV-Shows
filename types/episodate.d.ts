@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /* DO NOT EDIT THESE */
 /* These are the types of the data coming from the EpisoDate API */
 
