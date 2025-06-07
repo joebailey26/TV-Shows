@@ -2,11 +2,11 @@ import type { H3Event } from 'h3'
 import type { Cache, Response as CloudflareResponse } from '@cloudflare/workers-types'
 
 interface WasmImageModule {
-  init: undefined | Function
+  init?: (module: WebAssembly.Module) => unknown
 }
 
 interface WasmResizeModule {
-  initResize: undefined | Function
+  initResize?: (module: WebAssembly.Module) => unknown
 }
 
 async function loadWasmModule (wasmPath: string, module: WasmImageModule|WasmResizeModule): Promise<void> {

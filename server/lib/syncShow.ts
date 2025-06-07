@@ -22,17 +22,24 @@ export async function syncShow (showId: number): Promise<void> {
     permalink: tvShow.permalink,
     url: tvShow.url,
     description: tvShow.description,
+    // eslint-disable-next-line camelcase
     description_source: tvShow.description_source,
+    // eslint-disable-next-line camelcase
     start_date: tvShow.start_date,
+    // eslint-disable-next-line camelcase
     end_date: tvShow.end_date,
     country: tvShow.country,
     status: tvShow.status,
     runtime: tvShow.runtime,
     network: tvShow.network,
+    // eslint-disable-next-line camelcase
     youtube_link: tvShow.youtube_link,
+    // eslint-disable-next-line camelcase
     image_path: tvShow.image_path,
+    // eslint-disable-next-line camelcase
     image_thumbnail_path: tvShow.image_thumbnail_path,
     rating: tvShow.rating,
+    // eslint-disable-next-line camelcase
     rating_count: tvShow.rating_count,
     genres: tvShow.genres.join(','),
     pictures: tvShow.pictures.join(','),
@@ -58,6 +65,7 @@ export async function syncShow (showId: number): Promise<void> {
           season: episode.season,
           episode: episode.episode,
           name: episode.name,
+          // eslint-disable-next-line camelcase
           air_date: episode.air_date,
           episodateTvShowId: tvShow.id
         })
@@ -65,6 +73,7 @@ export async function syncShow (showId: number): Promise<void> {
           target: [episodes.episodateTvShowId, episodes.episode, episodes.season],
           set: {
             name: episode.name,
+            // eslint-disable-next-line camelcase
             air_date: episode.air_date
           }
         })
