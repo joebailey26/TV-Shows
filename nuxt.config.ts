@@ -51,8 +51,83 @@ export default defineNuxtConfig({
     eslint,
     '@nuxtjs/stylelint-module',
     '@hebilicious/authjs-nuxt',
-    'nitro-cloudflare-dev'
+    'nitro-cloudflare-dev',
+    '@vite-pwa/nuxt'
   ],
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'TV Shows',
+      short_name: 'TV Shows',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      start_url: '/',
+      icons: [
+        {
+          src: '/android-chrome-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/android-chrome-256x256.png',
+          sizes: '256x256',
+          type: 'image/png'
+        }
+      ]
+    },
+    workbox: {
+      runtimeCaching: [
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'POST',
+          options: {
+            backgroundSync: {
+              name: 'api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'PATCH',
+          options: {
+            backgroundSync: {
+              name: 'api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkOnly',
+          method: 'DELETE',
+          options: {
+            backgroundSync: {
+              name: 'api-queue',
+              options: {
+                maxRetentionTime: 60 * 24
+              }
+            }
+          }
+        },
+        {
+          urlPattern: /\/api\/.*$/,
+          handler: 'NetworkFirst',
+          method: 'GET',
+          options: {
+            cacheName: 'api-cache'
+          }
+        }
+      ]
+    }
+  },
   runtimeConfig: {
     authJs: {
       secret: '' // You can generate one with `openssl rand -base64 32`
