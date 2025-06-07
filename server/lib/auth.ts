@@ -4,18 +4,19 @@ import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import type { H3Event } from 'h3'
+import { getRequestHeaders, getRequestURL } from 'h3'
 import { skipCSRFCheck, Auth } from '@auth/core'
 import customCss from './auth.css.js'
 import { useDb } from './db'
 
-async function getServerSessionResponse (event: H3Event) {
+async function getServerSessionResponse (event: H3Event): Promise<Response> {
   const options = await useAuthOptions(event)
   const url = new URL('/api/auth/session', getRequestURL(event))
 
-  return Auth(
-    new Request(url, { headers: getRequestHeaders(event) }),
+  return await Auth(
+    new Request(url, { headers: new Headers(getRequestHeaders(event) as Record<string, string>) }),
     options
-  )
+  ) as Response
 }
 
 export async function getServerSession (event: H3Event) {
@@ -39,7 +40,7 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
 
   try {
     session = await getServerSession(event)
-  } catch (e) {
+  } catch {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
 
@@ -50,11 +51,12 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
   return session.user.email
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
   const DB = await useDb()
 
   return {
-    adapter: DrizzleAdapter(DB),
+    adapter: DrizzleAdapter(DB) as unknown as AuthConfig['adapter'],
     secret: globalThis.__env__.NUXT_AUTH_JS_SECRET,
     providers: [
       {

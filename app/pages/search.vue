@@ -33,6 +33,7 @@ export default defineComponent({
         total: '0',
         page: 0,
         pages: 0,
+        // eslint-disable-next-line camelcase
         tv_shows: []
       }
     }

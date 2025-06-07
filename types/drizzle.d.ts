@@ -1,5 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import { tvShows, episodateTvShows, users, episodes } from '../server/db/schema'
+import type { tvShows, episodateTvShows, users, episodes } from '../server/db/schema'
 
 declare global {
   type TvShows = InferSelectModel<typeof tvShows>

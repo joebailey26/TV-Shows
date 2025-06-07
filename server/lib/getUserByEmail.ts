@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { users } from '../db/schema'
 import { useDb } from '../lib/db'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getUserByEmail (email: string, event: H3Event) {
   const DB = await useDb()
 

@@ -1,5 +1,6 @@
 import { dirname, resolve, join } from 'node:path'
 import { copyFile, mkdir } from 'fs/promises'
+import eslint from '@nuxt/eslint-plugin'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-08',
@@ -47,7 +48,7 @@ export default defineNuxtConfig({
     }
   },
   modules: [
-    '@nuxtjs/eslint-module',
+    eslint,
     '@nuxtjs/stylelint-module',
     '@hebilicious/authjs-nuxt',
     'nitro-cloudflare-dev',

@@ -85,7 +85,7 @@ export default defineComponent({
     }
   },
   methods: {
-    goToPage (page: Number) {
+    goToPage (page: number) {
       this.$router.push({ path: this.$route.path, query: { ...this.$route.query, p: page.toString() } })
     }
   }
