@@ -95,6 +95,7 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
         authorization: {
           params: {
             scope: 'openid email profile https://www.googleapis.com/auth/calendar',
+            // eslint-disable-next-line camelcase
             access_type: 'offline',
             prompt: 'consent'
           }
