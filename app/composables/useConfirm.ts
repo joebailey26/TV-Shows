@@ -4,7 +4,7 @@ const visible = ref(false)
 const message = ref('')
 let resolver: ((value: boolean) => void) | null = null
 
-export default function useConfirm () {
+export default function () {
   const open = (msg: string) => {
     message.value = msg
     visible.value = true

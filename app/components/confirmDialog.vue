@@ -22,6 +22,9 @@
   justify-content: center;
   margin-top: 1rem
 }
+.button {
+  min-height: 0
+}
 </style>
 
 <template>

@@ -1,33 +1,33 @@
 <style lang="scss" scoped>
-  .sort-controls {
-    display: flex;
-    gap: .5rem;
-    align-items: center;
-    justify-content: end;
-    margin-top: 1rem;
-    margin-bottom: 1rem
+.sort-controls {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  justify-content: end;
+  margin-top: 1rem;
+  margin-bottom: 1rem
+}
+.sort-select {
+  height: 2rem;
+  padding: 0 .5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: .5rem
+}
+.sort-order-btn {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1rem;
+  background-color: var(--buttonBackgroundColor);
+  border: none;
+  border-radius: .5rem;
+  cursor: pointer;
+  transition: background-color .1s ease-in-out;
+  &:hover {
+    background-color: var(--buttonHoverBackgroundColor)
   }
-  .sort-select {
-    height: 2rem;
-    padding: 0 .5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: .5rem
-  }
-  .sort-order-btn {
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    font-size: 1rem;
-    background-color: var(--buttonBackgroundColor);
-    border: none;
-    border-radius: .5rem;
-    cursor: pointer;
-    transition: background-color .1s ease-in-out;
-    &:hover {
-      background-color: var(--buttonHoverBackgroundColor)
-    }
-  }
+}
 </style>
 
 <template>
@@ -35,8 +35,12 @@
     <div class="sort-controls">
       <label for="sort">Sort by:</label>
       <select id="sort" class="sort-select" :value="route.query.sort ?? 'alphabetical'" @change="changeSort">
-        <option value="alphabetical">Alphabetical</option>
-        <option value="episodesToWatch">Episodes to watch</option>
+        <option value="alphabetical">
+          Alphabetical
+        </option>
+        <option value="episodesToWatch">
+          Episodes to watch
+        </option>
       </select>
       <button type="button" class="sort-order-btn" @click="toggleOrder">
         {{ route.query.order === 'desc' ? '▼' : '▲' }}
