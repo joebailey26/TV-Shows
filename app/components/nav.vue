@@ -72,6 +72,9 @@ nav {
   font-size: 1.1rem;
   text-decoration: none
 }
+.nav-link.active {
+  color: var(--yellowColor)
+}
 .button {
   min-height: 0
 }
@@ -85,19 +88,19 @@ nav {
       </button>
       <div :class="['menu', { open: isMenuOpen }]">
         <div class="left">
-          <nuxt-link to="/my-shows" class="nav-link">
+          <nuxt-link to="/my-shows" class="nav-link" exact-active-class="active">
             All Shows
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=toCatchUpOn" class="nav-link">
+          <nuxt-link to="/my-shows?category=toCatchUpOn" class="nav-link" exact-active-class="active">
             To Catch Up On
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=wantToWatch" class="nav-link">
+          <nuxt-link to="/my-shows?category=wantToWatch" class="nav-link" exact-active-class="active">
             Want To Watch
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=waitingFor" class="nav-link">
+          <nuxt-link to="/my-shows?category=waitingFor" class="nav-link" exact-active-class="active">
             Waiting For
           </nuxt-link>
-          <nuxt-link to="/my-shows?category=cancelled" class="nav-link">
+          <nuxt-link to="/my-shows?category=cancelled" class="nav-link" exact-active-class="active">
             Cancelled
           </nuxt-link>
         </div>
@@ -118,11 +121,13 @@ nav {
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
   setup () {
     const { user } = useAuth()
+    const route = useRoute()
 
     const state = reactive({
       userEmail: '',
@@ -132,6 +137,8 @@ export default defineComponent({
     if (user.value?.email) {
       state.userEmail = user.value.email
     }
+
+    watch(() => route.path, () => { state.isMenuOpen = false })
 
     return state
   }
