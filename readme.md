@@ -12,6 +12,11 @@ The TV show is green for currently airing. Red for canceled/finished. And has no
 
 There is a live calendar link available so you can sync with services like Google Calendar. Google Calendar isn't very reliable when syncing from a URL, so custom functionality is currently being built.
 
+## Preview Deployments
+
+Pull requests automatically deploy to a temporary Cloudflare Worker so reviewers can test changes before merge. The URL is posted as a comment on the PR.
+
+
 ## Develop
 
 ``` pnpm run dev ```

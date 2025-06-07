@@ -1,11 +1,11 @@
 <style lang="scss" scoped>
 button {
   padding: 0;
+  text-align: left;
   background: none;
   border: none;
   border-radius: 0;
-  cursor: pointer;
-  text-align: left
+  cursor: pointer
 }
 .watched {
   color: var(--greenColor)
