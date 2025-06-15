@@ -41,6 +41,12 @@
         <option value="episodesToWatch">
           Episodes to watch
         </option>
+        <option value="nextEpisodeDate">
+          Next episode date
+        </option>
+        <option value="firstEpisodeDate">
+          First episode date
+        </option>
       </select>
       <button type="button" class="sort-order-btn" @click="toggleOrder">
         {{ route.query.order === 'desc' ? '▼' : '▲' }}
