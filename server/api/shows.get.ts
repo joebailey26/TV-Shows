@@ -1,13 +1,17 @@
 import type { H3Event } from 'h3'
 import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } from 'drizzle-orm'
-import type { SQLiteSelect } from 'drizzle-orm/sqlite-core'
+import { alias, type SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
 import { useDb } from '../lib/db'
 
 type ShowCategory = 'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'|''
-type SortType = 'alphabetical'|'episodesToWatch'
+type SortType =
+  | 'alphabetical'
+  | 'episodesToWatch'
+  | 'nextEpisodeDate'
+  | 'firstEpisodeDate'
 type SortOrder = 'asc'|'desc'
 
 export const pageSize = 20
@@ -21,7 +25,16 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
 
   const showCategory = Array.isArray(queryParams.showCategory) ? queryParams.showCategory[0] : queryParams.showCategory as ShowCategory
   const sortParam = Array.isArray(queryParams.sort) ? queryParams.sort[0] : queryParams.sort
-  const sort: SortType = sortParam === 'episodesToWatch' ? 'episodesToWatch' : 'alphabetical'
+  let sort: SortType
+  switch (sortParam) {
+    case 'episodesToWatch':
+    case 'nextEpisodeDate':
+    case 'firstEpisodeDate':
+      sort = sortParam
+      break
+    default:
+      sort = 'alphabetical'
+  }
   const orderParam = Array.isArray(queryParams.order) ? queryParams.order[0] : queryParams.order
   const order: SortOrder = orderParam === 'desc' ? 'desc' : 'asc'
 
@@ -33,6 +46,9 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   }
 
   function querySetup(qb: SQLiteSelect, sort: SortType, order: SortOrder): SQLiteSelect {
+    const futureEpisodes = alias(episodes, 'futureEpisodes')
+    const allEpisodes = alias(episodes, 'allEpisodes')
+
     let q = qb.leftJoin(
       tvShows,
       eq(tvShows.showId, episodateTvShows.id)
@@ -48,13 +64,31 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
           lte(sql`date(${episodes.air_date})`, sql`date('now')`)
         )
       )
-      .leftJoin(
-        watchedEpisodes,
+
+    if (sort === 'nextEpisodeDate') {
+      q = q.leftJoin(
+        futureEpisodes,
         and(
-          eq(watchedEpisodes.episodeId, episodes.id),
-          eq(watchedEpisodes.userId, tvShows.userId)
+          eq(futureEpisodes.episodateTvShowId, episodateTvShows.id),
+          gt(sql`date(${futureEpisodes.air_date})`, sql`date('now')`)
         )
       )
+    }
+
+    if (sort === 'firstEpisodeDate') {
+      q = q.leftJoin(
+        allEpisodes,
+        eq(allEpisodes.episodateTvShowId, episodateTvShows.id)
+      )
+    }
+
+    q = q.leftJoin(
+      watchedEpisodes,
+      and(
+        eq(watchedEpisodes.episodeId, episodes.id),
+        eq(watchedEpisodes.userId, tvShows.userId)
+      )
+    )
       .groupBy(episodateTvShows.id)
       .where(eq(users.email, userEmail))
 
@@ -63,6 +97,20 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
         order === 'asc'
           ? asc(sql`count(distinct ${episodes.id}) - count(distinct ${watchedEpisodes.id})`)
           : desc(sql`count(distinct ${episodes.id}) - count(distinct ${watchedEpisodes.id})`),
+        order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name)
+      )
+    } else if (sort === 'nextEpisodeDate') {
+      q = q.orderBy(
+        order === 'asc'
+          ? asc(sql`min(date(${futureEpisodes.air_date}))`)
+          : desc(sql`min(date(${futureEpisodes.air_date}))`),
+        order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name)
+      )
+    } else if (sort === 'firstEpisodeDate') {
+      q = q.orderBy(
+        order === 'asc'
+          ? asc(sql`min(date(${allEpisodes.air_date}))`)
+          : desc(sql`min(date(${allEpisodes.air_date}))`),
         order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name)
       )
     } else {
