@@ -64,31 +64,13 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
           lte(sql`date(${episodes.air_date})`, sql`date('now')`)
         )
       )
-
-    if (sort === 'nextEpisodeDate') {
-      q = q.leftJoin(
-        futureEpisodes,
+      .leftJoin(
+        watchedEpisodes,
         and(
-          eq(futureEpisodes.episodateTvShowId, episodateTvShows.id),
-          gt(sql`date(${futureEpisodes.air_date})`, sql`date('now')`)
+          eq(watchedEpisodes.episodeId, episodes.id),
+          eq(watchedEpisodes.userId, tvShows.userId)
         )
       )
-    }
-
-    if (sort === 'firstEpisodeDate') {
-      q = q.leftJoin(
-        allEpisodes,
-        eq(allEpisodes.episodateTvShowId, episodateTvShows.id)
-      )
-    }
-
-    q = q.leftJoin(
-      watchedEpisodes,
-      and(
-        eq(watchedEpisodes.episodeId, episodes.id),
-        eq(watchedEpisodes.userId, tvShows.userId)
-      )
-    )
       .groupBy(episodateTvShows.id)
       .where(eq(users.email, userEmail))
 
@@ -100,14 +82,29 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
         order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name)
       )
     } else if (sort === 'nextEpisodeDate') {
-      q = q.orderBy(
+      q = q.leftJoin(
+        futureEpisodes,
+        and(
+          eq(futureEpisodes.episodateTvShowId, episodateTvShows.id),
+          gt(sql`date(${futureEpisodes.air_date})`, sql`date('now')`)
+        )
+      )
+      .leftJoin(
+        allEpisodes,
+        eq(allEpisodes.episodateTvShowId, episodateTvShows.id)
+      )
+      .orderBy(
         order === 'asc'
-          ? asc(sql`min(date(${futureEpisodes.air_date}))`)
-          : desc(sql`min(date(${futureEpisodes.air_date}))`),
+          ? asc(sql`coalesce(min(date(${futureEpisodes.air_date})), max(date(${allEpisodes.air_date})))`)
+          : desc(sql`coalesce(min(date(${futureEpisodes.air_date})), max(date(${allEpisodes.air_date})))`),
         order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name)
       )
     } else if (sort === 'firstEpisodeDate') {
-      q = q.orderBy(
+      q = q.leftJoin(
+        allEpisodes,
+        eq(allEpisodes.episodateTvShowId, episodateTvShows.id)
+      )
+      .orderBy(
         order === 'asc'
           ? asc(sql`min(date(${allEpisodes.air_date}))`)
           : desc(sql`min(date(${allEpisodes.air_date}))`),
