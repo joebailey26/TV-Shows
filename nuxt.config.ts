@@ -1,12 +1,8 @@
 import { dirname, resolve, join } from 'node:path'
 import { copyFile, mkdir } from 'fs/promises'
-import eslint from '@nuxt/eslint-plugin'
 
 export default defineNuxtConfig({
-  compatibilityDate: '2025-01-08',
-  future: {
-    compatibilityVersion: 4
-  },
+  compatibilityDate: '2025-07-16',
   app: {
     head: {
       htmlAttrs: {
@@ -48,8 +44,8 @@ export default defineNuxtConfig({
     }
   },
   modules: [
-    eslint,
-    '@nuxtjs/stylelint-module',
+    '@nuxt/eslint',
+    // '@nuxtjs/stylelint-module',
     '@hebilicious/authjs-nuxt',
     'nitro-cloudflare-dev'
   ],
