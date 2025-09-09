@@ -42,8 +42,8 @@
 
 <template>
   <div class="show__button-container">
-    <button v-if="!tracked" type="button" class="button add" @click.stop="addShow()" />
-    <button v-else type="button" class="button remove" @click.stop="deleteShow()" />
+    <button v-if="!tracked" type="button" class="button add" @click.stop.prevent="addShow()" />
+    <button v-else type="button" class="button remove" @click.stop.prevent="deleteShow()" />
   </div>
 </template>
 
