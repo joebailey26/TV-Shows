@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } from 'drizzle-orm'
-import { alias, type SQLiteSelect } from 'drizzle-orm/sqlite-core'
+import { alias } from 'drizzle-orm/sqlite-core'
+import type { SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
 import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
