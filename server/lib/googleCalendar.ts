@@ -100,11 +100,11 @@ export const callGoogleCalendarApi = async (token: string, endpoint: string, met
     body: payload ? JSON.stringify(payload) : null
   })
 
-  if (!response.ok) {
-    throw new Error(`Google API error: ${response.statusText}. Request URL: ${requestUrl}`)
-  }
-
   const text = await response.text()
+
+  if (!response.ok) {
+    throw new Error(`Google API error: ${response.status} ${response.statusText}. Request URL: ${requestUrl}. Response: ${text}`)
+  }
 
   return text ? JSON.parse(text) : {}
 }

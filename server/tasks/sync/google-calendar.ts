@@ -202,9 +202,19 @@ export default defineTask({
         )
 
         if (!isStillInICS) {
-          deletePromises.push(() =>
-            callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE', null, calendarId)
-          )
+          deletePromises.push(async () => {
+            try {
+              await callGoogleCalendarApi(token, `/events/${event.id}`, 'DELETE', null, calendarId)
+            } catch (error) {
+              console.error('Failed to delete stale Google Calendar event:', {
+                id: event.id,
+                summary: event.summary,
+                start: event.start,
+                end: event.end,
+                error: error instanceof Error ? error.message : error
+              })
+            }
+          })
         }
       }
       console.timeEnd('Prepare insert and delete operations')
