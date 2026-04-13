@@ -10,6 +10,16 @@
     background-position: center;
     background-size: cover
   }
+  .header__title {
+    margin: 1rem 0;
+    font-size: 2em;
+    font-weight: bold;
+    h1 {
+      font-size: inherit;
+      display: inline;
+      margin: 0
+    }
+  }
   .header__content {
     width: 100%;
     max-width: 600px;
@@ -39,17 +49,26 @@
       background-color: var(--buttonHoverBackgroundColor)
     }
   }
+  .privacy-policy {
+    display: inline-block;
+    margin-top: 1rem;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline
+    }
+  }
 </style>
 
 <template>
   <header>
     <div class="inner-content">
       <div class="header__content">
-        <h1>Manage your TV Shows</h1>
+        <div class="header__title"><span>Manage your </span><h1>TV Shows</h1></div>
         <p>Keep track of your favorite TV shows in one place. Browse upcoming episodes, manage personal watchlists, and discover new series tailored to your tastes.</p>
         <button type="button" class="sign-in button" @click="signIn()">
           Sign Up / Sign In
         </button>
+        <nuxt-link class="privacy-policy" to="/privacy-policy">Privacy Policy</nuxt-link>
       </div>
     </div>
   </header>
