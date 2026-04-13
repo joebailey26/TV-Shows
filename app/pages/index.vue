@@ -13,12 +13,11 @@
   .header__title {
     margin: 1rem 0;
     font-size: 2em;
-    font-weight: bold;
-    h1 {
-      font-size: inherit;
-      display: inline;
-      margin: 0
-    }
+    font-weight: bold
+  }
+  .header__tagline {
+    margin-top: -.5rem;
+    font-weight: 500
   }
   .header__content {
     width: 100%;
@@ -63,12 +62,13 @@
   <header>
     <div class="inner-content">
       <div class="header__content">
-        <div class="header__title"><span>Manage your </span><h1>TV Shows</h1></div>
-        <p>Keep track of your favorite TV shows in one place. Browse upcoming episodes, manage personal watchlists, and discover new series tailored to your tastes.</p>
+        <h1 class="header__title">TV Shows</h1>
+        <p class="header__tagline">Manage your TV shows in one place.</p>
+        <p>TV Shows is an app for tracking your favorite television series, browsing upcoming episodes, managing a personal watchlist, and optionally syncing episode dates to your calendar.</p>
         <button type="button" class="sign-in button" @click="signIn()">
           Sign Up / Sign In
         </button>
-        <nuxt-link class="privacy-policy" to="/privacy-policy">Privacy Policy</nuxt-link>
+        <a class="privacy-policy" :href="privacyPolicyUrl">Privacy Policy</a>
       </div>
     </div>
   </header>
@@ -80,8 +80,26 @@ export default defineComponent({
     definePageMeta({ middleware: 'guest-only', layout: false })
 
     const { signIn } = useAuth()
+    const config = useRuntimeConfig()
+    const baseUrl = config.public.authJs.baseUrl.replace(/\/$/, '')
+    const privacyPolicyUrl = baseUrl ? `${baseUrl}/privacy-policy` : '/privacy-policy'
 
-    return { signIn }
+    useHead({
+      title: 'TV Shows',
+      meta: [
+        { name: 'application-name', content: 'TV Shows' },
+        { name: 'description', content: 'TV Shows is an app for tracking television series, browsing upcoming episodes, managing a personal watchlist, and syncing episode dates to a calendar.' },
+        { property: 'og:site_name', content: 'TV Shows' },
+        { property: 'og:title', content: 'TV Shows' },
+        { property: 'og:description', content: 'Track television series, browse upcoming episodes, manage a personal watchlist, and sync episode dates to a calendar.' }
+      ],
+      link: [
+        { rel: 'canonical', href: baseUrl || '/' },
+        { rel: 'privacy-policy', href: privacyPolicyUrl }
+      ]
+    })
+
+    return { privacyPolicyUrl, signIn }
   }
 })
 </script>
