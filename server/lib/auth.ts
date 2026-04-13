@@ -6,6 +6,8 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import type { H3Event } from 'h3'
 import { getRequestHeaders, getRequestURL } from 'h3'
 import { skipCSRFCheck, Auth } from '@auth/core'
+import { and, eq } from 'drizzle-orm'
+import { accounts } from '~~/server/db/schema'
 import customCss from './auth.css.js'
 import { useDb } from './db'
 
@@ -97,7 +99,9 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
             scope: 'openid email profile https://www.googleapis.com/auth/calendar',
             // eslint-disable-next-line camelcase
             access_type: 'offline',
-            prompt: 'consent'
+            prompt: 'consent',
+            // eslint-disable-next-line camelcase
+            response_type: 'code'
           }
         }
       }),
@@ -108,6 +112,62 @@ export async function useAuthOptions (event: H3Event): Promise<AuthConfig> {
       })
     ],
     trustHost: true,
+    callbacks: {
+      async signIn ({ account }) {
+        if (account?.provider !== 'google') {
+          return true
+        }
+
+        const updateData: Partial<typeof accounts.$inferInsert> = {}
+
+        if (account.access_token) {
+          // eslint-disable-next-line camelcase
+          updateData.access_token = account.access_token
+        }
+
+        if (account.expires_at) {
+          // eslint-disable-next-line camelcase
+          updateData.expires_at = account.expires_at
+        }
+
+        if (account.token_type) {
+          // eslint-disable-next-line camelcase
+          updateData.token_type = account.token_type
+        }
+
+        if (account.scope) {
+          updateData.scope = account.scope
+        }
+
+        if (account.id_token) {
+          // eslint-disable-next-line camelcase
+          updateData.id_token = account.id_token
+        }
+
+        if (typeof account.session_state === 'string') {
+          // eslint-disable-next-line camelcase
+          updateData.session_state = account.session_state
+        }
+
+        if (account.refresh_token) {
+          // eslint-disable-next-line camelcase
+          updateData.refresh_token = account.refresh_token
+        }
+
+        if (Object.keys(updateData).length) {
+          await DB.update(accounts)
+            .set(updateData)
+            .where(
+              and(
+                eq(accounts.provider, account.provider),
+                eq(accounts.providerAccountId, account.providerAccountId)
+              )
+            )
+        }
+
+        return true
+      }
+    },
     theme: {
       customCss
     },
