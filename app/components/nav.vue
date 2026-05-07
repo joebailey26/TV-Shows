@@ -105,6 +105,9 @@ nav {
           <nuxt-link to="/my-shows?category=cancelled" class="nav-link" :class="{ active: $route.query.category === 'cancelled' }">
             Cancelled
           </nuxt-link>
+          <nuxt-link to="/watch-partners" class="nav-link" :class="{ active: $route.path === '/watch-partners' }">
+            Friends & Family
+          </nuxt-link>
         </div>
         <div class="right">
           <a class="download-calendar button" :href="`/api/calendar/${userEmail}`" :download="`tv_joebailey_xyz_calendar_${userEmail}`">

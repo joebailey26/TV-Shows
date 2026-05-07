@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { eq, and, asc, sql, gt } from 'drizzle-orm'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
-import { tvShows, users, episodateTvShows, episodes } from '../../db/schema'
+import { tvShows, users, episodateTvShows, episodes, showWatchPartners, watchPartners } from '../../db/schema'
 import { useDb } from '../../lib/db'
 import { getEpisodesForShow } from '../../lib/getEpisodesForShow'
 
@@ -101,6 +101,22 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     return null
   }
 
+
+  const watchingWith = await DB.select({
+    id: watchPartners.id,
+    name: watchPartners.name
+  })
+    .from(tvShows)
+    .leftJoin(showWatchPartners, eq(showWatchPartners.showId, tvShows.id))
+    .leftJoin(watchPartners, eq(watchPartners.id, showWatchPartners.watchPartnerId))
+    .where(
+      and(
+        eq(tvShows.showId, showId),
+        eq(tvShows.userId, users.id),
+        eq(users.email, userEmail)
+      )
+    )
+
   const episodesFromDb = await getEpisodesForShow(showId, userEmail, event)
 
   return {
@@ -108,6 +124,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     tracked: true,
     genres: showResponse[0]?.genres ? showResponse[0].genres.split(',') : [],
     pictures: showResponse[0]?.pictures ? showResponse[0].pictures.split(',') : [],
-    episodes: episodesFromDb
+    episodes: episodesFromDb,
+    watchingWith: watchingWith.filter(item => item.id && item.name)
   }
 })

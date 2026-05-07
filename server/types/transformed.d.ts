@@ -11,10 +11,16 @@ declare global {
   interface EpisodesTransformed extends Episodes {
     watched: boolean
   }
+  interface WatchPartner {
+    id: number
+    name: string
+  }
+
   interface EpisodateShowTransformed extends EpisodateShow {
     tracked: boolean
     updatedAt: string
     countdown: EpisodesTransformed | null
     episodes: EpisodesTransformed[]
+    watchingWith: WatchPartner[]
   }
 }

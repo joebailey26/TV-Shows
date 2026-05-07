@@ -66,6 +66,21 @@ export const watchedEpisodes = sqliteTable('watchedEpisodes', {
   }
 })
 
+export const watchPartners = sqliteTable('watchPartners', {
+  id: integer('id').notNull().primaryKey({ autoIncrement: true }),
+  userId: text('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull()
+})
+
+export const showWatchPartners = sqliteTable('showWatchPartners', {
+  showId: integer('showId').notNull().references(() => tvShows.id, { onDelete: 'cascade' }),
+  watchPartnerId: integer('watchPartnerId').notNull().references(() => watchPartners.id, { onDelete: 'cascade' })
+}, (table) => {
+  return {
+    showPartnerIdx: uniqueIndex('showPartnerIdx').on(table.showId, table.watchPartnerId)
+  }
+})
+
 export const users = sqliteTable('user', {
   id: text('id').notNull().primaryKey(),
   name: text('name'),

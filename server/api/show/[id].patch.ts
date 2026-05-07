@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import { eq, and, inArray, sql } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import { getShowExists } from '../../lib/getShowExists'
-import { episodes, watchedEpisodes, users } from '../../db/schema'
+import { episodes, watchedEpisodes, users, tvShows, showWatchPartners } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'
@@ -40,8 +40,27 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'You must pass a body', statusCode: 400 })
   }
 
+
+  if (Array.isArray(body.watchPartnerIds)) {
+    const showRecord = await DB.select({ id: tvShows.id })
+      .from(tvShows)
+      .leftJoin(users, eq(users.id, tvShows.userId))
+      .where(and(eq(tvShows.showId, showId), eq(users.email, userEmail)))
+      .limit(1)
+
+    if (showRecord[0]) {
+      await DB.delete(showWatchPartners).where(eq(showWatchPartners.showId, showRecord[0].id))
+      if (body.watchPartnerIds.length > 0) {
+        await DB.insert(showWatchPartners).values(body.watchPartnerIds.map((watchPartnerId: number) => ({
+          showId: showRecord[0].id,
+          watchPartnerId
+        })))
+      }
+    }
+  }
+
   if (!body.episode) {
-    throw createError({ statusMessage: 'You must pass an episode', statusCode: 400 })
+    return { success: true }
   }
 
   // Find the episode in the database that has been passed in the payload

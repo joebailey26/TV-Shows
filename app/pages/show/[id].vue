@@ -68,6 +68,12 @@ h1 {
         <h1 v-html="name" />
         <p v-html="description" />
         <div class="info">
+          <div class="watching-with">
+            <label for="watchingWith">Watching together with:</label>
+            <select id="watchingWith" multiple @change="updateWatchingWith">
+              <option v-for="partner in partners" :key="partner.id" :value="partner.id" :selected="selectedPartners.includes(partner.id)">{{ partner.name }}</option>
+            </select>
+          </div>
           <span v-if="network">Network: {{ network }}</span>
           <span v-if="runtime">Average Runtime: {{ runtime }} minutes</span>
           <span v-if="start_date">Start Date: <PrettyDate :date="new Date(start_date)" /></span>
@@ -115,6 +121,8 @@ export default defineComponent({
     ) as string
     const showId = parseInt(idParam)
     const show = ref(null) as Ref<EpisodateShowTransformed|null>
+    const partners = ref<{id:number, name:string}[]>([])
+    const selectedPartners = ref<number[]>([])
 
     const response = await useFetch(`/api/show/${showId}`, {
       headers
@@ -122,6 +130,7 @@ export default defineComponent({
 
     if (response.data.value) {
       show.value = reactive(response.data.value)
+      selectedPartners.value = (response.data.value.watchingWith ?? []).map((item: { id: number }) => item.id)
     } else {
       throw createError({ statusCode: 404, message: 'Page not found' })
     }
@@ -145,6 +154,13 @@ export default defineComponent({
       return []
     })
 
+    async function updateWatchingWith (event: Event) {
+      const target = event.target as HTMLSelectElement
+      const watchPartnerIds = Array.from(target.selectedOptions).map(option => parseInt(option.value, 10))
+      selectedPartners.value = watchPartnerIds
+      await $fetch(`/api/show/${showId}`, { method: 'PATCH', headers, body: { watchPartnerIds } })
+    }
+
     async function updateShow (episode: number) {
       const response = await useFetch(`/api/show/${showId}`, {
         method: 'PATCH',
@@ -167,6 +183,8 @@ export default defineComponent({
       }
     }
 
+    partners.value = await $fetch('/api/watch-partners', { headers })
+
     const deleteShowCallback = () => {
       router.push('/my-shows')
     }
@@ -175,7 +193,10 @@ export default defineComponent({
       ...toRefs(show.value),
       updateShow,
       seasons,
-      deleteShowCallback
+      deleteShowCallback,
+      partners,
+      selectedPartners,
+      updateWatchingWith
     }
   }
 })
