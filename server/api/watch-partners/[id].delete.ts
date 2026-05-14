@@ -11,6 +11,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const partnerId = parseInt(idParam, 10)
+  if (!Number.isInteger(partnerId)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid id' })
+  }
+
   const userEmail = await getAuthenticatedUserEmail(event)
   const user = await getUserByEmail(userEmail, event)
   if (!user) {
