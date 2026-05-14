@@ -44,7 +44,7 @@
   <main class="inner-content partners-page">
     <h1>Friends & Family</h1>
     <form class="partner-form" @submit.prevent="addPartner">
-      <input v-model="newPartner" class="add-person-input" type="text" placeholder="Add a person" maxlength="64">
+      <input v-model="newPartner" class="add-person-input" type="text" placeholder="Add a person" aria-label="Partner name" maxlength="64">
       <button class="button add-person-submit" type="submit">Add</button>
     </form>
     <ul class="partner-list">

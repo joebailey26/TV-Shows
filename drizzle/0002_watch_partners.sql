@@ -5,6 +5,10 @@ CREATE TABLE `watchPartners` (
   FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 
+CREATE INDEX `watchPartnersUserIdIdx` ON `watchPartners` (`userId`);
+
+CREATE UNIQUE INDEX `watchPartnersUserIdNameIdx` ON `watchPartners` (`userId`, `name` COLLATE NOCASE);
+
 CREATE TABLE `showWatchPartners` (
   `showId` integer NOT NULL,
   `watchPartnerId` integer NOT NULL,

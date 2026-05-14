@@ -107,7 +107,13 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
   })
     .from(tvShows)
     .leftJoin(showWatchPartners, eq(showWatchPartners.showId, tvShows.id))
-    .leftJoin(watchPartners, eq(watchPartners.id, showWatchPartners.watchPartnerId))
+    .leftJoin(
+      watchPartners,
+      and(
+        eq(watchPartners.id, showWatchPartners.watchPartnerId),
+        eq(watchPartners.userId, tvShows.userId)
+      )
+    )
     .leftJoin(users, eq(users.id, tvShows.userId))
     .where(
       and(
