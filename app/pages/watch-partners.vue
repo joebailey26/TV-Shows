@@ -1,14 +1,56 @@
+<style lang="scss">
+.partner-form {
+  display: flex;
+  align-items: center;
+  gap: .5rem
+}
+.add-person-input {
+  height: 2rem;
+  padding: 0 .5rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 2rem
+}
+.add-person-submit {
+  font-size: 1.1rem;
+  padding: .5rem;
+  min-height: 0;
+}
+.partner-list {
+  font-size: 1.1rem;
+  padding-left: 0;
+  margin-top: 1rem;
+}
+.partner-item {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  button {
+    min-height: 0;
+    padding: .5rem;
+    padding-top: .8rem;
+    color: rgb(255, 0, 0);
+    background: none;
+    border: 0;
+    &:hover {
+      background: none;
+      color: rgb(220, 0, 0)
+    }
+  }
+}
+</style>
+
 <template>
   <main class="inner-content partners-page">
     <h1>Friends & Family</h1>
     <form class="partner-form" @submit.prevent="addPartner">
-      <input v-model="newPartner" type="text" placeholder="Add a person" maxlength="64">
-      <button class="button" type="submit">Add</button>
+      <input v-model="newPartner" class="add-person-input" type="text" placeholder="Add a person" maxlength="64">
+      <button class="button add-person-submit" type="submit">Add</button>
     </form>
-    <ul>
-      <li v-for="partner in partners" :key="partner.id">
+    <ul class="partner-list">
+      <li v-for="partner in partners" :key="partner.id" class="partner-item">
         {{ partner.name }}
-        <button type="button" class="button" @click="removePartner(partner.id)">Remove</button>
+        <button type="button" class="button" @click="removePartner(partner.id)">X</button>
       </li>
     </ul>
   </main>

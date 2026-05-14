@@ -1,6 +1,6 @@
 <style lang="scss" scoped>
 h1 {
-  margin-top: 0
+  margin-top: 0;
 }
 .header {
   display: grid;
@@ -14,12 +14,82 @@ h1 {
     height: auto;
     max-height: 490px;
     object-fit: cover;
-    aspect-ratio: 3/4.2
+    aspect-ratio: 3/4.2;
   }
 }
 .info {
   display: grid;
-  gap: 1rem
+  gap: 1rem;
+}
+.watching-with {
+  display: grid;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .watching-with-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .clear-button {
+    border: none;
+    background: transparent;
+    color: var(--primaryColor);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+
+    &:disabled {
+      color: #777;
+      cursor: not-allowed;
+    }
+  }
+
+  .watching-with-help {
+    margin: 0;
+    color: #d1d5db;
+    font-size: 0.9rem;
+  }
+
+  .partner-options {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .partner-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid #3a3a3a;
+    border-radius: 0.5rem;
+    background: #2a2a2a;
+    color: #f3f4f6;
+    padding: 0.55rem 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    input {
+      margin: 0;
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--buttonBackgroundColor);
+      cursor: pointer;
+    }
+
+    &:focus-within {
+      border-color: var(--buttonBackgroundColor);
+      box-shadow: 0 0 0 2px rgb(124 58 237 / 0.3);
+    }
+  }
+
 }
 .image-wrapper {
   position: relative;
@@ -28,18 +98,18 @@ h1 {
     position: absolute;
     inset: 0;
     z-index: 3;
-    margin-top: 0
+    margin-top: 0;
   }
 }
 @media (min-width: 768px) {
   .header {
-    grid-template-columns: 350px 1fr
+    grid-template-columns: 350px 1fr;
   }
   .image-wrapper {
-    grid-row: span 2
+    grid-row: span 2;
   }
   .episodes {
-    grid-column: 2
+    grid-column: 2;
   }
 }
 </style>
@@ -69,10 +139,36 @@ h1 {
         <p v-html="description" />
         <div class="info">
           <div class="watching-with">
-            <label for="watchingWith">Watching together with:</label>
-            <select id="watchingWith" multiple @change="updateWatchingWith">
-              <option v-for="partner in partners" :key="partner.id" :value="partner.id" :selected="selectedPartners.includes(partner.id)">{{ partner.name }}</option>
-            </select>
+            <div class="watching-with-header">
+              <label>Watching together with:</label>
+              <button
+                type="button"
+                class="clear-button"
+                :disabled="selectedPartners.length === 0"
+                @click="clearWatchingWith"
+              >
+                Clear all
+              </button>
+            </div>
+            <p class="watching-with-help">
+              Select one or more people.
+            </p>
+            <div class="partner-options">
+              <label
+                v-for="partner in partners"
+                :key="partner.id"
+                class="partner-option"
+                :for="`watchingWith-${partner.id}`"
+              >
+                <input
+                  :id="`watchingWith-${partner.id}`"
+                  type="checkbox"
+                  :checked="selectedPartners.includes(partner.id)"
+                  @change="updateWatchingWith(partner.id, $event)"
+                >
+                <span>{{ partner.name }}</span>
+              </label>
+            </div>
           </div>
           <span v-if="network">Network: {{ network }}</span>
           <span v-if="runtime">Average Runtime: {{ runtime }} minutes</span>
@@ -154,11 +250,28 @@ export default defineComponent({
       return []
     })
 
-    async function updateWatchingWith (event: Event) {
-      const target = event.target as HTMLSelectElement
-      const watchPartnerIds = Array.from(target.selectedOptions).map(option => parseInt(option.value, 10))
-      selectedPartners.value = watchPartnerIds
+    async function saveWatchingWith (watchPartnerIds: number[]) {
       await $fetch(`/api/show/${showId}`, { method: 'PATCH', headers, body: { watchPartnerIds } })
+    }
+
+    async function updateWatchingWith (partnerId: number, event: Event) {
+      const target = event.target as HTMLInputElement
+      const selectedSet = new Set(selectedPartners.value)
+
+      if (target.checked) {
+        selectedSet.add(partnerId)
+      } else {
+        selectedSet.delete(partnerId)
+      }
+
+      const watchPartnerIds = Array.from(selectedSet)
+      selectedPartners.value = watchPartnerIds
+      await saveWatchingWith(watchPartnerIds)
+    }
+
+    async function clearWatchingWith () {
+      selectedPartners.value = []
+      await saveWatchingWith([])
     }
 
     async function updateShow (episode: number) {
@@ -196,7 +309,8 @@ export default defineComponent({
       deleteShowCallback,
       partners,
       selectedPartners,
-      updateWatchingWith
+      updateWatchingWith,
+      clearWatchingWith
     }
   }
 })

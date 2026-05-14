@@ -39,7 +39,7 @@ nav {
   cursor: pointer
 }
 
-@media (max-width: 768px) {
+@media (width<= 768px) {
   nav {
     min-height: 0
   }
@@ -73,9 +73,7 @@ nav {
   text-decoration: none
 }
 .nav-link.active {
-  color: transparent;
-  background-image: var(--radialGradient);
-  background-clip: text
+  color: var(--primaryColor)
 }
 .button {
   min-height: 0

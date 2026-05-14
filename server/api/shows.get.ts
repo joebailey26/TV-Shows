@@ -3,7 +3,7 @@ import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } 
 import { alias } from 'drizzle-orm/sqlite-core'
 import type { SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
-import { tvShows, users, episodateTvShows, episodes, watchedEpisodes, showWatchPartners, watchPartners } from '../db/schema'
+import { tvShows, users, episodateTvShows, episodes, watchedEpisodes, showWatchPartners } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
 import { useDb } from '../lib/db'
 
@@ -82,8 +82,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
           watchingWith > 0
             ? sql`exists (
               select 1 from ${showWatchPartners} swp
-              join ${watchPartners} wp on wp.id = swp.watchPartnerId
-              where swp.showId = ${tvShows.id} and wp.id = ${watchingWith}
+              where swp.showId = ${tvShows.id} and swp.watchPartnerId = ${watchingWith}
             )`
             : sql`1=1`,
           watchingWith === -1

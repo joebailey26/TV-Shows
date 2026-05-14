@@ -8,7 +8,7 @@ button {
   cursor: pointer
 }
 .watched {
-  color: var(--greenColor)
+  color: var(--primaryColor)
 }
 </style>
 

@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import { eq, and, inArray, sql } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import { getShowExists } from '../../lib/getShowExists'
-import { episodes, watchedEpisodes, users, tvShows, showWatchPartners } from '../../db/schema'
+import { episodes, watchedEpisodes, users, tvShows, showWatchPartners, watchPartners } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'
@@ -40,6 +40,21 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError({ statusMessage: 'You must pass a body', statusCode: 400 })
   }
 
+  const hasEpisode = body.episode !== undefined
+  const hasWatchPartnerIds = body.watchPartnerIds !== undefined
+
+  if (!hasEpisode && !hasWatchPartnerIds) {
+    throw createError({ statusMessage: 'You must pass at least one supported field (episode or watchPartnerIds)', statusCode: 400 })
+  }
+
+  if (hasWatchPartnerIds && !Array.isArray(body.watchPartnerIds)) {
+    throw createError({ statusMessage: 'watchPartnerIds must be an array', statusCode: 400 })
+  }
+
+  if (Array.isArray(body.watchPartnerIds) && !body.watchPartnerIds.every((id: unknown) => Number.isInteger(id))) {
+    throw createError({ statusMessage: 'watchPartnerIds must contain only integer ids', statusCode: 400 })
+  }
+
 
   if (Array.isArray(body.watchPartnerIds)) {
     const showRecord = await DB.select({ id: tvShows.id })
@@ -51,15 +66,25 @@ export default defineEventHandler(async (event: H3Event) => {
     if (showRecord[0]) {
       await DB.delete(showWatchPartners).where(eq(showWatchPartners.showId, showRecord[0].id))
       if (body.watchPartnerIds.length > 0) {
-        await DB.insert(showWatchPartners).values(body.watchPartnerIds.map((watchPartnerId: number) => ({
-          showId: showRecord[0].id,
-          watchPartnerId
-        })))
+        // Validate that all provided IDs actually belong to the authenticated user
+        const ownedPartners = await DB.select({ id: watchPartners.id })
+          .from(watchPartners)
+          .where(and(
+            eq(watchPartners.userId, user.id),
+            inArray(watchPartners.id, body.watchPartnerIds)
+          ))
+        const validIds = ownedPartners.map(p => p.id)
+        if (validIds.length > 0) {
+          await DB.insert(showWatchPartners).values(validIds.map((watchPartnerId: number) => ({
+            showId: showRecord[0].id,
+            watchPartnerId
+          })))
+        }
       }
     }
   }
 
-  if (!body.episode) {
+  if (!hasEpisode) {
     return { success: true }
   }
 

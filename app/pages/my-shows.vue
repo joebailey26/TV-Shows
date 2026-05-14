@@ -33,6 +33,12 @@
 <template>
   <main class="inner-content">
     <div class="sort-controls">
+      <label for="watchingWith">Watching with:</label>
+      <select id="watchingWith" class="sort-select" :value="route.query.watchingWith ?? 'all'" @change="changeWatchingWith">
+        <option value="all">All</option>
+        <option value="-1">Only me</option>
+        <option v-for="partner in partners" :key="partner.id" :value="partner.id">Watching with {{ partner.name }}</option>
+      </select>
       <label for="sort">Sort by:</label>
       <select id="sort" class="sort-select" :value="route.query.sort ?? 'alphabetical'" @change="changeSort">
         <option value="alphabetical">
@@ -47,11 +53,6 @@
         <option value="firstEpisodeDate">
           First episode date
         </option>
-      </select>
-      <select id="watchingWith" class="sort-select" :value="route.query.watchingWith ?? 'all'" @change="changeWatchingWith">
-        <option value="all">All</option>
-        <option value="-1">Only me</option>
-        <option v-for="partner in partners" :key="partner.id" :value="partner.id">Watching with {{ partner.name }}</option>
       </select>
       <button type="button" class="sort-order-btn" @click="toggleOrder">
         {{ route.query.order === 'desc' ? '▼' : '▲' }}

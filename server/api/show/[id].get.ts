@@ -101,7 +101,6 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     return null
   }
 
-
   const watchingWith = await DB.select({
     id: watchPartners.id,
     name: watchPartners.name
@@ -109,10 +108,10 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     .from(tvShows)
     .leftJoin(showWatchPartners, eq(showWatchPartners.showId, tvShows.id))
     .leftJoin(watchPartners, eq(watchPartners.id, showWatchPartners.watchPartnerId))
+    .leftJoin(users, eq(users.id, tvShows.userId))
     .where(
       and(
         eq(tvShows.showId, showId),
-        eq(tvShows.userId, users.id),
         eq(users.email, userEmail)
       )
     )
