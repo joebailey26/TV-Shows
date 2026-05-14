@@ -16,6 +16,9 @@ export default defineEventHandler(async (event) => {
   if (!name) {
     throw createError({ statusCode: 400, statusMessage: 'Name is required' })
   }
+  if (name.length > 64) {
+    throw createError({ statusCode: 400, statusMessage: 'Name must be between 1 and 64 characters' })
+  }
 
   const DB = await useDb()
   const existing = await DB.select().from(watchPartners).where(eq(watchPartners.userId, user.id))
