@@ -2,7 +2,7 @@
   <main class="inner-content partners-page">
     <h1>Friends & Family</h1>
     <form class="partner-form" @submit.prevent="addPartner">
-      <input v-model="newPartner" type="text" placeholder="Add a person" maxlength="64">
+      <input v-model="newPartner" type="text" placeholder="Add a person" aria-label="Partner name" maxlength="64">
       <button class="button" type="submit">Add</button>
     </form>
     <ul>
