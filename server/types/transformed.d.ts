@@ -1,4 +1,4 @@
-export { EpisodesTransformed, EpisodateShowTransformed }
+export {}
 
 declare global {
   interface EpisodateShowFromSearchTransformed extends EpisodateShowFromSearch {

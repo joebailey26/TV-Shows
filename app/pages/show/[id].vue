@@ -220,20 +220,21 @@ export default defineComponent({
         : route.params.id
     ) as string
     const showId = parseInt(idParam)
-    const show = ref(null) as Ref<EpisodateShowTransformed|null>
+    const show = ref<EpisodateShowTransformed | null>(null)
     const partners = ref<{id:number, name:string}[]>([])
     const selectedPartners = ref<number[]>([])
 
-    const response = await useFetch(`/api/show/${showId}`, {
+    const response = await useFetch<EpisodateShowTransformed | null>(`/api/show/${showId}` as string, {
       headers
     })
 
-    if (response.data.value) {
-      show.value = reactive(response.data.value)
-      selectedPartners.value = (response.data.value.watchingWith ?? []).map((item: { id: number }) => item.id)
-    } else {
+    if (!response.data.value) {
       throw createError({ statusCode: 404, message: 'Page not found' })
     }
+
+    const showState = reactive(response.data.value) as EpisodateShowTransformed
+    show.value = showState
+    selectedPartners.value = showState.watchingWith.map(item => item.id)
 
     const seasons: ComputedRef<Season[]> = computed(() => {
       if (show.value && show.value.episodes.length > 0) {
@@ -255,7 +256,7 @@ export default defineComponent({
     })
 
     async function saveWatchingWith (watchPartnerIds: number[]) {
-      await $fetch(`/api/show/${showId}`, { method: 'PATCH', headers, body: { watchPartnerIds } })
+      await $fetch<{ success: boolean, watchedEpisodeIds: number[] }>(`/api/show/${showId}` as string, { method: 'PATCH', headers, body: { watchPartnerIds } })
     }
 
     async function updateWatchingWith (partnerId: number, event: Event) {
@@ -279,7 +280,7 @@ export default defineComponent({
     }
 
     async function updateShow (episode: number) {
-      const response = await useFetch(`/api/show/${showId}`, {
+      const response = await useFetch<{ success: boolean, watchedEpisodeIds: number[] }>(`/api/show/${showId}` as string, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({
@@ -300,14 +301,14 @@ export default defineComponent({
       }
     }
 
-    partners.value = await $fetch('/api/watch-partners', { headers })
+    partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
 
     const deleteShowCallback = () => {
       router.push('/my-shows')
     }
 
     return {
-      ...toRefs(show.value),
+      ...toRefs(showState),
       updateShow,
       seasons,
       deleteShowCallback,

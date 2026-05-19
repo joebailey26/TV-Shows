@@ -59,16 +59,16 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 const headers = useRequestHeaders(['cookie']) as HeadersInit
-const partners = ref<{id:number, name:string}[]>([])
+const partners = ref<WatchPartner[]>([])
 const newPartner = ref('')
 
 const refresh = async () => {
-  partners.value = await $fetch('/api/watch-partners', { headers })
+  partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
 }
 
 const addPartner = async () => {
   if (!newPartner.value.trim()) { return }
-  partners.value = await $fetch('/api/watch-partners', {
+  partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string, {
     method: 'POST',
     headers,
     body: { name: newPartner.value }
@@ -77,7 +77,7 @@ const addPartner = async () => {
 }
 
 const removePartner = async (id: number) => {
-  await $fetch(`/api/watch-partners/${id}`, { method: 'DELETE', headers })
+  await $fetch(`/api/watch-partners/${id}` as string, { method: 'DELETE', headers })
   await refresh()
 }
 

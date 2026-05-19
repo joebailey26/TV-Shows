@@ -120,17 +120,17 @@ export default defineComponent({
 
     const changeSort = (event: Event) => {
       const value = (event.target as HTMLSelectElement).value
-      router.push({ path: route.path, query: { ...route.query, sort: value, p: 1 } })
+      router.push({ query: { ...route.query, sort: value, p: 1 } })
     }
 
     const changeWatchingWith = (event: Event) => {
       const value = (event.target as HTMLSelectElement).value
-      router.push({ path: route.path, query: { ...route.query, watchingWith: value === 'all' ? undefined : value, p: 1 } })
+      router.push({ query: { ...route.query, watchingWith: value === 'all' ? undefined : value, p: 1 } })
     }
 
     const toggleOrder = () => {
       const newOrder = route.query.order === 'desc' ? 'asc' : 'desc'
-      router.push({ path: route.path, query: { ...route.query, order: newOrder, p: 1 } })
+      router.push({ query: { ...route.query, order: newOrder, p: 1 } })
     }
 
     const { data } = await useFetch('/api/shows', {
@@ -147,7 +147,7 @@ export default defineComponent({
     })
     shows.value = data.value?.tv_shows ?? []
     pages.value = data.value?.pages ?? 0
-    partners.value = await $fetch('/api/watch-partners', { headers })
+    partners.value = await $fetch<{ id: number, name: string }[]>('/api/watch-partners' as string, { headers })
 
     return {
       shows,
