@@ -61,6 +61,8 @@ definePageMeta({ middleware: 'auth' })
 const headers = import.meta.server ? useRequestHeaders(['cookie']) as HeadersInit : undefined
 const partners = ref<WatchPartner[]>([])
 const newPartner = ref('')
+const { data: initialPartners } = await useFetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
+partners.value = initialPartners.value ?? []
 
 const refresh = async () => {
   partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
@@ -81,5 +83,4 @@ const removePartner = async (id: number) => {
   await refresh()
 }
 
-await refresh()
 </script>

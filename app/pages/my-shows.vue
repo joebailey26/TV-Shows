@@ -147,7 +147,8 @@ export default defineComponent({
     })
     shows.value = data.value?.tv_shows ?? []
     pages.value = data.value?.pages ?? 0
-    partners.value = await $fetch<{ id: number, name: string }[]>('/api/watch-partners' as string, { headers })
+    const { data: partnerData } = await useFetch<{ id: number, name: string }[]>('/api/watch-partners' as string, { headers })
+    partners.value = partnerData.value ?? []
 
     return {
       shows,

@@ -291,7 +291,8 @@ export default defineComponent({
       }
     }
 
-    partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
+    const { data: partnerData } = await useFetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
+    partners.value = partnerData.value ?? []
 
     const deleteShowCallback = () => {
       router.push('/my-shows')

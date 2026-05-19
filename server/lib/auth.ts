@@ -21,6 +21,23 @@ async function getServerSessionResponse (event: H3Event): Promise<Response> {
   ) as Response
 }
 
+function getAuthCookieDebug (event: H3Event) {
+  const cookieHeader = getRequestHeader(event, 'cookie') ?? ''
+  const cookieNames = cookieHeader
+    .split(';')
+    .map((cookie) => {
+      const [name] = cookie.trim().split('=')
+      return name
+    })
+    .filter((name): name is string => Boolean(name))
+
+  return {
+    hasCookie: cookieNames.length > 0,
+    hasAuthSessionCookie: cookieNames.some(name => name.toLowerCase().includes('session-token')),
+    cookieNames
+  }
+}
+
 export async function getServerSession (event: H3Event) {
   const response = await getServerSessionResponse(event)
   const { status = 200 } = response
@@ -45,7 +62,7 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
   } catch (error) {
     console.warn('Failed to resolve auth session', {
       path: event.path,
-      hasCookie: Boolean(getRequestHeader(event, 'cookie')),
+      ...getAuthCookieDebug(event),
       error: error instanceof Error ? error.message : String(error)
     })
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
@@ -54,7 +71,7 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
   if (!session?.user?.email) {
     console.warn('No authenticated user email found in session', {
       path: event.path,
-      hasCookie: Boolean(getRequestHeader(event, 'cookie'))
+      ...getAuthCookieDebug(event)
     })
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
