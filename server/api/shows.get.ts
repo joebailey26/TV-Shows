@@ -3,7 +3,7 @@ import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } 
 import { alias } from 'drizzle-orm/sqlite-core'
 import type { SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
-import { tvShows, users, episodateTvShows, episodes, watchedEpisodes } from '../db/schema'
+import { tvShows, users, episodateTvShows, episodes, watchedEpisodes, showWatchPartners } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
 import { useDb } from '../lib/db'
 
@@ -39,6 +39,9 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   const orderParam = Array.isArray(queryParams.order) ? queryParams.order[0] : queryParams.order
   const order: SortOrder = orderParam === 'desc' ? 'desc' : 'asc'
 
+  const watchingFilterParam = Array.isArray(queryParams.watchingWith) ? queryParams.watchingWith[0] : queryParams.watchingWith
+  const watchingWith = watchingFilterParam ? parseInt(watchingFilterParam as string, 10) : 0
+
   // If offset starts to be slow
   // We could use SELECT WHERE NOT IN ( SELECT episodateTvShows.id FROM episodateTvShows ORDER BY episodateTvShows.name ASC LIMIT :offset )
   // This effectively skips the first X rows
@@ -73,7 +76,20 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
         )
       )
       .groupBy(episodateTvShows.id)
-      .where(eq(users.email, userEmail))
+      .where(
+        and(
+          eq(users.email, userEmail),
+          watchingWith > 0
+            ? sql`exists (
+              select 1 from ${showWatchPartners} swp
+              where swp.showId = ${tvShows.id} and swp.watchPartnerId = ${watchingWith}
+            )`
+            : sql`1=1`,
+          watchingWith === -1
+            ? sql`not exists (select 1 from ${showWatchPartners} swp where swp.showId = ${tvShows.id})`
+            : sql`1=1`
+        )
+      )
 
     if (sort === 'episodesToWatch') {
       q = q.orderBy(
