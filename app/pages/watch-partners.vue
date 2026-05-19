@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
-const headers = useRequestHeaders(['cookie']) as HeadersInit
+const headers = import.meta.server ? useRequestHeaders(['cookie']) as HeadersInit : undefined
 const partners = ref<WatchPartner[]>([])
 const newPartner = ref('')
 

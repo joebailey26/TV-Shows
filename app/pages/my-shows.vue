@@ -68,7 +68,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   async setup () {
     definePageMeta({ middleware: 'auth' })
-    const headers = useRequestHeaders(['cookie']) as HeadersInit
+    const headers = import.meta.server ? useRequestHeaders(['cookie']) as HeadersInit : undefined
 
     const shows = ref([]) as Ref<EpisodateShowFromSearchTransformed[]>
     const pages = ref(0)

@@ -4,7 +4,7 @@ import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import type { H3Event } from 'h3'
-import { getRequestHeaders, getRequestURL } from 'h3'
+import { getRequestHeader, getRequestHeaders, getRequestURL } from 'h3'
 import { skipCSRFCheck, Auth } from '@auth/core'
 import { and, eq } from 'drizzle-orm'
 import { accounts } from '~~/server/db/schema'
@@ -42,11 +42,20 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
 
   try {
     session = await getServerSession(event)
-  } catch {
+  } catch (error) {
+    console.warn('Failed to resolve auth session', {
+      path: event.path,
+      hasCookie: Boolean(getRequestHeader(event, 'cookie')),
+      error: error instanceof Error ? error.message : String(error)
+    })
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
 
   if (!session?.user?.email) {
+    console.warn('No authenticated user email found in session', {
+      path: event.path,
+      hasCookie: Boolean(getRequestHeader(event, 'cookie'))
+    })
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
 

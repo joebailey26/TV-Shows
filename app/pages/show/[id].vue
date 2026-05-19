@@ -201,7 +201,7 @@ export default defineComponent({
   },
   async setup () {
     const router = useRouter()
-    const headers = useRequestHeaders(['cookie']) as HeadersInit
+    const headers = import.meta.server ? useRequestHeaders(['cookie']) as HeadersInit : undefined
     definePageMeta({ middleware: 'auth' })
     const route = useRoute()
     const idParam = (
