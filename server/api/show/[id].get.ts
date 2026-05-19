@@ -5,6 +5,10 @@ import { tvShows, users, episodateTvShows, episodes, showWatchPartners, watchPar
 import { useDb } from '../../lib/db'
 import { getEpisodesForShow } from '../../lib/getEpisodesForShow'
 
+function isWatchPartner (item: { id: number | null, name: string | null }): item is { id: number, name: string } {
+  return item.id !== null && item.name !== null
+}
+
 export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowTransformed|null> => {
   const userEmail = await getAuthenticatedUserEmail(event)
 
@@ -130,6 +134,6 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     genres: showResponse[0]?.genres ? showResponse[0].genres.split(',') : [],
     pictures: showResponse[0]?.pictures ? showResponse[0].pictures.split(',') : [],
     episodes: episodesFromDb,
-    watchingWith: watchingWith.filter(item => item.id && item.name)
+    watchingWith: watchingWith.filter(isWatchPartner)
   }
 })
