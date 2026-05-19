@@ -35,6 +35,10 @@ h1 {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+
+    p {
+      margin: 0;
+    }
   }
 
   .clear-button {
@@ -140,7 +144,7 @@ h1 {
         <div class="info">
           <div class="watching-with">
             <div class="watching-with-header">
-              <label>Watching together with:</label>
+              <p>Watching together with:</p>
               <button
                 type="button"
                 class="clear-button"
