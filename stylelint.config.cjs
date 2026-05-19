@@ -1,4 +1,4 @@
-const galexiaConfig = require('stylelint-config-galexia');
+const galexiaConfig = require('stylelint-config-galexia')
 
 const removedStylelint16Rules = new Set([
   'block-closing-brace-newline-after',
@@ -27,16 +27,16 @@ const removedStylelint16Rules = new Set([
   'selector-list-comma-newline-after',
   'string-quotes',
   'unit-case'
-]);
+])
 
 const rules = Object.fromEntries(
   Object.entries(galexiaConfig.rules).filter(([ruleName]) => !removedStylelint16Rules.has(ruleName))
-);
+)
 
-delete rules['scss/at-import-no-partial-leading-underscore'];
-rules['scss/load-no-partial-leading-underscore'] = true;
+delete rules['scss/at-import-no-partial-leading-underscore']
+rules['scss/load-no-partial-leading-underscore'] = true
 
 module.exports = {
   ...galexiaConfig,
   rules
-};
+}
