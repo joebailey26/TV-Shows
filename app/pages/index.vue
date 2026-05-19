@@ -12,8 +12,8 @@
   }
   .header__title {
     margin: 1rem 0;
-    font-size: 2em;
-    font-weight: bold
+    font-weight: bold;
+    font-size: 2em
   }
   .header__tagline {
     margin-top: -.5rem;

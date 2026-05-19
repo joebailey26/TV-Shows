@@ -24,73 +24,63 @@ h1 {
 .watching-with {
   display: grid;
   gap: 0.5rem;
-
   label {
+    color: white;
     font-weight: 600;
-    color: #fff;
   }
-
   .watching-with-header {
     display: flex;
+    gap: 1rem;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-
     p {
       margin: 0;
     }
   }
-
   .clear-button {
-    border: none;
-    background: transparent;
+    padding: 0;
     color: var(--primaryColor);
     font: inherit;
-    font-size: 0.9rem;
     font-weight: 600;
+    font-size: 0.9rem;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    padding: 0;
-
     &:disabled {
-      color: #777;
+      color: #777777;
       cursor: not-allowed;
     }
   }
-
   .watching-with-help {
     margin: 0;
     color: #d1d5db;
     font-size: 0.9rem;
   }
-
   .partner-options {
     display: grid;
     gap: 0.5rem;
   }
-
   .partner-option {
     display: flex;
-    align-items: center;
     gap: 0.6rem;
+    align-items: center;
+    padding: 0.55rem 0.7rem;
+    color: #f3f4f6;
+    font-weight: 500;
+    background: #2a2a2a;
     border: 1px solid #3a3a3a;
     border-radius: 0.5rem;
-    background: #2a2a2a;
-    color: #f3f4f6;
-    padding: 0.55rem 0.7rem;
-    font-weight: 500;
     cursor: pointer;
-
     input {
-      margin: 0;
       width: 1rem;
       height: 1rem;
-      accent-color: var(--buttonBackgroundColor);
+      margin: 0;
       cursor: pointer;
+      accent-color: var(--buttonBackgroundColor);
     }
-
     &:focus-within {
       border-color: var(--buttonBackgroundColor);
-      box-shadow: 0 0 0 2px rgb(124 58 237 / 0.3);
+      box-shadow: 0 0 0 2px rgb(124 58 237 / 30%);
     }
   }
 
@@ -105,7 +95,7 @@ h1 {
     margin-top: 0;
   }
 }
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .header {
     grid-template-columns: 350px 1fr;
   }

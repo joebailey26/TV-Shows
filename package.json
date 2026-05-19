@@ -50,7 +50,7 @@
     "nuxt-component-date": "github:Galexia-Agency/nuxt-component-date",
     "nuxt-component-pagination": "github:Galexia-Agency/nuxt-component-pagination",
     "sass": "^1.89.1",
-    "stylelint": "^15.11.0",
+    "stylelint": "^16.21.1",
     "stylelint-config-galexia": "github:Galexia-Agency/stylelint-config",
     "typescript": "^5.8.3",
     "vue": "^3.5.16",

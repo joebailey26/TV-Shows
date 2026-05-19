@@ -1,8 +1,8 @@
 <style lang="scss">
 .partner-form {
   display: flex;
-  align-items: center;
-  gap: .5rem
+  gap: .5rem;
+  align-items: center
 }
 .add-person-input {
   height: 2rem;
@@ -12,14 +12,14 @@
   border-radius: 2rem
 }
 .add-person-submit {
-  font-size: 1.1rem;
-  padding: .5rem;
   min-height: 0;
+  padding: .5rem;
+  font-size: 1.1rem;
 }
 .partner-list {
-  font-size: 1.1rem;
-  padding-left: 0;
   margin-top: 1rem;
+  padding-left: 0;
+  font-size: 1.1rem;
 }
 .partner-item {
   display: flex;
@@ -29,12 +29,12 @@
     min-height: 0;
     padding: .5rem;
     padding-top: .8rem;
-    color: rgb(255, 0, 0);
+    color: red;
     background: none;
     border: 0;
     &:hover {
-      background: none;
-      color: rgb(220, 0, 0)
+      color: rgb(220 0 0);
+      background: none
     }
   }
 }
