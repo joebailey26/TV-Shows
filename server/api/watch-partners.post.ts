@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
-import { getAuthenticatedUserEmail } from '../../lib/auth'
-import { useDb } from '../../lib/db'
-import { getUserByEmail } from '../../lib/getUserByEmail'
-import { watchPartners } from '../../db/schema'
+import { getAuthenticatedUserEmail } from '../lib/auth'
+import { useDb } from '../lib/db'
+import { getUserByEmail } from '../lib/getUserByEmail'
+import { watchPartners } from '../db/schema'
 
 function isWatchPartnerUniqueConstraintError (error: unknown): boolean {
   if (!(error instanceof Error)) {
