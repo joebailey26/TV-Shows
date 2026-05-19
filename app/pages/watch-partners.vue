@@ -50,7 +50,7 @@
     <ul class="partner-list">
       <li v-for="partner in partners" :key="partner.id" class="partner-item">
         {{ partner.name }}
-        <button type="button" class="button" @click="removePartner(partner.id)">X</button>
+        <button type="button" class="button" :aria-label="`Remove ${partner.name}`" @click="removePartner(partner.id)">X</button>
       </li>
     </ul>
   </main>
