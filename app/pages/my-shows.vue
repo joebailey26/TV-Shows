@@ -74,6 +74,15 @@ export default defineComponent({
     const pages = ref(0)
     const partners = ref<{id:number, name:string}[]>([])
 
+    const loadPartners = async () => {
+      try {
+        partners.value = await $fetch<{ id: number, name: string }[]>('/api/watch-partners' as string)
+      } catch {
+        partners.value = []
+      }
+    }
+    onMounted(loadPartners)
+
     const route = useRoute()
     const router = useRouter()
 
@@ -147,13 +156,6 @@ export default defineComponent({
     })
     shows.value = data.value?.tv_shows ?? []
     pages.value = data.value?.pages ?? 0
-    onMounted(async () => {
-      try {
-        partners.value = await $fetch<{ id: number, name: string }[]>('/api/watch-partners' as string)
-      } catch {
-        partners.value = []
-      }
-    })
 
     return {
       shows,

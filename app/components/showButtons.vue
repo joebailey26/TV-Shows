@@ -83,16 +83,10 @@ export default defineComponent({
   methods: {
     async addShow () {
       this.addingShow = true
-      const headers = useRequestHeaders(['cookie']) as HeadersInit
-      const response = await fetch(`/api/show/${this.id}`, {
-        method: 'POST',
-        headers
-      })
+      await $fetch(`/api/show/${this.id}`, { method: 'POST' })
 
-      if (response.ok) {
-        if (typeof this.addShowCallback === 'function') {
-          this.addShowCallback(this.id)
-        }
+      if (typeof this.addShowCallback === 'function') {
+        this.addShowCallback(this.id)
       }
     },
     async deleteShow () {
@@ -100,16 +94,10 @@ export default defineComponent({
       const confirmed = await open('Are you sure you want to delete this show?')
 
       if (confirmed) {
-        const headers = useRequestHeaders(['cookie']) as HeadersInit
-        const response = await fetch(`/api/show/${this.id}`, {
-          method: 'DELETE',
-          headers
-        })
+        await $fetch(`/api/show/${this.id}`, { method: 'DELETE' })
 
-        if (response.ok) {
-          if (typeof this.deleteShowCallback === 'function') {
-            this.deleteShowCallback(this.id)
-          }
+        if (typeof this.deleteShowCallback === 'function') {
+          this.deleteShowCallback(this.id)
         }
       }
     }

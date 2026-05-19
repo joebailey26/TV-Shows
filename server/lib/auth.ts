@@ -4,7 +4,7 @@ import type { AuthConfig, Theme } from '@auth/core/types'
 import type { EmailConfig, SendVerificationRequestParams } from '@auth/core/providers/email'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import type { H3Event } from 'h3'
-import { getRequestHeader, getRequestHeaders, getRequestURL } from 'h3'
+import { getRequestHeaders, getRequestURL } from 'h3'
 import { skipCSRFCheck, Auth } from '@auth/core'
 import { and, eq } from 'drizzle-orm'
 import { accounts } from '~~/server/db/schema'
@@ -19,23 +19,6 @@ async function getServerSessionResponse (event: H3Event): Promise<Response> {
     new Request(url, { headers: new Headers(getRequestHeaders(event) as Record<string, string>) }),
     options
   ) as Response
-}
-
-function getAuthCookieDebug (event: H3Event) {
-  const cookieHeader = getRequestHeader(event, 'cookie') ?? ''
-  const cookieNames = cookieHeader
-    .split(';')
-    .map((cookie) => {
-      const [name] = cookie.trim().split('=')
-      return name
-    })
-    .filter((name): name is string => Boolean(name))
-
-  return {
-    hasCookie: cookieNames.length > 0,
-    hasAuthSessionCookie: cookieNames.some(name => name.toLowerCase().includes('session-token')),
-    cookieNames
-  }
 }
 
 export async function getServerSession (event: H3Event) {
@@ -59,20 +42,11 @@ export async function getAuthenticatedUserEmail (event: H3Event) {
 
   try {
     session = await getServerSession(event)
-  } catch (error) {
-    console.warn('Failed to resolve auth session', {
-      path: event.path,
-      ...getAuthCookieDebug(event),
-      error: error instanceof Error ? error.message : String(error)
-    })
+  } catch {
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
 
   if (!session?.user?.email) {
-    console.warn('No authenticated user email found in session', {
-      path: event.path,
-      ...getAuthCookieDebug(event)
-    })
     throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
   }
 

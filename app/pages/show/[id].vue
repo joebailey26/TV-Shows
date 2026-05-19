@@ -214,6 +214,15 @@ export default defineComponent({
     const partners = ref<{id:number, name:string}[]>([])
     const selectedPartners = ref<number[]>([])
 
+    const loadPartners = async () => {
+      try {
+        partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string)
+      } catch {
+        partners.value = []
+      }
+    }
+    onMounted(loadPartners)
+
     const response = await useFetch<EpisodateShowTransformed | null>(`/api/show/${showId}` as string, {
       headers
     })
@@ -270,15 +279,13 @@ export default defineComponent({
     }
 
     async function updateShow (episode: number) {
-      const response = await useFetch<{ success: boolean, watchedEpisodeIds: number[] }>(`/api/show/${showId}` as string, {
+      const response = await $fetch<{ success: boolean, watchedEpisodeIds: number[] }>(`/api/show/${showId}` as string, {
         method: 'PATCH',
         headers,
-        body: JSON.stringify({
-          episode
-        })
+        body: { episode }
       })
 
-      const watchedEpisodeIds = response.data.value?.watchedEpisodeIds
+      const watchedEpisodeIds = response.watchedEpisodeIds
 
       if (show.value && watchedEpisodeIds) {
         show.value.episodes.forEach((episode) => {
@@ -290,14 +297,6 @@ export default defineComponent({
         })
       }
     }
-
-    onMounted(async () => {
-      try {
-        partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string)
-      } catch {
-        partners.value = []
-      }
-    })
 
     const deleteShowCallback = () => {
       router.push('/my-shows')
