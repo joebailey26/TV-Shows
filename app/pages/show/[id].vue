@@ -291,8 +291,13 @@ export default defineComponent({
       }
     }
 
-    const { data: partnerData } = await useFetch<WatchPartner[]>('/api/watch-partners' as string, { headers })
-    partners.value = partnerData.value ?? []
+    onMounted(async () => {
+      try {
+        partners.value = await $fetch<WatchPartner[]>('/api/watch-partners' as string)
+      } catch {
+        partners.value = []
+      }
+    })
 
     const deleteShowCallback = () => {
       router.push('/my-shows')
