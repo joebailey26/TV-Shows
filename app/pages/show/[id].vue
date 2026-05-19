@@ -287,11 +287,11 @@ export default defineComponent({
         })
       })
 
-      const watchedEpisodes = response.data.value
+      const watchedEpisodeIds = response.data.value?.watchedEpisodeIds
 
-      if (show.value && watchedEpisodes) {
+      if (show.value && watchedEpisodeIds) {
         show.value.episodes.forEach((episode) => {
-          if (watchedEpisodes.find(watchedEpisode => watchedEpisode === episode.id)) {
+          if (watchedEpisodeIds.find(watchedEpisode => watchedEpisode === episode.id)) {
             episode.watched = true
           } else {
             episode.watched = false

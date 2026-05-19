@@ -56,36 +56,56 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
 
-  if (Array.isArray(body.watchPartnerIds)) {
-    const showRecord = await DB.select({ id: tvShows.id })
+  const showRecord = Array.isArray(body.watchPartnerIds)
+    ? await DB.select({ id: tvShows.id })
       .from(tvShows)
       .leftJoin(users, eq(users.id, tvShows.userId))
       .where(and(eq(tvShows.showId, showId), eq(users.email, userEmail)))
       .limit(1)
+    : []
 
-    if (showRecord[0]) {
-      await DB.delete(showWatchPartners).where(eq(showWatchPartners.showId, showRecord[0].id))
-      if (body.watchPartnerIds.length > 0) {
-        // Validate that all provided IDs actually belong to the authenticated user
-        const ownedPartners = await DB.select({ id: watchPartners.id })
-          .from(watchPartners)
-          .where(and(
-            eq(watchPartners.userId, user.id),
-            inArray(watchPartners.id, body.watchPartnerIds)
-          ))
-        const validIds = ownedPartners.map(p => p.id)
-        if (validIds.length > 0) {
-          await DB.insert(showWatchPartners).values(validIds.map((watchPartnerId: number) => ({
-            showId: showRecord[0].id,
-            watchPartnerId
-          })))
-        }
-      }
+  let validWatchPartnerIds: number[] = []
+
+  if (Array.isArray(body.watchPartnerIds) && body.watchPartnerIds.length > 0) {
+    // Validate that all provided IDs actually belong to the authenticated user
+    const ownedPartners = await DB.select({ id: watchPartners.id })
+      .from(watchPartners)
+      .where(and(
+        eq(watchPartners.userId, user.id),
+        inArray(watchPartners.id, body.watchPartnerIds)
+      ))
+    validWatchPartnerIds = ownedPartners.map(p => p.id)
+  }
+
+  // Set up batch requests after validation so partner and episode mutations commit together.
+  const dbRequestBatch: BatchItem<'sqlite'>[] = []
+
+  if (Array.isArray(body.watchPartnerIds) && showRecord[0]) {
+    const showDbId = showRecord[0].id
+
+    dbRequestBatch.push(
+      DB.delete(showWatchPartners).where(eq(showWatchPartners.showId, showDbId))
+    )
+
+    if (validWatchPartnerIds.length > 0) {
+      dbRequestBatch.push(
+        DB.insert(showWatchPartners).values(validWatchPartnerIds.map((watchPartnerId: number) => ({
+          showId: showDbId,
+          watchPartnerId
+        })))
+      )
     }
   }
 
   if (!hasEpisode) {
-    return { success: true }
+    if (dbRequestBatch.length > 0) {
+      await DB.batch(dbRequestBatch as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
+    }
+
+    return {
+      success: true,
+      watchedEpisodeIds: []
+    }
   }
 
   // Find the episode in the database that has been passed in the payload
@@ -148,9 +168,6 @@ export default defineEventHandler(async (event: H3Event) => {
     }
   }
 
-  // Set up batch requests
-  const dbRequestBatch: BatchItem<'sqlite'>[] = []
-
   // Find the watched episodes that have been removed
   const watchedEpisodesToPushIds = new Set(watchedEpisodesToPush.map(ep => ep.id))
   const notWatchedEpisodes = watchedEpisodesInDb.filter(item => !watchedEpisodesToPushIds.has(item.id))
@@ -201,5 +218,8 @@ export default defineEventHandler(async (event: H3Event) => {
     await DB.batch(dbRequestBatch as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]])
   }
 
-  return watchedEpisodesToPush.map(episode => episode.id)
+  return {
+    success: true,
+    watchedEpisodeIds: watchedEpisodesToPush.map(episode => episode.id)
+  }
 })
