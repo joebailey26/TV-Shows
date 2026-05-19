@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { sqliteTable, integer, uniqueIndex, text, primaryKey } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, integer, index, uniqueIndex, text, primaryKey } from 'drizzle-orm/sqlite-core'
 import type { AdapterAccount } from '@auth/core/adapters'
 
 export const tvShows = sqliteTable('tv_shows', {
@@ -70,6 +70,14 @@ export const watchPartners = sqliteTable('watchPartners', {
   id: integer('id').notNull().primaryKey({ autoIncrement: true }),
   userId: text('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull()
+}, (table) => {
+  return {
+    watchPartnersUserIdIdx: index('watchPartnersUserIdIdx').on(table.userId),
+    watchPartnersUserIdNameIdx: uniqueIndex('watchPartnersUserIdNameIdx').on(
+      table.userId,
+      sql`${table.name} COLLATE NOCASE`
+    )
+  }
 })
 
 export const showWatchPartners = sqliteTable('showWatchPartners', {
