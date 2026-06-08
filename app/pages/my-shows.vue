@@ -5,7 +5,14 @@
   align-items: center;
   justify-content: end;
   margin-top: 1rem;
-  margin-bottom: 1rem
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  > div {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+  }
 }
 .sort-select {
   height: 2rem;
@@ -49,30 +56,34 @@
 <template>
   <main class="inner-content">
     <div v-if="shows.length" class="sort-controls">
-      <label for="watchingWith">Watching with:</label>
-      <select id="watchingWith" class="sort-select" :value="route.query.watchingWith ?? 'all'" @change="changeWatchingWith">
-        <option value="all">All</option>
-        <option value="-1">Only me</option>
-        <option v-for="partner in partners" :key="partner.id" :value="partner.id">Watching with {{ partner.name }}</option>
-      </select>
-      <label for="sort">Sort by:</label>
-      <select id="sort" class="sort-select" :value="route.query.sort ?? 'alphabetical'" @change="changeSort">
-        <option value="alphabetical">
-          Alphabetical
-        </option>
-        <option value="episodesToWatch">
-          Episodes to watch
-        </option>
-        <option value="nextEpisodeDate">
-          Next episode date
-        </option>
-        <option value="firstEpisodeDate">
-          First episode date
-        </option>
-      </select>
-      <button type="button" class="sort-order-btn" @click="toggleOrder">
-        {{ route.query.order === 'desc' ? '▼' : '▲' }}
-      </button>
+      <div>
+        <label for="watchingWith">Watching with:</label>
+        <select id="watchingWith" class="sort-select" :value="route.query.watchingWith ?? 'all'" @change="changeWatchingWith">
+          <option value="all">All</option>
+          <option value="-1">Only me</option>
+          <option v-for="partner in partners" :key="partner.id" :value="partner.id">Watching with {{ partner.name }}</option>
+        </select>
+      </div>
+      <div>
+        <label for="sort">Sort by:</label>
+        <select id="sort" class="sort-select" :value="route.query.sort ?? 'alphabetical'" @change="changeSort">
+          <option value="alphabetical">
+            Alphabetical
+          </option>
+          <option value="episodesToWatch">
+            Episodes to watch
+          </option>
+          <option value="nextEpisodeDate">
+            Next episode date
+          </option>
+          <option value="firstEpisodeDate">
+            First episode date
+          </option>
+        </select>
+        <button type="button" class="sort-order-btn" @click="toggleOrder">
+          {{ route.query.order === 'desc' ? '▼' : '▲' }}
+        </button>
+      </div>
     </div>
     <Shows
       v-if="shows.length"
