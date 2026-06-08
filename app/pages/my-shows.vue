@@ -28,11 +28,27 @@
     background-color: var(--buttonHoverBackgroundColor)
   }
 }
+.empty-home {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 1.25rem 2rem;
+  background: rgb(255 255 255 / 5%);
+  border-radius: 1rem
+}
+.empty-home__title {
+  margin: 1rem 0;
+  font-weight: bold;
+  font-size: 2em
+}
+.empty-home__tagline {
+  margin-top: -.5rem;
+  font-weight: 500
+}
 </style>
 
 <template>
   <main class="inner-content">
-    <div class="sort-controls">
+    <div v-if="shows.length" class="sort-controls">
       <label for="watchingWith">Watching with:</label>
       <select id="watchingWith" class="sort-select" :value="route.query.watchingWith ?? 'all'" @change="changeWatchingWith">
         <option value="all">All</option>
@@ -58,7 +74,17 @@
         {{ route.query.order === 'desc' ? '▼' : '▲' }}
       </button>
     </div>
-    <Shows :shows="shows" :page-count="pages ?? 0" :delete-show-callback="deleteShowCallback" />
+    <Shows
+      v-if="shows.length"
+      :shows="shows"
+      :page-count="pages ?? 0"
+      :delete-show-callback="deleteShowCallback"
+    />
+    <div v-else class="empty-home">
+      <h1 class="empty-home__title">TV Shows</h1>
+      <p class="empty-home__tagline">Manage your TV shows in one place.</p>
+      <p>TV Shows is an app for tracking your favorite television series, browsing upcoming episodes, managing a personal watchlist, and optionally syncing episode dates to your calendar.</p>
+    </div>
   </main>
 </template>
 
