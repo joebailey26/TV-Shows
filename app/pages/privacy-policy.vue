@@ -56,6 +56,16 @@
       <li>We do not sell or share your information with advertisers.</li>
     </ul>
 
+    <h2>Data Protection and Security</h2>
+    <ul>
+      <li>Access to production systems, databases, OAuth client secrets and service credentials is limited to the App maintainer.</li>
+      <li>Google OAuth access tokens and refresh tokens are stored only so the App can create, update and remove events in the calendar created for the App.</li>
+      <li>Sensitive credentials and tokens are not exposed in client-side code, public repositories or application responses.</li>
+      <li>Data is transmitted over HTTPS, including sign-in, account access and calendar sync requests.</li>
+      <li>The App uses Cloudflare platform controls to protect stored application data, including managed access controls for Cloudflare D1 and deployment secrets.</li>
+      <li>Logs are used for troubleshooting and are not used for advertising or profiling.</li>
+    </ul>
+
     <h2>Data Retention</h2>
     <ul>
       <li>Your data is kept while your account remains active or as needed to provide the service.</li>
