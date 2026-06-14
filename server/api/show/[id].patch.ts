@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import { eq, and, inArray, sql } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import { getShowExists } from '../../lib/getShowExists'
-import { episodes, watchedEpisodes, users, tvShows, showWatchPartners, watchPartners } from '../../db/schema'
+import { episodes, watchedEpisodes, users, tvShows, showWatchPartners, watchPartners, showTags, tags } from '../../db/schema'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
 import { useDb } from '../../lib/db'
 import { getUserByEmail } from '../../lib/getUserByEmail'
@@ -42,9 +42,14 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const hasEpisode = body.episode !== undefined
   const hasWatchPartnerIds = body.watchPartnerIds !== undefined
+  const hasRewatch = body.rewatch !== undefined
 
-  if (!hasEpisode && !hasWatchPartnerIds) {
-    throw createError({ statusMessage: 'You must pass at least one supported field (episode or watchPartnerIds)', statusCode: 400 })
+  if (!hasEpisode && !hasWatchPartnerIds && !hasRewatch) {
+    throw createError({ statusMessage: 'You must pass at least one supported field (episode, watchPartnerIds or rewatch)', statusCode: 400 })
+  }
+
+  if (hasRewatch && typeof body.rewatch !== 'boolean') {
+    throw createError({ statusMessage: 'rewatch must be a boolean', statusCode: 400 })
   }
 
   if (hasWatchPartnerIds && !Array.isArray(body.watchPartnerIds)) {
@@ -56,7 +61,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
 
-  const showRecord = Array.isArray(body.watchPartnerIds)
+  const showRecord = (Array.isArray(body.watchPartnerIds) || hasRewatch)
     ? await DB.select({ id: tvShows.id })
       .from(tvShows)
       .leftJoin(users, eq(users.id, tvShows.userId))
@@ -65,6 +70,20 @@ export default defineEventHandler(async (event: H3Event) => {
     : []
 
   let validWatchPartnerIds: number[] = []
+  let rewatchTagId = 0
+
+  if (hasRewatch) {
+    const rewatchTag = await DB.select({ id: tags.id })
+      .from(tags)
+      .where(eq(tags.slug, 'rewatch'))
+      .limit(1)
+
+    if (!rewatchTag[0]) {
+      throw createError({ statusMessage: 'Rewatch tag does not exist', statusCode: 500 })
+    }
+
+    rewatchTagId = rewatchTag[0].id
+  }
 
   if (Array.isArray(body.watchPartnerIds) && body.watchPartnerIds.length > 0) {
     // Validate that all provided IDs actually belong to the authenticated user
@@ -80,14 +99,35 @@ export default defineEventHandler(async (event: H3Event) => {
   // Set up batch requests after validation so partner and episode mutations commit together.
   const dbRequestBatch: BatchItem<'sqlite'>[] = []
 
-  if (Array.isArray(body.watchPartnerIds) && showRecord[0]) {
+  if (showRecord[0]) {
     const showDbId = showRecord[0].id
 
-    dbRequestBatch.push(
-      DB.delete(showWatchPartners).where(eq(showWatchPartners.showId, showDbId))
-    )
+    if (hasRewatch) {
+      if (body.rewatch) {
+        dbRequestBatch.push(
+          DB.insert(showTags)
+            .values({ showId: showDbId, tagId: rewatchTagId })
+            .onConflictDoNothing()
+        )
+      } else {
+        dbRequestBatch.push(
+          DB.delete(showTags).where(
+            and(
+              eq(showTags.showId, showDbId),
+              eq(showTags.tagId, rewatchTagId)
+            )
+          )
+        )
+      }
+    }
 
-    if (validWatchPartnerIds.length > 0) {
+    if (Array.isArray(body.watchPartnerIds)) {
+      dbRequestBatch.push(
+        DB.delete(showWatchPartners).where(eq(showWatchPartners.showId, showDbId))
+      )
+    }
+
+    if (Array.isArray(body.watchPartnerIds) && validWatchPartnerIds.length > 0) {
       dbRequestBatch.push(
         DB.insert(showWatchPartners).values(validWatchPartnerIds.map((watchPartnerId: number) => ({
           showId: showDbId,

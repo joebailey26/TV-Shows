@@ -3,11 +3,11 @@ import { asc, desc, eq, inArray, and, countDistinct, gt, sql, notInArray, lte } 
 import { alias } from 'drizzle-orm/sqlite-core'
 import type { SQLiteSelect } from 'drizzle-orm/sqlite-core'
 import { getAuthenticatedUserEmail } from '../lib/auth'
-import { tvShows, users, episodateTvShows, episodes, watchedEpisodes, showWatchPartners } from '../db/schema'
+import { tvShows, users, episodateTvShows, episodes, watchedEpisodes, showWatchPartners, showTags, tags } from '../db/schema'
 import { pageSize as ps } from '../api/shows.get'
 import { useDb } from '../lib/db'
 
-type ShowCategory = 'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'|''
+type ShowCategory = 'wantToWatch'|'toCatchUpOn'|'waitingFor'|'cancelled'|'rewatch'|''
 type SortType =
   | 'alphabetical'
   | 'episodesToWatch'
@@ -87,7 +87,20 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
             : sql`1=1`,
           watchingWith === -1
             ? sql`not exists (select 1 from ${showWatchPartners} swp where swp.showId = ${tvShows.id})`
-            : sql`1=1`
+            : sql`1=1`,
+          showCategory === 'rewatch'
+            ? sql`exists (
+              select 1 from ${showTags} st
+              join ${tags} t on t.id = st.tagId
+              where st.showId = ${tvShows.id} and t.slug = 'rewatch'
+            )`
+            : showCategory
+              ? sql`not exists (
+              select 1 from ${showTags} st
+              join ${tags} t on t.id = st.tagId
+              where st.showId = ${tvShows.id} and t.slug = 'rewatch'
+            )`
+              : sql`1=1`
         )
       )
 
@@ -130,6 +143,7 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     } else {
       q = q.orderBy(order === 'asc' ? asc(episodateTvShows.name) : desc(episodateTvShows.name))
     }
+
     return q
   }
 
@@ -206,7 +220,12 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
     updatedAt: episodateTvShows.updatedAt,
     watchedEpisodeCount: countDistinct(watchedEpisodes.id),
     pastEpisodeCount: countDistinct(episodes.id),
-    episodesToWatch: sql<number>`count(distinct ${episodes.id}) - count(distinct ${watchedEpisodes.id})`
+    episodesToWatch: sql<number>`count(distinct ${episodes.id}) - count(distinct ${watchedEpisodes.id})`,
+    rewatch: sql<boolean>`exists (
+      select 1 from ${showTags} st
+      join ${tags} t on t.id = st.tagId
+      where st.showId = ${tvShows.id} and t.slug = 'rewatch'
+    )`
   })
     .from(episodateTvShows)
     .$dynamic()
@@ -238,8 +257,12 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
   ])
 
   const showsToReturn = batch[1].map((show) => {
+    const rewatch = Boolean(show.rewatch)
+
     return {
       ...show,
+      rewatch,
+      tags: rewatch ? [{ id: 0, slug: 'rewatch', name: 'Rewatch' }] : [],
       tracked: true
     } as EpisodateShowFromSearchTransformed
   })
