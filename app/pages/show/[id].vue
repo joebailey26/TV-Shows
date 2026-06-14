@@ -21,6 +21,7 @@ h1 {
   display: grid;
   gap: 1rem;
 }
+.show-tags,
 .watching-with {
   display: grid;
   gap: 0.5rem;
@@ -28,7 +29,7 @@ h1 {
     color: white;
     font-weight: 600;
   }
-  .watching-with-header {
+  .section-header {
     display: flex;
     gap: 1rem;
     align-items: center;
@@ -56,10 +57,12 @@ h1 {
     color: #d1d5db;
     font-size: 0.9rem;
   }
+  .tag-option,
   .partner-options {
     display: grid;
     gap: 0.5rem;
   }
+  .tag-option,
   .partner-option {
     display: flex;
     gap: 0.6rem;
@@ -132,8 +135,22 @@ h1 {
         <h1 v-html="name" />
         <p v-html="description" />
         <div class="info">
+          <div class="show-tags">
+            <div class="section-header">
+              <p>Tags:</p>
+            </div>
+            <label class="tag-option" for="rewatch">
+              <input
+                id="rewatch"
+                type="checkbox"
+                :checked="rewatch"
+                @change="updateRewatch"
+              >
+              <span>Rewatch</span>
+            </label>
+          </div>
           <div class="watching-with">
-            <div class="watching-with-header">
+            <div class="section-header">
               <p>Watching together with:</p>
               <button
                 type="button"
@@ -213,6 +230,7 @@ export default defineComponent({
     const show = ref<EpisodateShowTransformed | null>(null)
     const partners = ref<{id:number, name:string}[]>([])
     const selectedPartners = ref<number[]>([])
+    const rewatch = ref(false)
 
     const loadPartners = async () => {
       try {
@@ -234,6 +252,7 @@ export default defineComponent({
     const showState = reactive(response.data.value) as EpisodateShowTransformed
     show.value = showState
     selectedPartners.value = showState.watchingWith.map(item => item.id)
+    rewatch.value = showState.rewatch
 
     const seasons: ComputedRef<Season[]> = computed(() => {
       if (show.value && show.value.episodes.length > 0) {
@@ -256,6 +275,21 @@ export default defineComponent({
 
     async function saveWatchingWith (watchPartnerIds: number[]) {
       await $fetch<{ success: boolean, watchedEpisodeIds: number[] }>(`/api/show/${showId}` as string, { method: 'PATCH', headers, body: { watchPartnerIds } })
+    }
+
+    async function updateRewatch (event: Event) {
+      const target = event.target as HTMLInputElement
+      rewatch.value = target.checked
+      await $fetch<{ success: boolean, watchedEpisodeIds: number[] }>(`/api/show/${showId}` as string, { method: 'PATCH', headers, body: { rewatch: rewatch.value } })
+      if (show.value) {
+        const hasRewatchTag = show.value.tags.some(tag => tag.slug === 'rewatch')
+        if (rewatch.value && !hasRewatchTag) {
+          show.value.tags = [...show.value.tags, { id: 0, slug: 'rewatch', name: 'Rewatch' }]
+        } else if (!rewatch.value) {
+          show.value.tags = show.value.tags.filter(tag => tag.slug !== 'rewatch')
+        }
+        show.value.rewatch = rewatch.value
+      }
     }
 
     async function updateWatchingWith (partnerId: number, event: Event) {
@@ -309,6 +343,8 @@ export default defineComponent({
       deleteShowCallback,
       partners,
       selectedPartners,
+      rewatch,
+      updateRewatch,
       updateWatchingWith,
       clearWatchingWith
     }

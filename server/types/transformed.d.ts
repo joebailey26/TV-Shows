@@ -1,6 +1,12 @@
 export {}
 
 declare global {
+  interface ShowTag {
+    id: number
+    slug: string
+    name: string
+  }
+
   interface EpisodateShowFromSearchTransformed extends EpisodateShowFromSearch {
     tracked: boolean
     episodesToWatch: number
@@ -22,5 +28,7 @@ declare global {
     countdown: EpisodesTransformed | null
     episodes: EpisodesTransformed[]
     watchingWith: WatchPartner[]
+    tags: ShowTag[]
+    rewatch: boolean
   }
 }

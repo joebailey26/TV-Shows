@@ -12,6 +12,25 @@ export const tvShows = sqliteTable('tv_shows', {
   }
 })
 
+export const tags = sqliteTable('tags', {
+  id: integer('id').notNull().primaryKey({ autoIncrement: true }),
+  slug: text('slug').notNull(),
+  name: text('name').notNull()
+}, (table) => {
+  return {
+    tagsSlugIdx: uniqueIndex('tagsSlugIdx').on(table.slug)
+  }
+})
+
+export const showTags = sqliteTable('showTags', {
+  showId: integer('showId').notNull().references(() => tvShows.id, { onDelete: 'cascade' }),
+  tagId: integer('tagId').notNull().references(() => tags.id, { onDelete: 'cascade' })
+}, (table) => {
+  return {
+    showTagsIdx: uniqueIndex('showTagsIdx').on(table.showId, table.tagId)
+  }
+})
+
 export const episodateTvShows = sqliteTable('episodateTvShows', {
   id: integer('id').notNull().primaryKey(),
   name: text('name'),

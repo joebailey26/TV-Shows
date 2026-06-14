@@ -1,13 +1,12 @@
 <style lang="scss" scoped>
 .sort-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: .5rem;
   align-items: center;
   justify-content: end;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  flex-wrap: wrap;
-
   > div {
     display: flex;
     gap: .5rem;

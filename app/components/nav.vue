@@ -103,6 +103,9 @@ nav {
           <nuxt-link to="/my-shows?category=cancelled" class="nav-link" :class="{ active: $route.query.category === 'cancelled' }">
             Cancelled
           </nuxt-link>
+          <nuxt-link to="/my-shows?category=rewatch" class="nav-link" :class="{ active: $route.query.category === 'rewatch' }">
+            Rewatch
+          </nuxt-link>
           <nuxt-link to="/watch-partners" class="nav-link" :class="{ active: $route.path === '/watch-partners' }">
             Friends & Family
           </nuxt-link>

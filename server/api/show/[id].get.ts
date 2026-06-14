@@ -1,12 +1,16 @@
 import type { H3Event } from 'h3'
 import { eq, and, asc, sql, gt } from 'drizzle-orm'
 import { getAuthenticatedUserEmail } from '../../lib/auth'
-import { tvShows, users, episodateTvShows, episodes, showWatchPartners, watchPartners } from '../../db/schema'
+import { tvShows, users, episodateTvShows, episodes, showWatchPartners, watchPartners, showTags, tags } from '../../db/schema'
 import { useDb } from '../../lib/db'
 import { getEpisodesForShow } from '../../lib/getEpisodesForShow'
 
 function isWatchPartner (item: { id: number | null, name: string | null }): item is { id: number, name: string } {
   return item.id !== null && item.name !== null
+}
+
+function isShowTag (item: { id: number | null, slug: string | null, name: string | null }): item is ShowTag {
+  return item.id !== null && item.slug !== null && item.name !== null
 }
 
 export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowTransformed|null> => {
@@ -69,6 +73,11 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     genres: episodateTvShows.genres,
     pictures: episodateTvShows.pictures,
     updatedAt: episodateTvShows.updatedAt,
+    rewatch: sql<boolean>`exists (
+      select 1 from ${showTags} st
+      join ${tags} t on t.id = st.tagId
+      where st.showId = ${tvShows.id} and t.slug = 'rewatch'
+    )`,
     countdown: {
       id: countdown.id,
       season: countdown.season,
@@ -127,10 +136,28 @@ export default defineEventHandler(async (event: H3Event): Promise<EpisodateShowT
     )
 
   const episodesFromDb = await getEpisodesForShow(showId, userEmail, event)
+  const showTagsResponse = await DB.select({
+    id: tags.id,
+    slug: tags.slug,
+    name: tags.name
+  })
+    .from(tvShows)
+    .leftJoin(showTags, eq(showTags.showId, tvShows.id))
+    .leftJoin(tags, eq(tags.id, showTags.tagId))
+    .leftJoin(users, eq(users.id, tvShows.userId))
+    .where(
+      and(
+        eq(tvShows.showId, showId),
+        eq(users.email, userEmail),
+        sql`${tags.id} is not null`
+      )
+    )
 
   return {
     ...showResponse[0],
     tracked: true,
+    rewatch: Boolean(showResponse[0].rewatch),
+    tags: showTagsResponse.filter(isShowTag),
     genres: showResponse[0]?.genres ? showResponse[0].genres.split(',') : [],
     pictures: showResponse[0]?.pictures ? showResponse[0].pictures.split(',') : [],
     episodes: episodesFromDb,
