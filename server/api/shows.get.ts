@@ -94,11 +94,13 @@ export default defineEventHandler(async (event: H3Event): Promise<CustomSearch> 
               join ${tags} t on t.id = st.tagId
               where st.showId = ${tvShows.id} and t.slug = 'rewatch'
             )`
-            : sql`not exists (
+            : showCategory
+              ? sql`not exists (
               select 1 from ${showTags} st
               join ${tags} t on t.id = st.tagId
               where st.showId = ${tvShows.id} and t.slug = 'rewatch'
             )`
+              : sql`1=1`
         )
       )
 
